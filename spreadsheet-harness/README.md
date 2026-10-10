@@ -29,7 +29,7 @@ You can use it in three ways:
 cd spreadsheet-harness
 npm install          # needs network access to cdn.sheetjs.com (see Notes)
 npm run example      # model-free tour on a bundled sample workbook
-npm run check        # typecheck + ~2,800 unit tests
+npm run check        # typecheck + ~2,700 unit tests
 ```
 
 `npm run example` runs [`examples/analyze.ts`](examples/analyze.ts). Its
@@ -115,7 +115,6 @@ The main design ideas:
 | [`lib/plan/`](lib/plan/) | Edit-plan schema (`makeEditPlanSchema`), `applyEditPlan`, `buildOutputXlsx` (write result back to .xlsx) |
 | [`lib/charts/`](lib/charts/) | Chart spec → DrawingML compiler and xlsx injection (for Visualization tasks) |
 | [`lib/anthropic/`](lib/anthropic/) | Anthropic client (`MODEL = claude-sonnet-5`), validated JSON calls with one retry |
-| [`lib/bedrock/`](lib/bedrock/) | Optional AWS Bedrock backend for the same agent loop |
 | [`lib/bench/`](lib/bench/) | SpreadsheetBench 2: dataset parsing, prompts, per-task runner, scorer (`compare.ts`), logs |
 | [`lib/ir/schema.ts`](lib/ir/schema.ts) | Shared Zod types the prompts and plans reference |
 | [`scripts/benchmark.ts`](scripts/benchmark.ts) | `npm run bench`: the benchmark CLI |
@@ -124,7 +123,7 @@ The main design ideas:
 | [`simulation/`](simulation/) + [`scripts/dump-oracle.py`](scripts/dump-oracle.py) | Python reference formula engine used to generate the oracle fixtures the TS engine is tested against |
 | [`public/samples/`](public/samples/), [`public/scenarios/`](public/scenarios/) | Small synthetic workbooks used by tests and the example |
 | [`test/`](test/) | Vitest suites for everything above |
-| [`docs/`](docs/) | Upstream design notes: benchmark guide, status/handoff, Bedrock guide, layered-analysis design |
+| [`docs/`](docs/) | Upstream design notes: benchmark guide, status/handoff, layered-analysis design |
 
 ---
 
@@ -192,7 +191,7 @@ Results go to `bench-results/<Category>/`. Each category gets a
 `report.json` with per-task details, plus `output_excel/{id}_output.xlsx` in
 the layout the official Python evaluator reads. Run
 `npx tsx scripts/benchmark.ts` for the full flag list (`--mode tools|single`,
-`--effort`, `--model`, `--provider bedrock`, `--score-only`, …). For how to
+`--effort`, `--model`, `--score-only`, …). For how to
 read the score, see [docs/spreadsheetbench.md](docs/spreadsheetbench.md).
 
 ---
@@ -207,10 +206,12 @@ read the score, see [docs/spreadsheetbench.md](docs/spreadsheetbench.md).
 - **Known failing tests:** 2 tests in `test/digest-period-axis.test.ts` (the
   monthly/annual period-axis grouping) fail. They fail the same way in
   upstream cellwiser at `e88d886`, so this extraction didn't cause them. The
-  rest pass: 2,815 passed and 16 skipped (skipped suites need the downloaded
+  rest pass: 2,718 passed and 16 skipped (skipped suites need the downloaded
   dataset or a private `Excaliba.xlsx` workbook).
 - **Not included:** the Next.js UI, the animation player, the Works/runs
-  store, Supabase, auth/metering, and the workflow-IR inference routes. For
+  store, Supabase, auth/metering, the workflow-IR inference routes, and
+  upstream's AWS Bedrock backend (this copy talks to Claude only through
+  `ANTHROPIC_API_KEY`). For
   those, see the upstream repo.
 - **Syncing with upstream:** this is a one-time copy, not a submodule. To
   pick up upstream changes, re-copy the matching paths from `WhemDev/cellwiser`

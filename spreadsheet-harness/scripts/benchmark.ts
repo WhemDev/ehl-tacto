@@ -56,8 +56,6 @@ import { BENCH_PARSE_LIMITS, runBenchTask, type InferFn, type TaskRunResult } fr
 import { serializeTaskLog } from "../lib/bench/log";
 import { workbookReader } from "../lib/bench/readers";
 import { parseWorkbook } from "../lib/workbook";
-import { makeBedrockCallTurn } from "../lib/bedrock/call-turn";
-import { hasAwsCredentials } from "../lib/bedrock/client";
 
 export interface Options {
   datasetDir: string;
@@ -72,20 +70,6 @@ export interface Options {
   effort: "low" | "medium" | "high" | "max";
   mode: "tools" | "single";
   model?: string;
-  /** Which backend drives inference. "anthropic" (the default) is
-   *  byte-identical to this flag never having existed — see parseArgs and
-   *  buildAgent below, both of which gate every new bit of behavior behind
-   *  `provider === "bedrock"`. "bedrock" routes the agentic loop through
-   *  lib/bedrock/call-turn.ts's makeBedrockCallTurn instead of
-   *  lib/bench/agent-infer.ts's makeAgentCallTurn, so mid-tier models
-   *  available on Amazon Bedrock (Kimi K2.5, GLM-5, DeepSeek V3.2, MiniMax
-   *  M2/M2.5 — see docs/bedrock-bench.md) can drive the same benchmark. */
-  provider: "anthropic" | "bedrock";
-  /** Bedrock only: AWS region for the Converse call. Falls back to
-   *  AWS_REGION / AWS_DEFAULT_REGION, then to whatever
-   *  lib/bedrock/client.ts's getBedrockClient ultimately resolves (the AWS
-   *  SDK's own default chain) when none of those are set either. */
-  region?: string;
 }
 
 function usage(message?: string): never {
@@ -107,13 +91,7 @@ function usage(message?: string): never {
   --resume              skip tasks whose output file already exists, scoring it from disk
   --effort <level>      model effort: low | medium | high | max (default high)
   --mode <tools|single> tools: agentic loop with retrieval tools (default); single: one-shot prompt
-  --model <id>          Claude model id (default: ${MODEL}); for --provider bedrock,
-                         the Bedrock model id instead (required — no default)
-  --provider <name>     anthropic | bedrock (default anthropic). bedrock drives the
-                         agentic loop over Amazon Bedrock's Converse API instead of the
-                         Anthropic API — see docs/bedrock-bench.md. Requires --model and
-                         --mode tools (the default); --mode single is Anthropic-only.
-  --region <aws-region> Bedrock only (default: \$AWS_REGION or \$AWS_DEFAULT_REGION)
+  --model <id>          Claude model id (default: ${MODEL})
 `);
   process.exit(2);
 }
@@ -153,25 +131,6 @@ export function parseArgs(argv: string[]): Options {
   const model = get("--model");
   if (model !== undefined && model.length === 0) usage(`Bad --model "${model}"`);
 
-  const provider = (get("--provider") ?? "anthropic") as Options["provider"];
-  if (!["anthropic", "bedrock"].includes(provider)) {
-    usage(`Bad --provider "${provider}". Use anthropic or bedrock.`);
-  }
-  // Both checks below are bedrock-only — an anthropic run (the default) is
-  // unaffected either way, which is the "byte-identical when absent"
-  // property this flag was built to preserve.
-  if (provider === "bedrock" && mode === "single") {
-    usage(
-      "--provider bedrock does not support --mode single (single-shot inference is " +
-        "Anthropic-only — see lib/anthropic/run.ts's runValidated). Use --mode tools (the default).",
-    );
-  }
-  if (provider === "bedrock" && !model) {
-    usage("--provider bedrock requires --model (the Bedrock model id — see docs/bedrock-bench.md).");
-  }
-
-  const region = get("--region") ?? process.env.AWS_REGION ?? process.env.AWS_DEFAULT_REGION;
-
   return {
     datasetDir: resolve(
       get("--dataset") ?? process.env.SPREADSHEETBENCH_DIR ?? "data/spreadsheetbench-v2",
@@ -187,8 +146,6 @@ export function parseArgs(argv: string[]): Options {
     effort,
     mode,
     model,
-    provider,
-    region,
   };
 }
 
@@ -453,57 +410,19 @@ function printAggregate(label: string, agg: AggregateScore, note?: string): void
   console.log(`    ACCURACY:               ${fmtPct(agg.accuracy)}   (tasks fully solved — the leaderboard number)`);
 }
 
-/** provider === "anthropic": hasCredentials() (ANTHROPIC_API_KEY /
- *  ANTHROPIC_AUTH_TOKEN), exactly as before this flag existed. provider ===
- *  "bedrock": lib/bedrock/client.ts's hasAwsCredentials() — a presence-only
- *  check over the standard AWS credential chain's own env vars/config
- *  files, never a live AWS call (no credentials are available to test
- *  against at build time — see docs/bedrock-bench.md). Exported for tests. */
-export function checkCredentials(opts: Options): boolean {
-  return opts.provider === "bedrock" ? hasAwsCredentials() : hasCredentials();
-}
-
 /**
- * Builds the agentic-loop runner scripts/benchmark.ts's `main()` passes to
- * runBenchTask as `agent` — one branch per provider. The anthropic branch
- * is copied verbatim from what `main()` inlined before this flag existed,
- * so a caller that never mentions --provider gets byte-identical wiring
- * (same makeAgentCallTurn call, same arguments) to the pre-Bedrock version
- * of this script. `deps` is a test seam only: production always uses the
- * real makeAgentCallTurn/makeBedrockCallTurn (the defaults below); a test
- * can substitute a mock factory to assert this function calls it with the
- * right arguments, with no network access and no AWS/Anthropic credentials
- * involved. Assumes the caller already gated construction on `!opts.baseline
- * && !opts.scoreOnly && opts.mode === "tools"` (mirroring the pre-existing
- * `agent` construction in `main()`) — called unconditionally otherwise, it
- * would build a working-but-unwanted agent for e.g. a --baseline run.
+ * Builds the agentic-loop runner `main()` passes to runBenchTask as `agent`.
+ * Assumes the caller already gated construction on `!opts.baseline &&
+ * !opts.scoreOnly && opts.mode === "tools"`.
  */
 export function buildAgent(
   opts: Options,
-  deps: {
-    makeAgentCallTurn: typeof makeAgentCallTurn;
-    makeBedrockCallTurn: typeof makeBedrockCallTurn;
-  } = { makeAgentCallTurn, makeBedrockCallTurn },
 ): NonNullable<Parameters<typeof runBenchTask>[0]["agent"]> {
-  if (opts.provider === "bedrock") {
-    // parseArgs already enforces --model for --provider bedrock (no
-    // Bedrock model has a meaningful default the way MODEL is for
-    // Anthropic); re-checked here too since a test may build `Options`
-    // directly rather than through parseArgs's CLI validation.
-    const model = opts.model;
-    if (!model) throw new Error('buildAgent: --model is required for --provider "bedrock"');
-    return ({ workbook, system, userMessage }) =>
-      runAgentLoop({
-        workbook,
-        userMessage,
-        callTurn: deps.makeBedrockCallTurn({ system, model, region: opts.region }),
-      });
-  }
   return ({ workbook, system, userMessage }) =>
     runAgentLoop({
       workbook,
       userMessage,
-      callTurn: deps.makeAgentCallTurn({ system, effort: opts.effort, model: opts.model }),
+      callTurn: makeAgentCallTurn({ system, effort: opts.effort, model: opts.model }),
     });
 }
 
@@ -512,25 +431,15 @@ async function main() {
 
   let infer: InferFn | null = null;
   if (!opts.baseline && !opts.scoreOnly) {
-    if (!checkCredentials(opts)) {
+    if (!hasCredentials()) {
       console.error(
-        opts.provider === "bedrock"
-          ? "\n  No AWS credentials found.\n" +
-              "  Configure the standard AWS credential chain (env vars, ~/.aws/credentials, an IAM " +
-              "role, ...), or use --baseline / --score-only which make no model calls.\n"
-          : "\n  No Anthropic credentials found.\n" +
-              "  Set ANTHROPIC_API_KEY, or use --baseline / --score-only which make no model calls.\n",
+        "\n  No Anthropic credentials found.\n" +
+          "  Set ANTHROPIC_API_KEY, or use --baseline / --score-only which make no model calls.\n",
       );
       process.exit(2);
     }
-    // Bedrock never uses `infer` — parseArgs already rejects --mode single
-    // for --provider bedrock, so the `agent` branch below always drives
-    // the run; building an Anthropic-calling closure here anyway (even if
-    // never invoked) would be dead-code-that-lies about what this run does.
-    if (opts.provider === "anthropic") {
-      infer = ({ system, userMessage, schema }) =>
-        runValidated({ system, userMessage, schema, effort: opts.effort, model: opts.model });
-    }
+    infer = ({ system, userMessage, schema }) =>
+      runValidated({ system, userMessage, schema, effort: opts.effort, model: opts.model });
   } else if (opts.baseline) {
     infer = async ({ schema }) => ({
       value: schema.parse({ edits: [] }),
@@ -544,16 +453,11 @@ async function main() {
     agent = buildAgent(opts);
   }
 
-  // The bedrock branch's label is additive (only ever seen on a bedrock
-  // run); the anthropic string is untouched so a run with --provider
-  // omitted prints exactly what it always did.
   const mode = opts.scoreOnly
     ? "score-only"
     : opts.baseline
       ? "baseline (no model)"
-      : opts.provider === "bedrock"
-        ? `bedrock model ${opts.model}, effort ${opts.effort}, mode ${opts.mode}`
-        : `model ${opts.model ?? MODEL}, effort ${opts.effort}, mode ${opts.mode}`;
+      : `model ${opts.model ?? MODEL}, effort ${opts.effort}, mode ${opts.mode}`;
   console.log(`\nSpreadsheetBench 2 — ${mode}`);
   console.log(`dataset: ${opts.datasetDir}`);
 
@@ -597,10 +501,8 @@ async function main() {
 }
 
 // Only run the CLI when this file is the actual entrypoint (`tsx
-// scripts/benchmark.ts ...` / `npm run bench`), not when it is imported —
-// test/bedrock-benchmark.test.ts imports parseArgs/checkCredentials/
-// buildAgent directly to exercise the new --provider wiring without
-// spinning up the whole CLI (argv parsing, dataset I/O, process.exit).
+// scripts/benchmark.ts ...` / `npm run bench`), not when it is imported,
+// so parseArgs/buildAgent can be used without spinning up the whole CLI.
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   main().catch((err) => {
     console.error(err);
