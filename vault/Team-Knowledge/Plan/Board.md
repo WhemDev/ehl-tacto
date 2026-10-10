@@ -37,6 +37,9 @@ kanban-plugin: basic
 - [x] **Decided (Arda, 19:00): the final runs `arena run --set final --agent hybrid` (A9h, our runner), not `proto/final.py`**
 - [x] Final runner retries a case refused for the key's 10 open sessions while the wave leaves time (`c70bcf0`)
 - [x] Patience: 3 holds while the supplier still gives ≥ 0.3 % - P02 0.425 → 0.677, P08 0.592 → 0.607; A9h default ([[Review 2026-10-10 - worst practice cases and upgrades]])
+- [x] Fresh passes of the 3-holds build, all 10 at once: templates 0.721, Sonnet writer 0.726 (was 0.692) - the writer is at parity on real suppliers ([[0005 Writer model]])
+- [x] Style search gen 0 (30 sessions): warm 0.721, brief 0.719, collaborative 0.699 - wording settled, plain LLM writer is the default, no more language search
+- [x] [[0007 The final build]]: the command, the build, the Sunday checklist
 - [x] Full practice pass of the final build: mean 0.694, 10/10 deals, P08 0.603 and P18 0.532 new bests, P05 0.665 fresh ([[Testing]])
 - [x] Fresh practice pass, all 10 at once: mean 0.692, 10/10 deals, < 3 min for the whole wave, P05 0.688 new best ([[Testing]])
 - [x] Bug #9 fixed: attachments no longer delay a reply (17-21 s per quote PDF), a best final offer is accepted within 15 s of its arrival, A9's accept recovery ([[Progress/Bugs]], `tests/test_engine_clock.py`)

@@ -1,0 +1,127 @@
+---
+case: "case:P10"
+session: "57aafb0b8c3ce62a"
+set: "practice"
+score: 0.671
+deal: true
+supplier: "sup:70410"
+end_reason: "accepted"
+rounds: 3
+c_open: 1932492.18
+c_deal: 1527585.6
+c_best: 1328926.89
+agent: "hybrid+style-1936-g0-2"
+commit: "2ed641c"
+tags: ["run"]
+---
+# P10 · score 0.671
+
+[Replay](https://arena.tacto.ai/replay/57aafb0b8c3ce62a) · deal with sup:70410 · accepted
+
+## Result
+- terms: payment_days 30, lead_time_days 54, volume_per_year 23400, contract_months 24, effective_date "2027-01-01", index_clause null, incoterm "DAP", tooling_eur 0.0, ppm_commitment 300, chargeback_eur_per_complaint 0.0, unit_price 31.7
+- C open 1932492.18 · C deal 1527585.6 · C alt None · C best 1328926.89
+
+| item | eur |
+|---|---|
+| price | 1483560.0 |
+| uncovered_need | 0.0 |
+| fallback_risk | 0.0 |
+| payment_terms | 9890.4 |
+| freight | 0.0 |
+| late_delivery | 28800.0 |
+| quality | 5335.2 |
+| tooling | 0.0 |
+| index_clause | 0.0 |
+| index_risk | 0.0 |
+| relationship | 0.0 |
+
+## Negotiation
+### Round 0 · sup:70410
+**open**
+- term sheet `offer:70410-0`: unit_price 32.2, lead_time_days 54, volume_per_year 19890, contract_months 12
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear Sir or Madam,
+> Thank you for your enquiry. Please find our Angebot below.
+> Our terms: a price of €32.20 per unit, Lieferzeit 54 days, a volume of 19890 pcs per year, a contract term of 12 months.
+> We will process your next message according to our standard procedure.
+> Mit freundlichen Grüßen
+> Monika Zellner
+> Segment Manager, Dichtungswerk Ravensteiner GmbH
+### Round 1 · buyer
+Ravensteiner cuts the seal allocation
+- term sheet: unit_price 28.98, volume_per_year 23400, contract_months 24, lead_time_days 42
+- term sheet: unit_price 28.98, volume_per_year 23400, contract_months 36, lead_time_days 42
+> Hello,
+> 
+> Thank you for your quote and for the details on volume, term and lead time. We'd like to award this part to a partner for the full 24 months, so the 12-month term in your offer is not quite what we need. Payment terms of 30 days, the start date, DAP delivery and tooling at zero are fixed in this enquiry, but the packages leave room to find a fit.
+> Our bottom-up should-cost estimate for this part is €24.31 (cost:340010).
+> Our recent orders po:4500014436-10, po:4500014383-10, po:4500014337-10 show the price level we have been paying.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> Could you also send us your cost breakdown, so we can see which costs really moved? If cash, planning or volume certainty is a concern on your side, please tell us what would make a package work for you, and we'll gladly help find a solution.
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 1 · sup:70410
+**final_offer**
+- term sheet `offer:70410-1`: unit_price 33.6, lead_time_days 42, volume_per_year 23400, contract_months 24
+- claims: [{"index": 0, "result": "verified"}, {"index": 1, "result": "verified"}]
+- signals: {"reply_delay_days": 3, "validity_days": 7}
+> Dear Sir or Madam,
+> We acknowledge receipt of your message.
+> This is our final offer (letztes Angebot). Please decide.
+> Our terms: a price of €33.60 per unit, Lieferzeit 42 days, a volume of 23400 pcs per year, a contract term of 24 months.
+> Please note:
+> We checked the price history data you cited; it holds, but it does not change our calculation.
+> We checked the should cost data you cited; it holds and we took it into account.
+> We acknowledge your should-cost estimate; however, our pricing reflects our specialized manufacturing processes, and we do not disclose internal cost breakdowns.
+> We accept the 24-month contract and the volume of 23,400 units, but require a lead time of 54 days to maintain operational efficiency.
+> Alternatively, with Lieferzeit 54 days: €31.70 per unit.
+> Our calculation is our property; we do not share a breakdown.
+> These are our standard conditions for this product.
+> Please address any further questions in writing to this office.
+> Mit freundlichen Grüßen
+> Monika Zellner
+> Segment Manager, Dichtungswerk Ravensteiner GmbH
+
+**Reasons:**
+- We checked the price history data you cited; it holds, but it does not change our calculation.
+- We checked the should cost data you cited; it holds and we took it into account.
+- We acknowledge your should-cost estimate; however, our pricing reflects our specialized manufacturing processes, and we do not disclose internal cost breakdowns.
+- We accept the 24-month contract and the volume of … units, but require a lead time of … days to maintain operational efficiency.
+- Alternatively, with Lieferzeit … days: €… per unit.
+- Our calculation is our property; we do not share a breakdown.
+### Round 2 · buyer
+Ravensteiner cuts the seal allocation
+- term sheet: unit_price 31.7, lead_time_days 54, volume_per_year 23400, contract_months 24
+> Hello,
+> 
+> thank you, we take your alternative exactly as offered: €31.70, 24 months, 54 days lead time. Please confirm and we sign today.
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 2 · sup:70410
+**agreed**
+- term sheet `offer:70410-2`: unit_price 31.7, lead_time_days 54, volume_per_year 23400, contract_months 24
+- signals: {"reply_delay_days": 3, "validity_days": 14}
+> Dear Sir or Madam,
+> 
+> We acknowledge your acceptance of our alternative offer. 
+> 
+> We can accept your terms and await your order. The terms of our Angebot are confirmed at a price of €31.70 per unit, a volume of 23400 pcs per year, a contract term of 24 months, and a Lieferzeit 54 days. This offer remains valid for 14 days. 
+> 
+> We will initiate the standard process to finalize the agreement.
+> 
+> Mit freundlichen Grüßen
+> Monika Zellner
+> Segment Manager, Dichtungswerk Ravensteiner GmbH
+
+**Reasons:**
+- We acknowledge your acceptance of our alternative offer.
+- The terms are confirmed at €… per unit for a volume of … pieces, a 24-month contract, and a 54-day lead time.
+- We will initiate the standard process to finalize the agreement.
+### Round 2 · buyer
+
+## Team notes
+
+_Observations from replays, calls with Tacto, hunches. Kept when the note is regenerated._

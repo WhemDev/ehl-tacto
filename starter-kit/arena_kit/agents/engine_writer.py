@@ -1,10 +1,12 @@
-"""An LLM writer for Tugra's engine. The engine decides every number and writes a template e-mail; with
-ENGINE_WRITER=llm the model rewrites the words around them, and the template goes out whenever the model is
-slow, breaks a rule or fails.
+"""An LLM writer for Tugra's engine. The engine decides every number and writes a template e-mail; the model
+(LLM_MODEL, Sonnet 5.5) rewrites the words around them, and the template goes out whenever the model is slow,
+breaks a rule or fails. On the practice suppliers (2026-10-10, fresh replies, all 10 cases at once) the rewrite
+scored 0.726 against the templates' 0.721 - parity - at 2.4 s a mail with no fallback; three tone instructions
+(ENGINE_STYLE) scored 0.699-0.721, so the plain prompt stays.
 
-ENGINE_WRITER=vary keeps the template but tags the subject. The hosted sandbox answers an identical e-mail
-identically, so the template alone is one draw of the supplier, not a mean; the tag makes it answer afresh -
-the fair control for the model.
+ENGINE_WRITER=template switches the model off. ENGINE_WRITER=vary keeps the template but tags the subject: the
+hosted arenas answer an identical e-mail identically, so the template alone is one draw of the supplier, not a
+mean; the tag makes it answer afresh - the fair control for the model.
 """
 
 import json
@@ -45,7 +47,9 @@ Rules for the body:
 
 
 def mode():
-    m = os.environ.get("ENGINE_WRITER", "").strip().lower()
+    """ENGINE_WRITER: "llm" (default: the model rewrites, the template on any failure), "template" (no model), or
+    "vary" (the template with a tagged subject, for fresh replies on a cached arena)."""
+    m = os.environ.get("ENGINE_WRITER", "llm").strip().lower()
     return m if m in ("llm", "vary") else None
 
 

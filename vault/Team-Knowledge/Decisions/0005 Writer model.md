@@ -79,7 +79,10 @@ holds), all 10 cases at once, identical except for the writer: templates 0.721, 
 case the writer moved P04 +0.05, P07 +0.01, P05 −0.02: parity within the noise (±0.05 per case), 40 rewrites at
 2.4 s median, 0 fallbacks. So LLM wording costs nothing on real suppliers either, and may help a little; the
 engine's numbers decide. A style search (`scripts/evolve_style.py`, ENGINE_STYLE) can only resolve effects larger
-than that noise.
+than that noise - its generation 0 (3 tones × 10 cases, 30 sessions) confirmed it: warm 0.721, brief 0.719,
+collaborative 0.699 (the open "what would make it work for you?" invites "commit more volume"). **Decision
+(19:50): the LLM writer is the default (`ENGINE_WRITER=llm`, plain prompt, template fallback); no further
+language search.** `ENGINE_WRITER=template` switches it off.
 
 **Follow-ups.**
 - Set `LLM_MODEL=claude-sonnet-5-5` in the final machine's `starter-kit/.env`. Today it says `claude-opus-5-5`.

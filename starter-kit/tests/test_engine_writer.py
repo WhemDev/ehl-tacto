@@ -98,5 +98,7 @@ def test_vary_tags_the_subject_only_and_off_changes_nothing(monkeypatch):
     monkeypatch.setenv("ENGINE_WRITER", "vary")
     out = engine_writer.prepare(None, MSG, CASE, "")
     assert out["body"] == DRAFT and out["subject"].startswith("SH-220 (ref ")
-    monkeypatch.delenv("ENGINE_WRITER")
+    monkeypatch.setenv("ENGINE_WRITER", "template")
     assert engine_writer.prepare(answer(good_body()), MSG, CASE, "") is MSG
+    monkeypatch.delenv("ENGINE_WRITER")
+    assert engine_writer.mode() == "llm"  # the default since the practice A/B (0.726 vs 0.721)
