@@ -124,6 +124,13 @@ VARIANTS = {
                          bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
                          price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                          holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0, cash_rate_rel=0.064)),
+    # 00:15, a clause package in a supplier-health case at its cheapest payment term for us (P02: 90 instead of 60 days)
+    "A9h-clausepay": ("A9h + clause packages at the payment term cheapest for us in supplier-health cases",
+                      replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                              bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                              price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                              holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
+                              clause_pay_best=True)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,

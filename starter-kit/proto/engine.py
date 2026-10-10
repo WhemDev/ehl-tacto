@@ -124,6 +124,10 @@ class Config:
     # Selvbrunn, 23 deals) with residuals near EUR 0; we assumed 5 %, so our "equal-cost" packages were not equal and the
     # supplier took the one worst for us (P02: about EUR 7k of a EUR 47k range). None = the old 5 %.
     cash_rate_rel: float | None = None
+    # In a supplier-health case a clause package goes out at the payment term where it is cheapest for us. Nordmark
+    # (P02) agreed at once to all 12 clause packages we sent, every one at 60 days; on the arena's bill the 90-day
+    # clause package is about EUR 2.5k cheaper (formula: 0.76 vs 0.71 at each one's best price).
+    clause_pay_best: bool = False
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -520,6 +524,30 @@ class Negotiator:
                 break
             if terms not in picks:
                 picks.append(terms)
+        if (self.cfg.clause_pay_best and self.relationship and "index_clause" in self.case["negotiable"]
+                and "payment_days" in self.case["negotiable"]):
+            # a clause package keeps its clause but goes out at the payment term and price where it costs us least
+            # (P02: Nordmark agreed at once to every clause package, all at 60 days at the round's goal; on the arena's
+            # bill the 90-day clause package at its cheapest price scores about 0.76 against 0.65-0.71)
+            for i, pk in enumerate(picks):
+                if not pk.get("index_clause"):
+                    continue
+                cands = []
+                for g in grid:
+                    if g.get("index_clause") != pk["index_clause"] or any(
+                            g.get(k) != pk.get(k) for k in g if k not in ("payment_days", "unit_price")):
+                        continue
+                    p = price_for_c(self.case, g, t.std, 0.0, t.est)  # target 0 is out of reach: its cheapest price
+                    if their_price is not None and p > their_price:
+                        p = their_price
+                    terms = complete_offer(self.case, {**g, "unit_price": p})
+                    cands.append((self.C(t, terms), terms))
+                if cands:
+                    c_best, best_terms = min(cands, key=lambda z: z[0])
+                    if best_terms.get("payment_days") != pk.get("payment_days") and c_best < self.C(t, pk) and c_best < their_c:
+                        self.note("clause_pay", supplier=t.sid, was=pk.get("payment_days"), now=best_terms.get("payment_days"),
+                                  price=best_terms.get("unit_price"))
+                        picks[i] = best_terms
         if self.cfg.theirs_sheet and offered and len(priced) > 1 and not (self.cfg.theirs_rfq_only and len(self.threads) < 2):
             # one package on the supplier's own levers (its standing + standard terms, clamped to our must-haves):
             # cheap gives for us can be dear to it (D02: 42 instead of 35 days' lead costs us EUR 0.09/unit, while
