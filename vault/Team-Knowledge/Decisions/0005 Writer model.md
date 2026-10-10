@@ -74,6 +74,13 @@ template e-mails only. `ENGINE_WRITER=llm` lets `claude-sonnet-5-5` (effort low)
 - **Decision:** the engine keeps its templates. `ENGINE_WRITER=llm` stays available (off by default) for a practice
   A/B, if the team wants to check whether real suppliers reward wording (2-3 cases × 2 = 4-6 sessions, ask first).
 
+**Addendum 2026-10-10 19:40: on the real practice suppliers.** Two fresh passes of the final build (A9h with 3
+holds), all 10 cases at once, identical except for the writer: templates 0.721, Sonnet 5.5 rewriting 0.726. Per
+case the writer moved P04 +0.05, P07 +0.01, P05 −0.02: parity within the noise (±0.05 per case), 40 rewrites at
+2.4 s median, 0 fallbacks. So LLM wording costs nothing on real suppliers either, and may help a little; the
+engine's numbers decide. A style search (`scripts/evolve_style.py`, ENGINE_STYLE) can only resolve effects larger
+than that noise.
+
 **Follow-ups.**
 - Set `LLM_MODEL=claude-sonnet-5-5` in the final machine's `starter-kit/.env`. Today it says `claude-opus-5-5`.
 - Ask the writer for structured output (`output_config.format`) so a non-JSON answer can't happen.
