@@ -76,11 +76,12 @@ def main():
                                       log_dir=out / 'logs' / v, quiet=True)
         except Exception as exc:
             # No new session retries: retain failed attempts in the comparison.
-            result = {'error': type(exc).__name__, 'score': None}
+            result = {'error': type(exc).__name__, 'http_status': getattr(exc, 'status', None), 'score': None}
         return {'variant': v, 'case': case, 'rep': rep, 'session': sid,
                 'score': result.get('score'), 'deal': result.get('deal'),
                 'c_deal': result.get('c_deal'), 'terms': result.get('terms'),
-                'error': result.get('error'), 'end_reason': result.get('end_reason'),
+                'error': result.get('error'), 'http_status': result.get('http_status'),
+                'end_reason': result.get('end_reason'),
                 'elapsed_s': round(time.monotonic() - started, 2)}
 
     print(f'{len(jobs)} sandbox sessions; mode={manifest["mode"]}; output={out}', flush=True)
