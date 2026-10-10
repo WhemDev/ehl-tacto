@@ -29,7 +29,7 @@ def packages(variant, goal):
 
 def test_the_clause_package_moves_to_its_cheapest_payment_term_and_price():
     goal = 2_246_000
-    _, _, frozen = packages("A9h", goal)
+    _, _, frozen = packages("A9h-frozen", goal)
     n, t, plan = packages("A9h-clausepay", goal)
     old = [p for p in frozen if p.get("index_clause")]
     new = [p for p in plan if p.get("index_clause")]
@@ -41,4 +41,5 @@ def test_the_clause_package_moves_to_its_cheapest_payment_term_and_price():
 
 def test_no_change_outside_supplier_health_cases():
     cfg = VARIANTS["A9h-clausepay"][1]
-    assert cfg.clause_pay_best and not VARIANTS["A9h"][1].clause_pay_best
+    assert cfg.clause_pay_best and not VARIANTS["A9h-frozen"][1].clause_pay_best
+    assert VARIANTS["A9h"][1].clause_pay_best and VARIANTS["A9h"][1].clause_pay_rate == 0.064  # the final build
