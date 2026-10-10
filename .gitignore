@@ -5,3 +5,11 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .DS_Store
+.env.*
+!.env.example
+
+# Obsidian: per-user state stays local
+vault/.obsidian/workspace*.json
+vault/.obsidian/plugins/
+vault/.obsidian/cache
+vault/.trash/

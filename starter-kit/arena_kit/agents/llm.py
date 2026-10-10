@@ -111,6 +111,13 @@ class LLMAgent:
                 out.append(f"LETTER\n{self.package.document(case['trigger_doc'])[:2500]}")
             except (FileNotFoundError, ValueError):
                 pass
+        from .. import vault
+
+        if team := vault.playbook():  # the team's Obsidian playbook (vault/Playbook, agent: true)
+            out.append(f"TEAM PLAYBOOK\n{team}")
+        for sid in case["suppliers"]:
+            if notes := vault.supplier_notes(sid):
+                out.append(f"TEAM NOTES ON {sid}\n{notes}")
         out.append("FACTS (cite by ID)")
         for ref in dict.fromkeys(case["suppliers"] + case["parts"] + case.get("refs", [])):
             if fact := self.fact(case, ref):

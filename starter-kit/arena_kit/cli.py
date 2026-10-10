@@ -41,6 +41,34 @@ def agent_factory(name, data):
     return lambda: LLMAgent(complete, package)
 
 
+def commit():
+    """The commit this agent runs, for the run notes."""
+    import subprocess
+
+    try:
+        out = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5)
+        return out.stdout.strip() or None
+    except OSError:
+        return None
+
+
+def log_runs(client, set_, agent, session_id=None):
+    """Practice and sandbox runs go to the vault (`vault/Runs`); never during the final."""
+    from . import vault
+
+    try:
+        if session_id:
+            state = client.session(session_id)
+            path = vault.log_session(state, os.environ.get("ARENA_URL", ""), agent, commit())
+            new = [path] if path else []
+        else:
+            new = vault.sync_runs(client, set_, agent, commit())
+        for path in new:
+            print(f"vault: {path.relative_to(vault.VAULT.parent)}")
+    except Exception as e:  # the notes must never cost a run
+        logging.warning("vault logging failed: %s", e)
+
+
 def summary(result):
     keep = ("deal", "supplier_id", "terms", "c_open", "c_deal", "c_best", "score")
     return {k: result.get(k) for k in keep if k in result}
@@ -48,6 +76,9 @@ def summary(result):
 
 def main(argv=None):
     load_env()
+    load_env(Path(__file__).resolve().parents[2] / ".env")  # team secrets at the repo root
+    if os.environ.get("CLAUDE_API_KEY"):
+        os.environ.setdefault("ANTHROPIC_API_KEY", os.environ["CLAUDE_API_KEY"])
     ap = argparse.ArgumentParser(prog="arena")
     ap.add_argument("-v", "--verbose", action="store_true")
     verbose = argparse.ArgumentParser(add_help=False)  # -v also after the command
@@ -78,6 +109,10 @@ def main(argv=None):
     sub.add_parser("me", help="your team: practice quota used and left, best score per case")
     b = sub.add_parser("board", help="show the leaderboard")
     b.add_argument("--set", **sets)
+    v = sub.add_parser("vault", help="write Obsidian notes: suppliers (data), cases (case files), runs (sessions)")
+    v.add_argument("what", choices=["suppliers", "cases", "runs"])
+    v.add_argument("--set", **sets)
+    v.add_argument("--data", **data)
     m = sub.add_parser("mcp", help="run the read-only MCP server over the data (stdio)")
     m.add_argument("--data", **data)
     args = ap.parse_args(argv)
@@ -91,7 +126,20 @@ def main(argv=None):
         from .mcp_server import main as serve
 
         return serve(args.data)
+    if args.cmd == "vault" and args.what == "suppliers":
+        from . import vault
+        from .data import DataPackage
+
+        n = vault.build_suppliers(DataPackage(args.data or "../data"))
+        return print(f"vault: {n} supplier notes written to {vault.VAULT / 'Suppliers'}")
     client = ArenaClient()
+    if args.cmd == "vault":
+        from . import vault
+
+        if args.what == "cases":
+            n = vault.build_cases(client.cases(args.set))
+            return print(f"vault: {n} case notes written to {vault.VAULT / 'Cases'}")
+        return log_runs(client, args.set, None)
     if args.cmd == "register":
         out = client.register(args.team_name, args.event_code)
         print(json.dumps(out, indent=2))
@@ -126,6 +174,7 @@ def main(argv=None):
         replay = client.session(table.session_id).get("replay_url")
         if replay:  # the supplier's reasons, move by move: read it, improve, play again
             print(f"replay: {os.environ['ARENA_URL'].rstrip('/')}{replay}")
+        log_runs(client, None, args.agent, table.session_id)
     elif args.set == "final":  # waits for each wave and plays its cases within the cap
         out = play_waves(client, agent_factory(args.agent, args.data), args.waves, min(args.parallel, 10))
     else:
@@ -148,6 +197,8 @@ def main(argv=None):
             print(f"waves: {points}  points so far: {round(sum(points.values()), 1)} (the board is the record)")
         elif scores and all(v is not None for v in scores.values()):
             print(f"mean score: {100 * statistics.mean(scores.values()):.1f}")
+        if args.set != "final":
+            log_runs(client, args.set, args.agent)
     if args.cmd in ("play", "run") and client.practice_remaining is not None:
         print(f"practice sessions left today: {client.practice_remaining}")
 
