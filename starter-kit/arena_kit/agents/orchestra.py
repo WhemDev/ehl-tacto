@@ -519,13 +519,15 @@ class Orchestra:
         body = subject = None
         if self.complete:
             prompt = self._prompt(sid, move)
-            with ThreadPoolExecutor(max_workers=1) as one:
-                try:
-                    out = one.submit(self.complete, SYSTEM, prompt).result(timeout=NARRATE_S)
-                    d = json.loads(re.search(r"\{.*\}", out, re.S).group(0))
-                    body, subject = str(d.get("body") or ""), str(d.get("subject") or "")
-                except (FutureTimeout, ValueError, AttributeError, Exception) as e:  # the template writes instead
-                    log.warning("narrator failed (%s) - template e-mail", type(e).__name__)
+            one = ThreadPoolExecutor(max_workers=1, thread_name_prefix="narrator")
+            try:
+                out = one.submit(self.complete, SYSTEM, prompt).result(timeout=NARRATE_S)
+                d = json.loads(re.search(r"\{.*\}", out, re.S).group(0))
+                body, subject = str(d.get("body") or ""), str(d.get("subject") or "")
+            except (FutureTimeout, ValueError, AttributeError, Exception) as e:  # the template writes instead
+                log.warning("narrator failed (%s) - template e-mail", type(e).__name__)
+            finally:  # not `with`: leaving it waits for the call, and a hung call would hold the e-mail
+                one.shutdown(wait=False, cancel_futures=True)
         if not body:
             body = self._template(move)
         # every argument verbatim, no ID the code did not hand over

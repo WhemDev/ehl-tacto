@@ -40,11 +40,12 @@ def agent_factory(name, data):
     from .events import recording_complete
 
     if name == "orchestra":
-        from .agents.orchestra import Orchestra
+        from .agents.orchestra import NARRATE_S, Orchestra
 
         try:  # ARENA_NARRATOR=template, or no LLM configured: the template writes the e-mails
             template = os.environ.get("ARENA_NARRATOR") == "template"
-            complete = None if template else recording_complete(llm_from_env())
+            # one attempt of NARRATE_S: when the orchestra stops waiting for the writer, its call ends too
+            complete = None if template else recording_complete(llm_from_env(timeout=NARRATE_S, max_retries=0))
         except KeyError:
             complete = None
         return lambda: Orchestra(complete, package)
