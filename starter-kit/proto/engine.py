@@ -1034,6 +1034,7 @@ class Negotiator:
             return self.run_rfq()
         cfg, limit = self.cfg, self.case.get("round_limit", 10)
         rnd, prev_c, holds = 0, None, 0
+        last_goal = None  # C of our last ask (the planner never asks for more than last time)
         while True:
             if self.near_cap():
                 return self.closing_move()
@@ -1054,7 +1055,14 @@ class Negotiator:
                 t.stalled_before = stalled
                 if ((holds < cfg.holds and gave > cfg.hold_gave * c) or more) and c <= next_goal and t.status == "open" \
                         and t.sent() < limit - 2:
+                    if cfg.plan_facts and last_goal is not None and c <= last_goal * 1.0001:
+                        self.note("accept", why="meets our last ask", c=c, goal=last_goal)
+                        return self.close(t, sh)
                     holds += 1  # it is still moving: one more round at our current goal before we take it
+                    if cfg.plan_facts and last_goal is not None:
+                        # a visible step toward it, never the same ask (Tugra's A10, P08: a 4th mail at an unchanged
+                        # goal drew "we are withdrawing from this negotiation" - a zero without an alternative)
+                        goal = max(goal, last_goal + 0.25 * (c - last_goal))
                     self.note("hold", c=c, gave=round(gave), goal=round(goal), facts=more)
                     rnd -= cfg.hold_back if not more else min(cfg.hold_back, 0.75)  # facts left: a small move too
                 elif cfg.patient and t.status == "open" and not stalled and t.sent() < limit - 2:
@@ -1078,6 +1086,9 @@ class Negotiator:
                     return self.close(t, sh)
             elif rnd >= cfg.max_rounds:
                 return self.walk()
+            if cfg.plan_facts and last_goal is not None:
+                goal = max(goal, last_goal)  # never ask for more than last time
+            last_goal = goal
             self.note("round", rnd=rnd, c_target=round(self.target_c), goal=round(goal),
                       reserve=round(best[0]) if best else None)
             jobs = []

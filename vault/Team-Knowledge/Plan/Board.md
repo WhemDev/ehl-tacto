@@ -4,6 +4,8 @@ kanban-plugin: basic
 
 ## Backlog
 
+- [ ] A9: when every supplier's final offer is dearer than our alternative, walk at once instead of waiting for the cap (sim D02)
+- [ ] Port R4's remaining pieces (P10 anchor fix, full-need fallback, cap-if-empty) from `.claude/worktrees/tugra`
 - [ ] Upgrade 1: raw-material clause from round 1 at a 5 % deadband, 90 days, 36 months (P08, P18) - [[Review 2026-10-10 - worst practice cases and upgrades]]
 - [ ] Upgrade 2: new evidence - rival POs for the same part, recently falling cost drivers (P18, P08, P05, P04, P13)
 - [ ] Upgrade 3: lead time never beyond our need, the supplier's standard within it (P10, P05)
@@ -27,14 +29,13 @@ kanban-plugin: basic
 
 ## Doing
 
-
-- [ ] Final runner: retry `429 at most 10 open sessions` until the cap (`play_waves` and `proto/final.py`)
-- [ ] A9: when every supplier's final offer is dearer than our alternative, walk at once instead of waiting for the cap (sim D02; the worktree's R-engine has it)
-- [ ] Merge or drop the worktree's uncommitted R4 engine (`.claude/worktrees/tugra`, sandbox D02 ~0.79): its fact allocation and supplier's-levers package are not in A9
+- [ ] **Fact planner + RFQ rival loop** ([[Options 2026-10-10 - beyond tuning]] O1/O3, variant `A9h-plan-rfq`, `26601fa`): sandbox D02 head-to-head, then a fresh practice pass against 0.715-0.726; adopt only at ≥ +0.03 with no case collapsing
 
 
 ## Done
 
+- [x] Phantom IDs: the frozen build still cited a forecast that is only in the tables (P05, "contradicted ... costs trust"); now only facts.json IDs go out, tested on all 19 case files (`cb9e2cb`)
+- [x] A10 (patience with movement): practice 0.719, sandbox 81.7 / 84.3 = no gain, stays a variant
 - [x] **Decided (Arda, 19:00): the final runs `arena run --set final --agent hybrid` (A9h, our runner), not `proto/final.py`**
 - [x] Final runner retries a case refused for the key's 10 open sessions while the wave leaves time (`c70bcf0`)
 - [x] Patience: 3 holds while the supplier still gives ≥ 0.3 % - P02 0.425 → 0.677, P08 0.592 → 0.607; A9h default ([[Review 2026-10-10 - worst practice cases and upgrades]])

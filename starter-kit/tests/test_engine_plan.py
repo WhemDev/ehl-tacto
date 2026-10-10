@@ -9,7 +9,7 @@ from pathlib import Path
 
 import pytest
 
-from arena_kit import complete_offer
+from arena_kit import complete_offer, total_cost
 from proto.practice import CITE_RE, PracticeNegotiator, citable
 from proto.variants import VARIANTS
 
@@ -30,7 +30,7 @@ class Werdenfels:
     def __init__(self, step=0.01, floor=5.0):
         self.case, self.sup = case("P18"), case("P18")["suppliers"][0]
         self.step, self.floor, self.price, self.n = step, floor, 5.95, 0
-        self.asks, self.refs, self.accepted_after, self.lock = [], [], None, threading.Lock()
+        self.asks, self.ask_c, self.refs, self.accepted_after, self.lock = [], [], [], None, threading.Lock()
 
     def quote(self, status="open"):
         terms = complete_offer(self.case, {"unit_price": self.price, "payment_days": 90, "contract_months": 24,
@@ -62,6 +62,7 @@ class Werdenfels:
         new = [r for r in refs if r not in self.refs and not r.startswith("offer:")]
         self.refs += sorted(new)
         self.asks.append(min(s["terms"]["unit_price"] for s in msg["term_sheets"]))
+        self.ask_c.append(min(total_cost(self.case, complete_offer(self.case, s["terms"])) for s in msg["term_sheets"]))
         lines = []
         if any(r.startswith("fc:") for r in new):
             lines.append("We checked the volume change data you cited; it holds, "
@@ -101,8 +102,8 @@ def test_keeps_negotiating_while_facts_land_and_never_sends_an_id_twice():
     assert res["deal"]
     assert len(plan.refs) == len(set(plan.refs))  # no ID twice
     assert plan.price < frozen.price  # more facts landed, so it conceded further
-    for a, b in zip(plan.asks, plan.asks[1:], strict=False):
-        assert a != b  # never the same ask twice: a hold moves a quarter step
+    for a, b in zip(plan.ask_c, plan.ask_c[1:], strict=False):
+        assert b > a  # never the same ask twice, never asking for more than last time: a hold moves toward it
 
 
 def test_a_waved_off_type_drops_back():
