@@ -8,6 +8,30 @@ Full write-up in the shared Obsidian vault (RxV00/EHL-Hackathon): `Progress/Expe
 measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Target-C-Model.md`,
 `Progress/Practice-Run-A-Findings.md`, `Progress/Teammate-Findings-Comparison.md`.
 
+## Sudeep's B line
+
+**B1** names the strongest existing Sudeep hybrid, previously logged as `A3fca35`.
+It keeps the A3 policy configuration, adds response-aware wording, and prioritizes a
+14-day payment / FCA / at-least-35-day lead package at the same buyer cost for demo J1.
+The historical name remains an alias. Future revisions use B2, B3, etc.; the older
+standalone `target_cost_candidate.py` remains a separate baseline.
+
+B1 still contains D02/supplier-specific rules. Its results measure a demo specialist,
+not proven performance on unseen suppliers. The updated teammate commit `d5ed469`
+introduces A6 and makes data-package evidence the runner default. Historical results
+below used the older engine and handwritten demo facts, so compare them separately.
+
+For a fresh, isolated comparison using the same updated engine and generic evidence:
+
+```bash
+PYTHONPATH=. uv run python proto/compare_sandbox.py --variants A3 B1 A6 --repeats 5 --data ../data
+```
+
+The comparison accepts D01/D02 sandbox cases only and defaults to D02. It records
+source hashes, complete configurations, replay IDs, all attempts, means and medians
+in a new ignored `proto/runs/comparisons/` directory for each batch. Use `--env-file`
+if your local environment file is outside `starter-kit/`.
+
 ## Results
 
 | Algorithm | D01 (sandbox) | D02 (sandbox, mean of 3) | Notes |

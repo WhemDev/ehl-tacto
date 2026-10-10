@@ -78,6 +78,11 @@ VARIANTS = {
                          mirror_supplier_package=True)),
 }
 
+# Sudeep's B line starts with the strongest previously tested hybrid.
+# Retain the original identifier so historical logs/configurations remain reproducible.
+VARIANTS["B1"] = ("Sudeep B1: response-aware equal-cost FCA/35-day package trading",
+                  VARIANTS["A3fca35"][1])
+
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts
