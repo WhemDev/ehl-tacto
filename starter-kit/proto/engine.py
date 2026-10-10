@@ -91,6 +91,7 @@ class Config:
     # from the R4 fork (another session, 2026-10-10 evening; sandbox D02 +0.05 each on fresh replies)
     allocate_facts: bool = False  # RFQ: a case fact counts once per case - a shared one goes to the best supplier now, never twice
     theirs_sheet: bool = False  # one package on the supplier's own levers (its standing + standard terms, within our must-haves)
+    theirs_rfq_only: bool = False  # ... only with rivals: alone, a supplier agrees to it at our goal instead of conceding (P01)
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -475,7 +476,7 @@ class Negotiator:
                 break
             if terms not in picks:
                 picks.append(terms)
-        if self.cfg.theirs_sheet and offered and len(priced) > 1:
+        if self.cfg.theirs_sheet and offered and len(priced) > 1 and not (self.cfg.theirs_rfq_only and len(self.threads) < 2):
             # one package on the supplier's own levers (its standing + standard terms, clamped to our must-haves):
             # cheap gives for us can be dear to it (D02: 42 instead of 35 days' lead costs us EUR 0.09/unit, while
             # C1 wrote that the shorter lead time "increases our operational costs")
