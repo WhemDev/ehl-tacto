@@ -40,6 +40,9 @@ kanban-plugin: basic
 - [x] Fresh passes of the 3-holds build, all 10 at once: templates 0.721, Sonnet writer 0.726 (was 0.692) - the writer is at parity on real suppliers ([[0005 Writer model]])
 - [x] Style search gen 0 (30 sessions): warm 0.721, brief 0.719, collaborative 0.699 - wording settled, plain LLM writer is the default, no more language search
 - [x] [[0007 The final build]]: the command, the build, the Sunday checklist
+- [x] Offline smoke test of the final build on all 19 case files (0 problems); Sunday-release merge rehearsed
+- [x] README for the jury (`README.md`): approach, setup, the final command, layout, learnings
+- [x] RFQ port from the R4 fork as flags (`A9hr`): sandbox D02 0.739 vs 0.717; practice pass running
 - [x] Full practice pass of the final build: mean 0.694, 10/10 deals, P08 0.603 and P18 0.532 new bests, P05 0.665 fresh ([[Testing]])
 - [x] Fresh practice pass, all 10 at once: mean 0.692, 10/10 deals, < 3 min for the whole wave, P05 0.688 new best ([[Testing]])
 - [x] Bug #9 fixed: attachments no longer delay a reply (17-21 s per quote PDF), a best final offer is accepted within 15 s of its arrival, A9's accept recovery ([[Progress/Bugs]], `tests/test_engine_clock.py`)
