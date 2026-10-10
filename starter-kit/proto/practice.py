@@ -62,9 +62,10 @@ TYPE_WORDS = {"delivery record": "delivery_record", "scorecard": "delivery_recor
               "forecast": "volume_change", "quality record": "quality_record", "quality": "quality_record",
               "notice period": "notice_period", "notice": "notice_period"}
 LANDED = ("took it into account", "took them into account", "did not know", "fair point", "pass this saving",
-          "adjusted our calculation", "factored")
-REJECTED = ("does not change our", "already taken", "already factored", "does not concern", "not our reality",
-            "cannot give up margin", "does not alter", "do not alter", "not relevant")
+          "adjusted our calculation", "factored in", "reduce our price")
+REJECTED = ("does not change our", "already taken", "already factored", "already been factored", "does not concern",
+            "not our reality", "cannot give up margin", "does not alter", "do not alter", "not relevant", "not impact",
+            "no impact", "does not affect", "do not affect", "into our previous")  # rejected is checked first
 
 
 CITE_RE = re.compile(r"\b(?:idx|quote|offer|sc|qn|po|cost|fc|news|doc|ctr|gr|inv|rfq):[\w.:@#/-]*\w")
@@ -276,8 +277,9 @@ class PracticeNegotiator(Negotiator):
         if fcs:
             top = fcs[0][0].split("@")[-1]
             cut = f"{int(top[:4]) - 1}{top[4:]}" if top[:4].isdigit() else ""
-            for j, (k, v) in enumerate(kv for kv in fcs if kv[0].split("@")[-1] >= cut and (kv[1].get("change_pct") or 0) > 0):
-                add(k, f"Our demand forecast {k} shows {v['change_pct']:+.1f}% for this part", "volume_change", 0.75 ** j)
+            # one snapshot: later ones are versions of the same forecast ("already taken that volume change data")
+            for k, v in [kv for kv in fcs if kv[0].split("@")[-1] >= cut and (kv[1].get("change_pct") or 0) > 0][:1]:
+                add(k, f"Our demand forecast {k} shows {v['change_pct']:+.1f}% for this part", "volume_change")
         # weak delivery quarters of this supplier (on-time below 92 %) in the last 12 months, newest first
         scs = sorted(((k, v) for k, v in facts.items() if k.startswith("sc:") and v.get("supplier") == t.sid),
                      key=lambda kv: kv[1].get("quarter") or "", reverse=True)[:4]
@@ -297,17 +299,17 @@ class PracticeNegotiator(Negotiator):
         """Land chance per claim type for this supplier, from its own replies: a type it took into account rises to
         0.9; a type it waved off ("does not change our calculation", "already taken") drops to 0.05."""
         post = {}
-        for m in t.events:
-            if m.get("from") == "buyer":
+        for m in t.events:  # the latest reply's verdict on a type wins (P08: a forecast taken into account in round 1,
+            if m.get("from") == "buyer":  # its next snapshot "already taken" in round 2)
                 continue
+            now = {}
             for sent in re.split(r"(?<=[.!?])\s+", (m.get("body") or "").lower()):
                 types = {v for k, v in TYPE_WORDS.items() if k in sent}
-                if not types:
-                    continue
-                if any(w in sent for w in LANDED):
-                    post.update({x: 0.9 for x in types})
-                elif any(w in sent for w in REJECTED):
-                    post.update({x: 0.05 for x in types if post.get(x) != 0.9})
+                if any(w in sent for w in REJECTED):  # one driver waved off says nothing about the next (P08: AS-14404
+                    now.update({x: max(now.get(x, 0.0), 0.05) for x in types if x != "index_change"})  # hedged, PPI landed)
+                elif any(w in sent for w in LANDED):
+                    now.update({x: 0.9 for x in types})  # within one reply, a landed claim of a type beats a waved one
+            post.update(now)
         return post
 
     def fact_queue(self, t):
@@ -330,6 +332,16 @@ class PracticeNegotiator(Negotiator):
 
     def facts_left(self, t):
         return max((f["p"] for f in self.fact_queue(t)), default=0.0) if self.cfg.plan_facts else 0.0
+
+    def fact_count(self, t, most):
+        """Just enough facts that at least one lands with `plan_sure` (a strong one alone; two weak ones), at most
+        `most`: the rest buy later rounds."""
+        n, miss = 0, 1.0
+        for f in self.fact_queue(t)[:most]:
+            n, miss = n + 1, miss * (1 - f["p"])
+            if 1 - miss >= self.cfg.plan_sure:
+                break
+        return max(n, 1)
 
     def _estimate(self):
         b, case = self.b, self.case

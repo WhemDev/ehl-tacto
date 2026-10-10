@@ -108,8 +108,12 @@ class Config:
     # (moved + landed: 82 % conceded, 1.8 % mean, 8 % final; moved, nothing landed: 54 %, 0.9 %, 27 % final), and
     # suppliers go final when we run out of new facts, not rounds. Our own order prices landed 0 of 198 times.
     plan_facts: bool = False  # every checkable, favourable fact for the supplier, ranked by land rate (practice adapter)
-    plan_first: int = 3  # claims in the first mail (the arena checks at most 3 per message)
-    plan_later: int = 2  # new claims per later mail (a rival's offer is one more)
+    plan_first: int = 3  # most claims in the first mail (the arena checks at most 3 per message)
+    plan_later: int = 2  # most new claims per later mail (a rival's offer is one more)
+    # A round concedes about the same with 1, 2 or 3 new facts landing (rounds >= 2: 1.05 / 0.55 / 1.67 % median), so
+    # a mail carries just enough facts that one likely lands, and the rest buy later rounds (probe 22:30: P18 with
+    # both falling indices in the first mail 0.401 vs 0.532 when the second index came a round later)
+    plan_sure: float = 0.8
     plan_hold: float = 0.5  # keep holding past `holds` while a fact at least this likely to land is left
     # RFQ rival loop (Options note O3): an open best offer at our goal is not taken while a rival is still bidding down,
     # and every bidder is shown the best rival offer it has not seen yet, only if it beats its own (practice RFQs:
@@ -610,6 +614,10 @@ class Negotiator:
         """The planner's best land chance among the facts not yet sent to `t` (0 without a planner)."""
         return 0.0
 
+    def fact_count(self, t, most):
+        """How many facts this mail carries (the planner: just enough that one likely lands)."""
+        return most
+
     def pick_facts(self, t, facts, n):
         """RFQ: a case fact counts once per case (api.md), so a shared one (should-cost, forecast, orders, an index,
         news, a quote) goes only to the supplier whose standing offer is best for us now, and never twice; a
@@ -654,7 +662,7 @@ class Negotiator:
         facts = self.facts_for(t)
         n_facts = cfg.facts if rnd == 0 or not cfg.facts_later else cfg.facts_later
         if cfg.plan_facts:
-            n_facts = cfg.plan_first if rnd == 0 else cfg.plan_later
+            n_facts = self.fact_count(t, cfg.plan_first if rnd == 0 else cfg.plan_later)
         if cfg.allocate_facts and len(self.threads) > 1:
             new = self.pick_facts(t, facts, n_facts)
         else:
