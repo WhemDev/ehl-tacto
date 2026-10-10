@@ -51,7 +51,7 @@ def agent_factory(name, data):
         if name == "hybrid":  # Tugra's engine for the types it won in practice, the orchestra for the rest
             from .agents.hybrid import Hybrid
 
-            return lambda: Hybrid(lambda: Orchestra(complete, package))
+            return lambda: Hybrid(lambda: Orchestra(complete, package), complete)
         return lambda: Orchestra(complete, package)
     complete = recording_complete(llm_from_env())
     return lambda: LLMAgent(complete, package)

@@ -30,10 +30,12 @@ kanban-plugin: basic
 - [ ] Decide the final agent with Tugra: `--agent hybrid` or his `proto/final.py` - [[Report 2026-10-10 - hybrid head to head on D01 D02]]
 - [ ] First practice pass of the chosen final build, one case per type (~7 sessions, needs the team's quota OK)
 - [ ] Final runner: retry `429 at most 10 open sessions` until the cap (`play_waves` and `proto/final.py`)
+- [ ] **Blocker:** the engine's RFQ accept must not wait on a rival (bug #9: a €13.90 final offer lost on sandbox D02) - A6's fix into the final build
 
 
 ## Done
 
+- [x] Does an LLM writer pay for Tugra's engine? Sonnet 5.5 vs template, 5 runs/case: no (80.0-82.8 vs 83.3); templates stay ([[0005 Writer model]])
 - [x] `--agent hybrid`: Tugra's engine (merged from `tugra`) for price/renewal/RFQ/bundle, orchestra for the rest - sandbox 85.9 vs orchestra 80.7 ([[Report 2026-10-10 - hybrid head to head on D01 D02]])
 - [x] Final timing: close by the slowest round, round budget, watchdog, orchestra = default agent (`358a010`)
 - [x] Quick wins: profiles only raise anchors, free contract months, claims pool, fixed terms (`78774e4`)

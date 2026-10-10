@@ -19,5 +19,6 @@
 | Sandbox: small-steps concession (my own idea) | Claude (Arda) | 2026-10-10 | ❌ | D01 0.75 (vs 0.77), D02 0.40/0.46 - no gain; replaced by the engine's early concession |
 | `--agent hybrid` on arena-sim (P01 P05 P07 P08 P10 D02) + `tests/test_hybrid.py` | Claude (Arda) | 2026-10-10 | ✅ | routes by case type, one session per case; found the engine's RFQ wait when every final is dearer than the alternative (now capped at 8 min) |
 | Sandbox head to head, 3 runs/case: Tugra's A3 via `--agent hybrid` vs orchestra | Claude (Arda) | 2026-10-10 | ✅ | hybrid D01 0.979, D02 0.740 (85.9, identical replies each run) · orchestra D01 0.964, D02 0.650 (80.7). [[Report 2026-10-10 - hybrid head to head on D01 D02]] |
+| Engine writer A/B, 5 runs/case: template (fresh replies) vs Sonnet 5.5 rewriting the engine's e-mails | Claude (Arda) | 2026-10-10 | ❌ | template 83.3 vs Sonnet 80.0 (82.8 without one run lost to the RFQ accept bug): no gain, +3.1 s per e-mail. Templates stay. [[0005 Writer model]] |
 
 Result: ✅ pass · ❌ fail · ⏳ not yet

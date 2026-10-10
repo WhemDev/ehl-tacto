@@ -18,6 +18,7 @@ from pathlib import Path
 
 from .. import events as event_log
 from ..play import CLOSE_BEFORE_CAP_S, ROUND_MARGIN_S
+from . import engine_writer
 
 log = logging.getLogger("arena")
 ENGINE_TYPES = {"price_increase", "renewal", "rfq", "bundling"}
@@ -97,6 +98,20 @@ def _negotiator(case_id):
     base = eng.Negotiator if case_id in eng.FACTS else PracticeNegotiator
 
     class Negotiator(base):
+        writer = None  # the LLM `complete` for ENGINE_WRITER=llm
+
+        def write(self, t, rnd, sheets, rival=None):
+            msg = super().write(t, rnd, sheets, rival)
+            if engine_writer.mode():
+                msg["_draft"] = True  # rewritten in send(), outside the RFQ loop's lock
+            return msg
+
+        def send(self, t, msg):
+            if msg.pop("_draft", False):
+                self.c._ctx()  # a pool thread in the single-supplier loop: log the model's call with this case
+                msg = engine_writer.prepare(self.writer, msg, self.case, t.last.get("body"))
+            return super().send(t, msg)
+
         def near_cap(self):  # the wave's cap may move (the host can extend a wave): ask each time
             cap = self.deadline() if callable(self.deadline) else self.deadline
             return cap is not None and time.time() > cap - max(CLOSE_BEFORE_CAP_S, self.slowest + ROUND_MARGIN_S)
@@ -122,8 +137,8 @@ def _negotiator(case_id):
 
 
 class Hybrid:
-    def __init__(self, new_orchestra):
-        self.new_orchestra = new_orchestra
+    def __init__(self, new_orchestra, complete=None):
+        self.new_orchestra, self.complete = new_orchestra, complete  # complete: the engine's writer (ENGINE_WRITER)
 
     def play_case(self, table, case_id, deadline=None):
         case, threads = table.open(case_id)
@@ -132,7 +147,8 @@ class Hybrid:
         if not plays_engine(case):
             event_log.emit("engine", step="route", agent="orchestra", type=case.get("type"))
             return self.new_orchestra().play_case(_Opened(table, case, threads), case_id, deadline)
-        event_log.emit("engine", step="route", agent="engine A3", type=case.get("type"))
+        writes = engine_writer.mode() or "template"
+        event_log.emit("engine", step="route", agent=f"engine A3 ({writes})", type=case.get("type"))
         return self._engine(table, case_id, case, threads, deadline)
 
     def _engine(self, table, case_id, case, threads, deadline):
@@ -142,6 +158,7 @@ class Hybrid:
         deadline = deadline or time.time() + SAFETY_CAP_S
         try:  # setting up only reads (documents, data, the target): if it breaks, the orchestra plays the case
             n = _negotiator(case_id)(client, case_id, engine_config(), quiet=True, deadline=deadline)
+            n.writer = self.complete
         except Exception as e:
             log.exception("engine could not start on %s", case_id)
             event_log.emit("warning", message=f"engine could not start ({type(e).__name__}: {e}) - orchestra plays")

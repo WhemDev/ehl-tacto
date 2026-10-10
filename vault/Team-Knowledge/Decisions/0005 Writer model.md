@@ -49,6 +49,31 @@ is the strategy (anchors, concessions, trades), not the prose.
 - If the team wants to check wording on real suppliers, an A/B of Sonnet vs template on 2–3 hosted practice cases
   would cost ~6 sessions. Ask first.
 
+**Addendum 2026-10-10 18:30: Sonnet on Tugra's engine.** The base agent is now Tugra's engine (A3), which writes
+template e-mails only. `ENGINE_WRITER=llm` lets `claude-sonnet-5-5` (effort low) rewrite the engine's words
+(`agents/engine_writer.py`).
+- **Guards:** every sentence with a data ID stays verbatim; no figure that is not already in the draft, our sheets or
+  the supplier's e-mail; signature; ≤ 220 words. Any break, a timeout (15 s) or an API error sends the template.
+- **Control:** the template with a subject tag (`ENGINE_WRITER=vary`). The sandbox answers an identical e-mail
+  identically and at once, so the plain template is a single cached draw, not a mean.
+- **Setup:** 5 runs per variant and case, interleaved, 18:12-18:27.
+
+| Engine writer | D01 | D02 | Mean |
+|---|---|---|---|
+| Template, fresh replies (`vary`) | 0.976 (0.969-0.987) | 0.691 (0.661-0.703) | **83.3** |
+| Sonnet 5.5 (`llm`) | 0.959 (0.943-0.982) | 0.642 (0.417-0.724); 0.698 without the 0.417 | 80.0 (82.8 without it) |
+| Template, cached (plain A3) | 0.979 | 0.740 | 85.9 (one draw) |
+
+- **No gain from the model.**
+  - D01: Sonnet deals landed €0.20-0.30 higher in 3 of 5 runs (€49.8-49.9 vs €49.5-49.6).
+  - D02: equal once the one bad run is removed. That run was not the wording: the engine's RFQ accept bug lost a
+    €13.90 final offer, see [[Progress/Bugs]] #9.
+  - Cost: +3.1 s per e-mail (median, 95th pct. 4.7 s), one more API that can fail. 1 of 61 rewrites fell back to the template (it changed a sentence with a data ID).
+- **The engine's real D02 is ~0.69, not 0.74.** The cached 0.740 was a lucky draw. Once replies are fresh, the
+  template lands at 0.66-0.70.
+- **Decision:** the engine keeps its templates. `ENGINE_WRITER=llm` stays available (off by default) for a practice
+  A/B, if the team wants to check whether real suppliers reward wording (2-3 cases × 2 = 4-6 sessions, ask first).
+
 **Follow-ups.**
 - Set `LLM_MODEL=claude-sonnet-5-5` in the final machine's `starter-kit/.env`. Today it says `claude-opus-5-5`.
 - Ask the writer for structured output (`output_config.format`) so a non-JSON answer can't happen.

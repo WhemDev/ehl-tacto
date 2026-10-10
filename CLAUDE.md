@@ -32,6 +32,7 @@ uv run arena me                                   # key works? practice quota
 uv run arena play case:D01 --agent orchestra -v         # hosted sandbox: real-style suppliers, no quota
 uv run arena run --set sandbox --agent orchestra        # both sandbox cases (D01 price increase, D02 RFQ)
 uv run arena run --set sandbox --agent hybrid           # Tugra's engine (proto/) for price/renewal/RFQ/bundle cases, orchestra for the rest
+ENGINE_WRITER=llm uv run arena run --set sandbox --agent hybrid   # the engine's e-mails rewritten by LLM_MODEL (template on any rule break)
 ../scripts/sim.sh play case:P05 --agent orchestra -v    # local arena-sim, any case P01-P19/D01/D02, scripted supplier
 ../scripts/sim.sh run --set practice --parallel 10   # every case locally (plumbing, timing)
 ../scripts/sim.sh stop
