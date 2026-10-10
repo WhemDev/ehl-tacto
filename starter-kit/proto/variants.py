@@ -153,6 +153,15 @@ VARIANTS = {
                             price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                             holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
                             clause_pay_best=True, clause_pay_rate=0.064, pay_rate_learn=True)),
+    # 00:30, R1 fact selection (RESEARCH split, candidate B): only facts that can land, so the falling own-driver indices
+    # fill the first mail. Caution: the 22:26 planner probe (both indices + forecast in R1) gave P08 0.597 (= base) and
+    # P18 0.401 (base 0.532) - test last
+    "A9h-landing": ("A9h + only facts that can land (no plain statements, no own order prices)",
+                    replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                            bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                            price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                            holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
+                            clause_pay_best=True, clause_pay_rate=0.064, landing_only=True)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,

@@ -57,3 +57,18 @@ def test_every_cited_id_is_in_facts_json(cid):
             ids = set(msg.get("refs") or []) | set(ID_RE.findall(msg["body"]))
             unknown = sorted(i for i in ids if not i.startswith("offer:") and not citable(i) and i not in own)
             assert not unknown, f"{cid} {t.sid} round {rnd}: {unknown}"
+
+
+def test_landing_only_fills_the_first_mail_with_facts_that_can_land():
+    """A9h-landing: no plain statement without an ID and no own order prices (0 of 198 landed), so P08/P18's two
+    falling own-driver indices go out together in the first mail."""
+    from proto.variants import VARIANTS as V
+    for cid in ("P08", "P18"):
+        n = negotiator(cid)
+        n.cfg = V["A9h-landing"][1]
+        t = next(iter(n.threads.values()))
+        t.sheets[0]["terms"]["unit_price"] = 6.10  # the live opening: the plain PO line would qualify in A9h
+        facts = n.facts_for(t)
+        assert all(f[0] for f in facts), "no fact without an ID"
+        assert not any(str(f[0]).startswith("['po:") for f in facts), "no own order prices"
+        assert all(str(f[0]).startswith("['idx:") for f in facts[:2]), facts[:2]

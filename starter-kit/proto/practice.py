@@ -160,14 +160,15 @@ class PracticeNegotiator(Negotiator):
                           "ORDER BY order_date DESC LIMIT 2", (part, t.sid))
                 unit = (q("SELECT price_unit FROM po_lines WHERE part_id = ? AND supplier_id = ? LIMIT 1", (part, t.sid))
                         or [{"price_unit": None}])[0]["price_unit"]
-                if len(other) == 2 and all(o["price_unit"] == unit for o in other) and other[0]["price"] < asked:
+                if len(other) == 2 and all(o["price_unit"] == unit for o in other) and other[0]["price"] < asked \
+                        and not self.cfg.landing_only:
                     # a plain statement without IDs: the arena only checks a supplier's own orders, so the IDs came
                     # back "irrelevant" and cost a claim slot (practice A9: P04, P08, P18)
                     facts.insert(0, ([], f"We currently buy the same part from another supplier at EUR "
                                          f"{other[0]['price']:.2f} per unit"))
         # 4. our order history with this supplier for this part (2-8 order lines)
         pos = q("SELECT id FROM po_lines WHERE part_id = ? AND supplier_id = ? ORDER BY id DESC LIMIT 3", (part, t.sid))
-        if len(pos) >= 2:
+        if len(pos) >= 2 and not self.cfg.landing_only:  # our own order prices landed 0 of 198 times
             ids = [p["id"] for p in pos]
             facts.append((ids, f"Our recent orders {', '.join(ids)} show the price level we have been paying"))
         # 5. its scorecard, if it is weak
@@ -191,7 +192,7 @@ class PracticeNegotiator(Negotiator):
             h = q("SELECT asked_pct, settled_pct FROM negotiation_history WHERE supplier_id = ? AND part_id = ? "
                   "ORDER BY date DESC LIMIT 3", (t.sid, part))
             gaps = [x["asked_pct"] - x["settled_pct"] for x in h if x["asked_pct"] is not None and x["settled_pct"] is not None]
-            if len(gaps) >= 2 and all(g > 0 for g in gaps):
+            if len(gaps) >= 2 and all(g > 0 for g in gaps) and not self.cfg.landing_only:
                 facts.append(([], f"In your last {len(gaps)} renewals of this part we settled on average "
                                   f"{sum(gaps) / len(gaps):.1f} points below your initial ask"))
         # 7. our alternative, only if it is cheaper than what the supplier asks

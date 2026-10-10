@@ -138,6 +138,10 @@ class Config:
     # 0.065, P01 0.139 - we assumed 0.05 / 0.10 from credit bands. Used only to rank our equal-cost packages by their
     # value to the supplier (with its opening payment term as its standard), never in our own cost or the target.
     pay_rate_learn: bool = False
+    # Only facts that can land: no plain statement without an ID ("we buy it elsewhere at EUR X" drew "send us the
+    # competing offer"; "in your last renewals we settled X below" drew "provide the records") and no own order prices
+    # (0 of 198 landed). They took first-mail slots, so P08/P18's second falling index went out only in round 2.
+    landing_only: bool = False
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
