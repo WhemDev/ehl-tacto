@@ -33,6 +33,12 @@ suppliers' own reasons in the replays. Run notes: `Runs/` (agent `orchestra+prof
 6. **Operational:** a crashed case must close, not abandon its session (abandoned sessions block the key's 10
    open sessions for minutes); quotes may list only some standard terms.
 
+## Batch 2 and validation (16:00)
+Full A/B over 10 cases: profiles 58.0 vs none 56.8 - no measurable gain; half the cases ended identical. More
+lessons: suppliers go final at round 2-4 (plan 4 rounds); an early `agreed` in an RFQ is the bar, not the deal
+(P05 0.29 → 0.41); never offer above their standing offer (P02). Board: **60.1, #2, 10/10 deals**.
+Details and next steps: [[Report 2026-10-10 - profile hook and practice A-B]].
+
 ## Open questions
 - Does the bolder anchor make any supplier type walk away? (sandbox check, then practice batch 2)
 - Profiles vs no profiles: P01 0.76 vs 0.72, P04 equal - not enough yet (batch 2: 8 more pairs).

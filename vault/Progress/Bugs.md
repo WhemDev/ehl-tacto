@@ -2,7 +2,13 @@
 
 | # | Description | Severity | Reporter | Assignee | Status |
 |---|-------------|----------|----------|----------|--------|
-| 1 |             |          |          |          | open   |
+| 1 | `DataPackage` shares one SQLite connection across threads with no lock: under parallel cases (a final wave starts all at once) queries fail at random, and `analysis._q` silently returns `[]`, so the agent argues without index moves, should-cost or history. Fixed: a lock in `DataPackage.query` (`arena_kit/data.py`). | major | Claude | Claude | fixed |
 | 2 | Orchestra writer timeout never fired: leaving `with ThreadPoolExecutor(...)` waited for the abandoned LLM call, so after `NARRATE_S` (25 s) the turn still waited up to 45 s × 3 attempts (~135 s), past the 60 s message limit. Fixed: `_write` shuts its executor down without waiting (the template goes out right after `NARRATE_S`), and the writer's client makes one attempt of `NARRATE_S`, no retry (`cli.py`; `llm_from_env()` keeps 45 s and 2 retries for the other callers). Tests in `tests/test_orchestra.py`; sim P01 with a hung LLM: template 25 s after the supplier's reply, deal, no timeout. | major | Claude | Claude | fixed |
+| 3 | Two sandbox sessions (14:47:07, 14:47:22) ended by a `walk_away` our agent never sent: no walk decision or action in its event log. Did anyone run a script or another machine on our key then? **In the final only one process may use the key.** | major | Claude |  | open |
+| 4 | The writer (Sonnet) once answered without JSON (1 of 27); the orchestra then sends the template e-mail. Fix: structured output (`output_config.format`) for the writer. | minor | Claude |  | open |
+| 5 | Quote PDFs list only some standard terms (P02/P03: ppm, chargeback) → the margin estimate raised, every C was inf, `analyse()` crashed and the session was abandoned. Fixed `dce12e5`. | major | Claude (Arda) | Claude (Arda) | fixed |
+| 6 | A crashed case never closed its session: abandoned + running sessions hit the key's 10-open limit and 7 practice cases never started. Fixed: crash-safe close, wait for a free slot (`dce12e5`, `47c0ad4`). | major | Claude (Arda) | Claude (Arda) | fixed |
+| 7 | RFQ: a worker accepted the cheapest rival's opening at round 0 (P05 → 0). Fixed: accept against that supplier's own curve, never a first offer (`dce12e5`). | major | Claude (Arda) | Claude (Arda) | fixed |
+| 8 | Mixed measures (C with vs without the relationship estimate) let a sheet above the supplier's own quote through; it agreed → deal worse than the opening (P02 → 0). Fixed `3d78de2`. | major | Claude (Arda) | Claude (Arda) | fixed |
 
 Severity: `blocker` · `major` · `minor`
