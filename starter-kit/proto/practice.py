@@ -223,9 +223,12 @@ class PracticeNegotiator(Negotiator):
                 est.update(floor=round(0.85 * lowest_open, 2), full_cost=round(0.85 * lowest_open, 2), basis="85 % of lowest opening")
             # teammates' P02/P05 zeros: should-cost can sit ABOVE the quotes. It is a weak prior: cap it so
             # the supplier's own opening still earns a sustainable margin (else the opening looks like a squeeze)
-            # its opening price (the first offer, not a later counter: the cap must not move with the negotiation)
-            first = next((m for m in t.events if m.get("from") != "buyer" and m.get("term_sheets")), None)
-            own_open = first["term_sheets"][0]["terms"].get("unit_price") if first else None
+            # the lowest price it has offered so far (any of its sheets): it proves it lives at that price with its
+            # margin, so its floor is at most that / (1 + margin). Not only the latest offer (P18 countered higher once)
+            # and not only the opening (P02's counter sat above its opening): the minimum
+            offered = [s["terms"].get("unit_price") for m in t.events if m.get("from") not in ("buyer", "arena")
+                       for s in m.get("term_sheets") or [] if s.get("terms", {}).get("unit_price")]
+            own_open = min(offered) if offered else None
             if est.get("floor") and own_open:
                 cap = round(own_open / (1 + (b.get("sustainable_margin_pct") or 5) / 100), 2)
                 if est["floor"] > cap:
