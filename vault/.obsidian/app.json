@@ -1,7 +1,1 @@
-{
-  "userIgnoreFilters": ["Source/Data/data/", "Source/Data/datapackage.json"],
-  "newFileLocation": "folder",
-  "newFileFolderPath": "Plan",
-  "alwaysUpdateLinks": true,
-  "showUnsupportedFiles": false
-}
+{}

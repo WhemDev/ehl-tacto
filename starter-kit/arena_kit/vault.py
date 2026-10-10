@@ -11,7 +11,7 @@ import os
 import re
 from pathlib import Path
 
-VAULT = Path(os.environ.get("ARENA_VAULT") or Path(__file__).resolve().parents[2] / "vault")
+VAULT = Path(os.environ.get("ARENA_VAULT") or Path(__file__).resolve().parents[2] / "vault" / "Team-Knowledge")
 TEAM = "## Team notes"
 TEAM_STUB = f"{TEAM}\n\n_Observations from replays, calls with Tacto, hunches. Kept when the note is regenerated._\n"
 
@@ -250,7 +250,8 @@ def _move(move):
         [{"term_sheet_id": move.get("offer_id"), "terms": move["terms"]}] if move.get("terms") else []
     )
     for ts in sheets:
-        lines.append(f"- term sheet `{ts.get('term_sheet_id') or ''}`: {_terms(ts.get('terms', ts))}")
+        tid = f" `{ts['term_sheet_id']}`" if ts.get("term_sheet_id") else ""
+        lines.append(f"- term sheet{tid}: {_terms(ts.get('terms', ts))}")
     if move.get("action"):
         lines.append(f"- action: `{json.dumps(move['action'])}`")
     if move.get("claim_results"):

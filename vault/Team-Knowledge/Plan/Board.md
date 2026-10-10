@@ -25,6 +25,7 @@ kanban-plugin: basic
 ## Done
 
 - [x] Kit cloned, repo + vault set up
+- [x] Research: negotiation techniques and sources → [[Research - negotiation techniques]] (experiments list inside)
 
 
 
