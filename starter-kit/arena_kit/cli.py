@@ -37,7 +37,9 @@ def agent_factory(name, data):
 
         package = DataPackage(data)
         package.lookup("")  # build the ID index once, before agents share it
-    complete = llm_from_env()
+    from .events import recording_complete
+
+    complete = recording_complete(llm_from_env())
     return lambda: LLMAgent(complete, package)
 
 
@@ -144,6 +146,8 @@ def main(argv=None):
     v.add_argument("what", choices=["suppliers", "cases", "runs"])
     v.add_argument("--set", **sets)
     v.add_argument("--data", **data)
+    w = sub.add_parser("dashboard", help="live dashboard of the agent's negotiations (logs/events.jsonl)")
+    w.add_argument("--port", type=int, default=8765)
     m = sub.add_parser("mcp", help="run the read-only MCP server over the data (stdio)")
     m.add_argument("--data", **data)
     args = ap.parse_args(argv)
@@ -153,6 +157,14 @@ def main(argv=None):
         datefmt="%H:%M:%S",
     )
 
+    if args.cmd == "dashboard":
+        from .dashboard import serve
+
+        return serve(args.port)
+    if args.cmd in ("play", "run"):
+        from . import events
+
+        events.install()
     if args.cmd == "mcp":
         from .mcp_server import main as serve
 

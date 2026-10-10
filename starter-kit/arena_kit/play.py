@@ -15,6 +15,7 @@ import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
 
+from . import events as event_log
 from .client import ArenaError
 from .cost import must_haves_ok, total_cost
 from .docs import read_document, standard_terms
@@ -142,6 +143,7 @@ def closing_move(case, threads):
 def play(table, case_id, agent, deadline=None):
     """Play one case to its end. `deadline` (time.time(), or a function returning it): a Live Final
     wave's cap - shortly before it, `closing_move` closes the case so it does not end without a deal."""
+    table, agent = event_log.wrap(table, agent)  # the local event log behind `arena dashboard`
     case, threads = table.open(case_id)
     if getattr(table, "done", None):  # resumed a case that had already ended
         return table.done

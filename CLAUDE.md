@@ -39,6 +39,7 @@ uv run arena run --set sandbox --agent llm        # both sandbox cases (D01 pric
 uv run arena play case:P01 --agent llm -v --practice
 uv run arena run --set practice --agent llm --parallel 8 --practice
 
+uv run arena dashboard                            # live view of every play/run: http://127.0.0.1:8765 (logs/events.jsonl)
 uv run arena vault suppliers|cases|runs           # regenerate vault notes
 uv run arena cases --save cases                   # refresh the saved case files arena-sim loads
 uv run arena data                                 # data package (+ Sunday release from Sun 08:00)
