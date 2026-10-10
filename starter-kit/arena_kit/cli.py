@@ -91,6 +91,9 @@ def log_runs(client, set_, agent, session_id=None):
     """Practice and sandbox runs go to the vault (`vault/Runs`); never during the final or from arena-sim."""
     from . import vault
 
+    if agent and os.environ.get("ARENA_VARIANT"):  # e.g. an A/B label, shown in the run notes
+        agent = f"{agent}+{os.environ['ARENA_VARIANT']}"
+
     if local():
         return
 

@@ -185,6 +185,17 @@ class RecordingTable:
             breakdown=breakdown,
             replay=(os.environ.get("ARENA_URL", "").rstrip("/") + replay) if replay else None,
         )
+        try:  # the supplier's roles talking internally: open after the case in practice and sandbox
+            office = self._t.client.backoffice(self._t.session_id)
+            emit(
+                "backoffice",
+                items=[
+                    {k: m.get(k) for k in ("round", "supplier_id", "from", "to", "text")}
+                    for m in (office if isinstance(office, list) else office.get("messages", []))
+                ][:300],
+            )
+        except Exception:
+            pass
 
 
 class RecordingAgent:
@@ -235,7 +246,12 @@ def install():
     log = logging.getLogger("arena")
     if ENABLED and not any(isinstance(h, LogHandler) for h in log.handlers):
         log.addHandler(LogHandler())
-        emit("run", pid=os.getpid())
+        emit(
+            "run",
+            pid=os.getpid(),
+            variant=os.environ.get("ARENA_VARIANT"),
+            profiles=os.environ.get("ARENA_PROFILES", "on"),
+        )
 
 
 def wrap(table, agent):

@@ -276,8 +276,10 @@ def claims(case, package, supplier, opening_price):
 # --- the analysis ---------------------------------------------------------------------------
 
 
-def analyse(case, opening, package=None):
-    """`opening`: {supplier_id: {"terms": its opening offer, "standard": its standard terms}}."""
+def analyse(case, opening, package=None, tactics=None):
+    """`opening`: {supplier_id: {"terms": its opening offer, "standard": its standard terms}}.
+    `tactics`: {supplier_id: strategy.tactics(...)} - per-supplier anchor, Boulware e, the value of
+    money to it; without, the category goal's defaults."""
     b = case["buyer"]
     goal = GOALS.get(b.get("category_goal"), GOALS["leverage"])
     alt = b.get("alternative") or {}
@@ -288,6 +290,7 @@ def analyse(case, opening, package=None):
     sups = {}
     for sid, o in opening.items():
         std, terms = o.get("standard") or {}, o.get("terms") or {}
+        tac = (tactics or {}).get(sid) or {}
         c_open = cost(case, terms, std)
         ok = bool(terms.get("unit_price")) and must_haves_ok(case, terms, std)
         price = terms.get("unit_price")
@@ -300,7 +303,7 @@ def analyse(case, opening, package=None):
         # strategic and bottleneck goals charge for squeezing the supplier: with a should-cost we can
         # price that, and the best package for us is where the charge outweighs any further saving
         est = (
-            {"full_cost": unit_cost, "interest_rate": b["interest_rate"], "standard": std}
+            {"full_cost": unit_cost, "interest_rate": tac.get("interest_rate") or b["interest_rate"], "standard": std}
             if unit_cost and b.get("category_goal") in RELATIONSHIP_GOALS
             else None
         )
@@ -308,11 +311,12 @@ def analyse(case, opening, package=None):
         if est and price:
             ideal, p_opt, _ = best_fit(case, std, est, unit_cost * 0.85, max(price, unit_cost * 1.2))
         # the anchor price: below the opening, at most the justified increase, never below the floor
-        anchor = price * (1 - goal["anchor"]) if price else None
+        anchor = price * (1 - tac.get("anchor", goal["anchor"])) if price else None
         if anchor and case.get("type") == "price_increase" and b.get("current_unit_price"):
             anchor = min(anchor, b["current_unit_price"] * (1 + max(justified or 0.0, 0.0) / 100))
-        if anchor and p_opt:
-            anchor = p_opt  # asking for less would cost us more in the relationship charge
+        if anchor and p_opt:  # never below the relationship optimum (it would cost us more), and not
+            # further than twice the supplier type's discount (a bottleneck that barely moves)
+            anchor = max(p_opt, min(anchor, price * (1 - 2 * tac.get("anchor", goal["anchor"]))))
         elif anchor and floor:
             anchor = max(anchor, floor * (0.97 if b.get("category_goal") == "leverage" else 1.0))
         min_price = None if est else (round(floor * 0.97, 2) if floor else None)
@@ -339,6 +343,8 @@ def analyse(case, opening, package=None):
             "levers": lever_table(case, base, std) if base else {},
             "history": history(package, sid, case.get("parts", [])),
             "claims": claims(case, package, sid, price),
+            "e": tac.get("e", goal["e"]),
+            "tactics": tac,
         }
     opens = [s["c_open"] for s in sups.values() if s["must_haves_ok"] and s["c_open"] is not None]
     best_open = min(opens) if opens else None
@@ -386,10 +392,11 @@ def best_fit(case, std, est, lo, hi):
     return best
 
 
-def meso(case, sup, target_c, theirs, protect=(), probe=0):
+def meso(case, sup, target_c, theirs, protect=(), probe=0, gives=None):
     """Up to three term sheets that each cost us `target_c` and differ in the levers: our ideal
     levers, ours except the fields the supplier protects, and the supplier's own levers.
-    `sup` is the supplier's entry of `analyse()`; `theirs` its standing terms."""
+    `sup` is the supplier's entry of `analyse()`; `theirs` its standing terms. `gives` {field: value}:
+    trades its profile says it values; then the 2nd sheet offers the first, the 3rd all of them."""
     fields, std, est = lever_fields(case), sup["standard"], sup.get("estimate")
     ours = sup["ideal_levers"]
     theirs = {**std, **(theirs or {})}
@@ -400,18 +407,26 @@ def meso(case, sup, target_c, theirs, protect=(), probe=0):
     # need an absurd price to stay equal in C
     ref = complete_offer(case, {**ours, "unit_price": sup.get("anchor_price") or sup.get("price") or 1.0})
     per_unit = cost(case, {**ref, "unit_price": ref["unit_price"] + 1}, std) - cost(case, ref, std)
-    tradeable = [
-        f
-        for f in fields
-        if theirs.get(f) is not None
-        and theirs.get(f) != ours.get(f)
-        and per_unit > 0
-        and abs(cost(case, {**ref, f: snap(case, f, theirs[f])}, std) - cost(case, ref, std)) / per_unit
-        <= 0.04 * ref["unit_price"]
-    ]
-    # without known protected fields, each round probes a different lever (round r gives field r)
-    keep = [f for f in protect if f in tradeable] or (tradeable[probe % len(tradeable) :][:1] if tradeable else [])
-    mixes = [ours, {**ours, **{f: theirs[f] for f in keep}}, {**ours, **{f: theirs[f] for f in tradeable}}]
+
+    def small(f, v):
+        t = {**ref, f: snap(case, f, v)}
+        return (
+            v is not None
+            and v != ours.get(f)
+            and per_unit > 0
+            and must_haves_ok(case, t, std)
+            and abs(cost(case, t, std) - cost(case, ref, std)) / per_unit <= 0.04 * ref["unit_price"]
+        )
+
+    tradeable = [f for f in fields if small(f, theirs.get(f))]
+    held = {f: theirs[f] for f in protect if f in tradeable}
+    offered = {f: v for f, v in (gives or {}).items() if f in fields and small(f, v)}
+    if offered:  # the profile says what it values: our ideal, then its first trade, then all of them
+        first = dict([next(iter(offered.items()))])
+        mixes = [ours, {**ours, **held, **first}, {**ours, **held, **offered}]
+    else:  # without known trades, each round probes a different lever (round r gives field r)
+        keep = list(held) or (tradeable[probe % len(tradeable) :][:1] if tradeable else [])
+        mixes = [ours, {**ours, **{f: theirs[f] for f in keep}}, {**ours, **{f: theirs[f] for f in tradeable}}]
     sheets = []
     for levers in mixes:
         levers = {f: snap(case, f, v) for f, v in levers.items() if f in fields}
