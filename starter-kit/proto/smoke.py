@@ -26,7 +26,7 @@ for cid, case in cases.items():
                 terms.update(volume_per_year=19890, contract_months=12, lead_time_days=56, unit_price=32.2)
             if os.environ.get("CLAUSE") and "index_clause" in case["negotiable"]:
                 opts = [o for o in case["term_options"]["index_clause"] if o]
-                terms["index_clause"] = opts[-1]
+                terms["index_clause"] = opts[int(os.environ.get("CLAUSE_IDX", "-1"))]
             ev = [{"from": f"sales@{s}", "status": "open", "body": "Our offer. Which volume can you commit to? Faster payment would help. For 24 months an AS-14404 index clause is mandatory.",
                    "term_sheets": [{"term_sheet_id": f"offer:{s}-0", "terms": terms}], "attachments": []}]
             threads[s] = Thread(s, ev)

@@ -81,6 +81,11 @@ class Config:
     rfq_push_pct: float | None = None
     rfq_meso_n: int | None = None
     rfq_facts: int | None = None
+    # upgrades from the team's weak-case review (2026-10-10 17:40)
+    meet_cheapest: bool = False  # an insisted term goes into EVERY package, in the variant cheapest for us
+    lead_cap: bool = False  # never offer a lead time beyond our need (within it: the supplier's standard)
+    evidence_plus: bool = False  # cheaper orders of the same part elsewhere, recently falling drivers, its own history
+    answer_plus: bool = False  # forecast ID with volume answers, on-time payment promise, bundle volume framing
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -122,6 +127,13 @@ GOAL_ANCHOR = {"routine": 0.12, "leverage": 0.16, "quality_first": 0.10, "stabil
 ROOM_PRIOR = {"leverage": 0.15, "routine": 0.08, "quality_first": 0.08}
 FREEZE = re.compile(r"frozen|freeze|no (further )?price reduction|cannot (reduce|lower|move on) (the |our )?price|"
                     r"talk about the terms|price (is|remains|stays) (fixed|firm)", re.I)
+INSIST = (r"\bmandatory\b|\bessential\b|\brequires?\b|\brequired\b|\bwe (must|need to|have to) (include|have|add|keep|insist)"
+          r"|\bnot possible without\b|\bonly (with|if)\b|\bcannot (offer|accept|do)\b[^.]*\bwithout\b|\binsist|non-negotiable")
+TERM_WORDS = {"index_clause": r"index|clause|Preisgleitklausel|surcharge", "payment_days": r"payment|Zahlungsziel",
+              "contract_months": r"contract (term|length|duration)|\bmonths\b", "lead_time_days": r"lead ?time|Lieferzeit|delivery time",
+              "volume_per_year": r"volume", "incoterm": r"incoterm|delivery terms|\bDAP\b|\bFCA\b|\bEXW\b",
+              "effective_date": r"start date|effective|valid from", "ppm_commitment": r"ppm|quality commitment",
+              "chargeback_eur_per_complaint": r"chargeback", "tooling_eur": r"tooling"}
 FIXED_WORDS = {"payment_days": r"payment|zahlungsziel|pay faster|faster payment", "volume_per_year": r"volume",
                "lead_time_days": r"lead time|lieferzeit|delivery time", "contract_months": r"contract (length|term)",
                "incoterm": r"incoterm|delivery terms|\bDAP\b|\bFCA\b|\bEXW\b", "effective_date": r"start date|valid from"}
@@ -343,6 +355,57 @@ class Negotiator:
         tol = max(min(0.002 * c_goal, 0.1 * room), 0.0005 * c_goal)
         offered = t.sheets[0]["terms"] if t.sheets else {}
         grid = [g for g in lever_grid(self.case, {**t.std, **offered}) if must_haves_ok(self.case, g, t.std)]
+        if self.cfg.lead_cap and "lead_time_days" in self.case["negotiable"]:
+            # never beyond our need: a longer lead time costs us late days and suppliers rarely pay for it (P10)
+            need = self.b.get("need_lead_time_days")
+            grid = [g for g in grid if g.get("lead_time_days") is None or g["lead_time_days"] <= need] or grid
+        if self.cfg.meet_cheapest:
+            # a term the supplier explicitly insists on becomes a condition of EVERY package, in the variant of that
+            # term that is cheapest for us - for an index clause: same series, widest deadband (P08/P18). Only a term
+            # named in the same sentence as the insistence, and never one that cuts our coverage or a must-have.
+            t.required = getattr(t, "required", {})
+            sentences = re.split(r"(?<=[.!?])\s+", t.last.get("body") or "")
+            opts = self.case.get("term_options", {})
+            for f in self.case["negotiable"]:
+                v = offered.get(f)
+                if f == "unit_price" or v is None or f in t.required or not opts.get(f) or f not in TERM_WORDS:
+                    continue
+                said = any(re.search(INSIST, x, re.I) and re.search(TERM_WORDS[f], x, re.I) for x in sentences)
+                # ... or a term it INTRODUCED itself (not in its opening offer, never proposed by us) and kept in its
+                # last two offers: its condition, even if it never says "mandatory" (practice P18)
+                sup_offers = [((m.get("term_sheets") or [{}])[0].get("terms") or {}) for m in t.events
+                              if m.get("from") not in ("buyer", "arena")]
+                # a structured clause it adds on its own is a demand at once; a changed plain number (payment days,
+                # months) is ordinary counter-offering, so it must be kept for two offers in a row
+                need_n = 1 if isinstance(v, dict) else 2
+                introduced = (len(sup_offers) >= need_n + 1 and sup_offers[0].get(f) != v
+                              and all(o.get(f) == v for o in sup_offers[-need_n:]))
+                if not (said or introduced):
+                    continue
+                if any(((m.get("term_sheets") or [{}])[0].get("terms") or {}).get(f) == v or
+                       any(s3.get("terms", {}).get(f) == v for s3 in m.get("term_sheets") or [])
+                       for m in t.events if m.get("from") == "buyer"):
+                    continue  # an echo of our own proposal is not its condition (sandbox D02: "DAP as you requested")
+                family = ([o for o in opts[f] if isinstance(o, dict) and o.get("series") == v.get("series")]
+                          if isinstance(v, dict) else [v])
+                def _full(g):
+                    return (g.get("volume_per_year") or self.b["need_per_year"]) >= self.b["need_per_year"] and (
+                        g.get("contract_months") is None or g["contract_months"] >= 12 * self.b["horizon_years"])
+                base = next((g for g in grid if _full(g)), grid[0] if grid else {})
+                price = offered.get("unit_price") or 1.0
+                ok = []
+                for o in family:
+                    cand = complete_offer(self.case, {**base, f: o, "unit_price": price})
+                    full = (cand.get("volume_per_year") or self.b["need_per_year"]) >= self.b["need_per_year"] and (
+                        cand.get("contract_months") is None or cand["contract_months"] >= 12 * self.b["horizon_years"])
+                    if must_haves_ok(self.case, cand, t.std) and full:
+                        ok.append((self.C(t, cand), o))
+                if ok:
+                    ok.sort(key=lambda z: z[0])
+                    t.required[f] = [ok[0][1]]
+                    self.note("required_term", supplier=t.sid, field=f, theirs=v, ours=ok[0][1])
+            for f, allowed in t.required.items():
+                grid = [g for g in grid if g.get(f) in allowed] or grid
         months = self.case.get("term_options", {}).get("contract_months")
         if self.cfg.long_contract and months and "contract_months" in self.case["negotiable"]:
             longest = max(months)  # beyond the horizon it costs nothing; suppliers value the security
@@ -405,7 +468,7 @@ class Negotiator:
                 break
             if terms not in picks:
                 picks.append(terms)
-        if self.cfg.meet_fields and offered:
+        if self.cfg.meet_fields and offered and not self.cfg.meet_cheapest:  # meet_cheapest supersedes this rule
             # practice P08/P18: the supplier insisted on its index clause and we never offered one back
             ours = [s2["terms"] for m in t.events if m.get("from") == "buyer" for s2 in m.get("term_sheets") or []]
             theirs = [(m.get("term_sheets") or [{}])[0].get("terms", {}) for m in t.events if m.get("from") not in ("buyer", "arena")]
@@ -413,6 +476,8 @@ class Negotiator:
             for f in order:  # at most one met field per message, the index clause first
                 if f not in offered or offered[f] is None or any(q.get(f) == offered[f] for q in picks):
                     continue
+                if f in getattr(t, "required", {}):
+                    continue  # already a condition of every package, in the variant cheapest for us
                 # only a term the supplier introduced itself (never in our sheets) and kept in its last two offers,
                 # after it has seen at least one of ours - not an echo of our own packages (sandbox D01)
                 persisted = f in getattr(t, "met", {}) and t.met[f] == offered[f]
