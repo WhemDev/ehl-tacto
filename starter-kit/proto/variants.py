@@ -131,6 +131,12 @@ VARIANTS = {
                               price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                               holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
                               clause_pay_best=True)),
+    "A9h-clausepay2": ("A9h-clausepay, the clause package priced with the arena-implied 6.4 % cost of money",
+                       replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                               bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                               price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                               holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
+                               clause_pay_best=True, clause_pay_rate=0.064)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,

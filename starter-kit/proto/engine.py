@@ -128,6 +128,9 @@ class Config:
     # (P02) agreed at once to all 12 clause packages we sent, every one at 60 days; on the arena's bill the 90-day
     # clause package is about EUR 2.5k cheaper (formula: 0.76 vs 0.71 at each one's best price).
     clause_pay_best: bool = False
+    # ... priced with this cost of money for a good-credit supplier (the arena-implied 6.1-6.6 %, not our 5 %): at 5 %
+    # the cheapest price for us came out at EUR 358.92 and the supplier-health charge jumped to EUR 52.5k (0.701)
+    clause_pay_rate: float | None = None
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -529,6 +532,17 @@ class Negotiator:
             # a clause package keeps its clause but goes out at the payment term and price where it costs us least
             # (P02: Nordmark agreed at once to every clause package, all at 60 days at the round's goal; on the arena's
             # bill the 90-day clause package at its cheapest price scores about 0.76 against 0.65-0.71)
+            est, std = t.est, t.std
+            if self.cfg.clause_pay_rate:
+                # the arena's supplier-health charge fits P02's 24 deals exactly with the supplier's OPENING payment
+                # term as its standard (30 days) and a 6.6 % cost of money; the quote PDF lists no standard payment
+                # term, so the engine fell back to our 60-day reference and priced the package EUR 2.3 too low
+                first = ((t.events[0].get("term_sheets") or [{}])[0].get("terms") or {}) if t.events else {}
+                if first.get("payment_days") is not None:
+                    std = {**std, "payment_days": first["payment_days"]}
+                    est = {**est, "standard": {**est.get("standard", {}), "payment_days": first["payment_days"]}}
+                if (est.get("interest_rate") or 1.0) < self.cfg.clause_pay_rate:
+                    est = {**est, "interest_rate": self.cfg.clause_pay_rate}
             for i, pk in enumerate(picks):
                 if not pk.get("index_clause"):
                     continue
@@ -537,14 +551,15 @@ class Negotiator:
                     if g.get("index_clause") != pk["index_clause"] or any(
                             g.get(k) != pk.get(k) for k in g if k not in ("payment_days", "unit_price")):
                         continue
-                    p = price_for_c(self.case, g, t.std, 0.0, t.est)  # target 0 is out of reach: its cheapest price
+                    p = price_for_c(self.case, g, std, 0.0, est)  # target 0 is out of reach: its cheapest price
                     if their_price is not None and p > their_price:
                         p = their_price
                     terms = complete_offer(self.case, {**g, "unit_price": p})
-                    cands.append((self.C(t, terms), terms))
+                    cands.append((total_cost(self.case, terms, std, est), terms))
                 if cands:
                     c_best, best_terms = min(cands, key=lambda z: z[0])
-                    if best_terms.get("payment_days") != pk.get("payment_days") and c_best < self.C(t, pk) and c_best < their_c:
+                    if (best_terms.get("payment_days"), best_terms.get("unit_price")) != (pk.get("payment_days"), pk.get("unit_price")) \
+                            and c_best < total_cost(self.case, pk, std, est) and self.C(t, best_terms) < their_c:
                         self.note("clause_pay", supplier=t.sid, was=pk.get("payment_days"), now=best_terms.get("payment_days"),
                                   price=best_terms.get("unit_price"))
                         picks[i] = best_terms
