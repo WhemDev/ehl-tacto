@@ -30,7 +30,10 @@ kanban-plugin: basic
 ## Doing
 
 
+
 ## Done
+
+- [x] Reversible A9h candidates implemented; owed RFQ tests repaired. Four hosted openings total: two harness failures, then P05 A9h 0.607 vs owed 0.665; owed excluded by <15 s replies, no promotion. [[Reversible candidates 2026-10-11]]
 
 - [x] Fact planner + RFQ rival loop ([[Options 2026-10-10 - beyond tuning]] O1/O3, `A9h-plan-rfq`): probe P18 0.401 (facts front-loaded), fresh pass **0.715** = baseline; suppliers stop at the same price whatever facts we send. Kept as a variant; the final build stays A9h (+ the phantom-ID fix)
 - [x] Phantom IDs: the frozen build still cited a forecast that is only in the tables (P05, "contradicted ... costs trust"); now only facts.json IDs go out, tested on all 19 case files (`cb9e2cb`)

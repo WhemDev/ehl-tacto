@@ -142,6 +142,17 @@ class Config:
     # competing offer"; "in your last renewals we settled X below" drew "provide the records") and no own order prices
     # (0 of 198 landed). They took first-mail slots, so P08/P18's second falling index went out only in round 2.
     landing_only: bool = False
+    first_indices: bool = False
+    economic_lead: bool = False
+    extreme_payment: bool = False
+    # Collect an announced step (2026-10-11 00:10, 1,572 sessions). "Any further step needs approval from our
+    # management" (the rep asked its boss) or "we need to clarify this internally" (a rival half step's rest) promises a
+    # further step on the supplier's NEXT reply. With one more ask below its offer the approval came 31 of 40 times
+    # (median -1.3 % of price, 0 walk-aways); we threw 39 away by accepting in that round (P02 6c1f4006871e6587).
+    # So: never accept on such a reply, ask once more just below its offer; in an RFQ, never close while a bidder owes it.
+    collect_owed: bool = False
+    owed_gap: float = 0.012  # the collecting ask sits this share of C below its offer
+    owed_final: bool = False  # also when the cue comes with a final offer (untested: we accepted all 23 of those)
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -197,7 +208,11 @@ WORDS = {"unit_price": "price", "payment_days": "payment terms", "contract_month
          "effective_date": "the start date", "lead_time_days": "lead time", "incoterm": "delivery terms",
          "volume_per_year": "the annual volume"}
 BREAKDOWN = re.compile(r"\| ([\d.]+) \|[^\n]*\n[^\n]*\| ([\d.]+) \|[^\n]*\n[^\n]*conversion[^|]*\| ([\d.]+)")
-SIGN = ["", "Best regards", "Hollerau Pumpenwerke, Purchasing"]
+# a further step announced for the supplier's next reply (Config.collect_owed); not "management has frozen all price
+# reductions" (P03), "reviewed internally" or "engineering approval"
+OWED = re.compile(r"needs approval from our management|approval (?:from|of) our (?:pricing )?committee|"
+                  r"need to clarify this internally", re.I)
+SIGN =["", "Best regards", "Hollerau Pumpenwerke, Purchasing"]
 # facts the whole case shares (one claim per case, api.md) as opposed to a supplier's own (its scorecard)
 SHARED = ("cost:", "fc:", "po:", "idx:", "news:", "quote:", "doc:", "ctr:")
 
@@ -411,6 +426,9 @@ class Negotiator:
             return []
         pk = [complete_offer(self.case, {**g, "unit_price": p}) for g in lever_grid(self.case, {**t.std, **their})]
         pk = [x for x in pk if must_haves_ok(self.case, x, t.std) and self.C(t, x) < self.C(t, their) - 1]
+        if self.cfg.extreme_payment:
+            from proto.candidate_levers import extreme_payments
+            pk = extreme_payments(self.case, pk)
         pk.sort(key=lambda x: self.C(t, x))
         if pk:
             self.note("price_frozen", supplier=t.sid, price=p, best_c=round(self.C(t, pk[0])))
@@ -425,10 +443,14 @@ class Negotiator:
         tol = max(min(0.002 * c_goal, 0.1 * room), 0.0005 * c_goal)
         offered = t.sheets[0]["terms"] if t.sheets else {}
         grid = [g for g in lever_grid(self.case, {**t.std, **offered}) if must_haves_ok(self.case, g, t.std)]
+        longer = {}
         if self.cfg.lead_cap and "lead_time_days" in self.case["negotiable"]:
             # never beyond our need: a longer lead time costs us late days and suppliers rarely pay for it (P10)
             need = self.b.get("need_lead_time_days")
-            grid = [g for g in grid if g.get("lead_time_days") is None or g["lead_time_days"] <= need] or grid
+            from proto.candidate_levers import worthwhile_leads
+            longer = worthwhile_leads(self, t) if self.cfg.economic_lead else {}
+            grid = [g for g in grid if need is None or g.get("lead_time_days") is None
+                    or g["lead_time_days"] <= need or g["lead_time_days"] in longer] or grid
         if self.cfg.meet_cheapest:
             # a term the supplier explicitly insists on becomes a condition of EVERY package, in the variant of that
             # term that is cheapest for us - for an index clause: same series, widest deadband (P08/P18). Only a term
@@ -476,6 +498,9 @@ class Negotiator:
                     self.note("required_term", supplier=t.sid, field=f, theirs=v, ours=ok[0][1])
             for f, allowed in t.required.items():
                 grid = [g for g in grid if g.get(f) in allowed] or grid
+        if self.cfg.extreme_payment:
+            from proto.candidate_levers import extreme_payments
+            grid = extreme_payments(self.case, grid)
         months = self.case.get("term_options", {}).get("contract_months")
         if self.cfg.long_contract and months and "contract_months" in self.case["negotiable"]:
             longest = max(months)  # beyond the horizon it costs nothing; suppliers value the security
@@ -501,6 +526,9 @@ class Negotiator:
             near = sum(terms.get(k) != offered.get(k) for k in terms if k != "unit_price" and k in offered)
             terms["_capped"] = capped
             sv = supplier_value(self.case, {k: v for k, v in terms.items() if k != "_capped"}, self.rank_est(t))
+            # Revealed speed premium: compensate supplier ranking for the price discount
+            # required to offset our late cost, only where its own comparable quotes justify it.
+            sv += longer.get(terms.get("lead_time_days"), 0.0)
             if self.cfg.penalty_aversion:  # suppliers price penalty clauses far above their expected cost (P11)
                 sv -= self.cfg.penalty_aversion * (terms.get("chargeback_eur_per_complaint") or 0) * (terms.get("ppm_commitment") or 0) / 1e6
             priced.append((sv, near, terms, c))
@@ -906,6 +934,15 @@ class Negotiator:
         self.note("result", **{k: res.get(k) for k in ("deal", "c_open", "c_deal", "c_best", "score")})
         return res
 
+    def owes_step(self, t):
+        """Config.collect_owed: its last reply announced a further step for its next reply (an approval from its
+        management, or the rest of a rival half step). Collected once per thread."""
+        if not self.cfg.collect_owed or getattr(t, "collected", 0) or t.status in ENDED or t.status == "agreed":
+            return False
+        if t.status == "final_offer" and not self.cfg.owed_final:
+            return False
+        return bool(OWED.search(t.last.get("body") or ""))
+
     def near_cap(self):
         """The kit's closing rule: act max(90 s, slowest round + 15 s) before the wave's cap."""
         return self.deadline is not None and time.time() > self.deadline - max(90, self.slowest + 15)
@@ -988,6 +1025,9 @@ class Negotiator:
             untouched = any(x.sent() < 1 and x.status not in ENDED for x in live) and time.time() - t_start < 90
             hold_close = bool(best) and best[1].status == "open" and (untouched or best[1].in_flight or (  # its offer may change,
                 any(x.in_flight for x in live if x is not best[1]) and time.time() - best[1].replied_at < 20))  # or a rival's beat it
+            owing = [x for x in live if self.owes_step(x) and x.sent() < limit - 1]
+            if owing or any(getattr(x, "collected", 0) and x.in_flight for x in live):
+                hold_close = True  # a bidder promised a further step on its next reply (approval / rival rest): collect it first
             # (an agreed or final offer is never held: under load its 60 s may already be running out - P05)
             if best and best[0] <= self.c_alt and not hold_close:
                 # (closing waits while another supplier's reply is on its way - it may be better: sandbox D02 0.269;
@@ -1043,11 +1083,18 @@ class Negotiator:
                 return ("send", {"subject": self.case["title"], "refs": [], "body": "\n".join(
                     ["Hello,", "", "thank you for your offer. We are completing our evaluation and will come back to you "
                      "very shortly with our decision."] + SIGN)})
-            if t.status == "final_offer" or t.rounds >= cfg.max_rounds or t.sent() >= limit - 1:
+            collecting = t in owing
+            if (t.status == "final_offer" and not collecting) or t.rounds >= cfg.max_rounds or t.sent() >= limit - 1:
                 if best is None and all(x.status == "final_offer" or x.rounds >= cfg.max_rounds for x in live):
                     return ("walk", None)
                 return ("wait", None)
-            sheets = self.recalled(t) or self.meso(t, goal)
+            if collecting:
+                own = [self.C(t, s2["terms"]) for s2 in t.sheets if must_haves_ok(self.case, s2["terms"], t.std)]
+                if own:
+                    goal = min(goal, min(own) * (1 - cfg.owed_gap))  # below its offer (deeper if our curve already is)
+                t.collected = 1
+                self.note("collect", supplier=t.sid, goal=round(goal), status=t.status)
+            sheets = (None if collecting else self.recalled(t)) or self.meso(t, goal)
             if not sheets:
                 return ("wait", None)
             others = [(self.C(x, s2["terms"]), s2["term_sheet_id"], s2["terms"]) for x in self.threads.values()
@@ -1148,6 +1195,7 @@ class Negotiator:
             if not live:
                 return self.walk() if best is None else self.close(best[1], best[2])
             goal, next_goal = self.goal(rnd), self.goal(rnd + 1)
+            owed, owed_cap, owed_t = False, None, None
             if best and best[0] <= self.c_alt:
                 c, t, sh = best
                 open_rivals = [x for x in live if x is not t and x.status == "open"]
@@ -1158,7 +1206,15 @@ class Negotiator:
                 more = (cfg.plan_facts and not (stalled and getattr(t, "stalled_before", False))
                         and self.facts_left(t) >= cfg.plan_hold)
                 t.stalled_before = stalled
-                if ((holds < cfg.holds and gave > cfg.hold_gave * c) or more) and c <= next_goal and t.status == "open" \
+                owed = self.owes_step(t) and t.sent() < limit - 1
+                if owed:
+                    # it promised a further step for its next reply: never accept on this one, ask once more just
+                    # below its offer to collect it
+                    t.collected, owed_t = 1, t
+                    owed_cap = c * (1 - cfg.owed_gap)
+                    goal = min(goal, owed_cap)
+                    self.note("collect", c=c, goal=round(goal), status=t.status)
+                elif ((holds < cfg.holds and gave > cfg.hold_gave * c) or more) and c <= next_goal and t.status == "open" \
                         and t.sent() < limit - 2:
                     if cfg.plan_facts and last_goal is not None and c <= last_goal * 1.0001:
                         self.note("accept", why="meets our last ask", c=c, goal=last_goal)
@@ -1178,7 +1234,7 @@ class Negotiator:
                     self.note("accept", why="goal" if c <= next_goal else "agreed" if t.status == "agreed" else "stalled",
                               c=c, goal=next_goal)
                     return self.close(t, sh)
-                if t.status == "final_offer" and not open_rivals:
+                if t.status == "final_offer" and not open_rivals and not owed:
                     backup = [x for x in live if x is not t and x.sheets]
                     allowed = cfg.push == "all" or (cfg.push == "rfq" and backup)
                     if allowed and t.pushes < cfg.pushes and t.sent() < limit - 1:
@@ -1186,21 +1242,23 @@ class Negotiator:
                         continue
                     self.note("accept", why="final_offer", c=c)
                     return self.close(t, sh)
-                if rnd >= cfg.max_rounds or all(x.sent() >= limit - 1 for x in live):
+                if not owed and (rnd >= cfg.max_rounds or all(x.sent() >= limit - 1 for x in live)):
                     self.note("accept", why="out of rounds: best seen", c=c)
                     return self.close(t, sh)
             elif rnd >= cfg.max_rounds:
                 return self.walk()
             if cfg.plan_facts and last_goal is not None:
                 goal = max(goal, last_goal)  # never ask for more than last time
+            if owed_cap is not None:
+                goal = min(goal, owed_cap)  # the collecting ask stays below its offer
             last_goal = goal
             self.note("round", rnd=rnd, c_target=round(self.target_c), goal=round(goal),
                       reserve=round(best[0]) if best else None)
             jobs = []
             for t in live:
-                if t.status == "final_offer":
+                if t.status == "final_offer" and t is not owed_t:
                     continue  # rests while a rival is still open
-                sheets = self.recalled(t) or self.meso(t, goal)
+                sheets = (None if t is owed_t else self.recalled(t)) or self.meso(t, goal)
                 if not sheets:
                     continue
                 others = [(self.C(x, sh["terms"]), sh["term_sheet_id"], sh["terms"]) for x in self.threads.values()

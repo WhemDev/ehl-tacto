@@ -188,6 +188,21 @@ VARIANTS = {
     "A2all": ("A2 but pushing after every final offer (to price the safety)",
               replace(A, push="all", bottleneck_anchor=0.03, say_fixed=True, meet_fields=True)),
 }
+# 2026-10-11 00:30 (research over 1,572 sessions): collect a step the supplier announced for its next reply (an approval
+# from its management, a rival half step's rest) instead of accepting on that reply, and keep a resting final-offer
+# thread alive in RFQs (a timeout after a final offer ended the thread 77 of 81 times; a no-sheet mail kept it 29 of 29)
+VARIANTS["A9h-owed"] = ("A9h + collect an announced step (approval / rival rest) + RFQ keep-alive for final offers",
+                        replace(VARIANTS["A9h"][1], collect_owed=True, rfq_hold=True))
+
+
+# Independently reversible candidates: select A9h to disable every new lever.
+for name, overrides in {
+    "A9h-indices-first": {"first_indices": True},
+    "A9h-economic-lead": {"economic_lead": True},
+    "A9h-extreme-pay": {"extreme_payment": True},
+    "A9h-candidate": {"first_indices": True, "economic_lead": True, "extreme_payment": True},
+}.items():
+    VARIANTS[name] = (name, replace(VARIANTS["A9h"][1], **overrides))
 
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):

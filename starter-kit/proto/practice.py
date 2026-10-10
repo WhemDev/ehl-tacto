@@ -217,6 +217,9 @@ class PracticeNegotiator(Negotiator):
                 facts.append((r, f"Our forecast ({r}) backs the full volume over the contract term"))
             elif kind == "sc" and sup_short in r:
                 facts.append((r, f"Your delivery and quality scorecard ({r}) is part of our review"))
+        if self.cfg.first_indices:
+            from proto.candidate_levers import first_indices
+            facts = first_indices(facts)
         t.facts = facts
         return facts
 
