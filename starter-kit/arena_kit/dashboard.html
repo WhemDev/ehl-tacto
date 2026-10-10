@@ -66,7 +66,7 @@ const fmtv=v=>v==null?"–":typeof v==="object"?esc(JSON.stringify(v)):esc(v);
 
 function runOf(id,ts){if(!S.runs.has(id))S.runs.set(id,{id,start:ts,sessions:new Map(),last:ts});return S.runs.get(id)}
 function ingest(e){
-  const r=runOf(e.run,e.ts);r.last=e.ts;
+  const r=runOf(e.run,e.ts);r.last=e.ts;if(e.kind==="run"&&e.variant)r.variant=e.variant;
   if(!e.case)return;
   const k=e.case;
   if(!r.sessions.has(k))r.sessions.set(k,{case:e.case,start:e.ts,events:[],suppliers:{},state:"opening",buyerMsgs:0,colors:{}});
@@ -84,7 +84,7 @@ function ingest(e){
 function render(){
   const runs=[...S.runs.values()].sort((a,b)=>b.start-a.start);
   if($("follow").checked&&runs.length)S.run=runs[0].id;
-  $("run").innerHTML=runs.map(r=>`<option value="${r.id}" ${r.id===S.run?"selected":""}>run ${r.id} · ${new Date(r.start*1000).toLocaleTimeString()} · ${r.sessions.size} case${r.sessions.size===1?"":"s"}</option>`).join("");
+  $("run").innerHTML=runs.map(r=>`<option value="${r.id}" ${r.id===S.run?"selected":""}>run ${r.id}${r.variant?" ["+esc(r.variant)+"]":""} · ${new Date(r.start*1000).toLocaleTimeString()} · ${r.sessions.size} case${r.sessions.size===1?"":"s"}</option>`).join("");
   const run=S.runs.get(S.run);if(!run)return;
   const ss=[...run.sessions.values()].sort((a,b)=>a.start-b.start);
   if(!S.sel||!run.sessions.has(S.sel))S.sel=ss[0]?.case;
@@ -154,6 +154,16 @@ function detail(s){
     else if(e.kind==="buyer")b=`<div class="msg buyer"><h4>us → ${esc(short(e.supplier))}<span class="sub">${esc(e.subject||"")}</span></h4>
       ${(e.sheets||[]).map((t,k)=>`<div class="sub" style="margin-top:6px">term sheet ${k+1} · <span class="c">${eur(t.c)}</span></div>${termsTable(t.terms,prev[e.supplier]?.terms)}`).join("")}
       ${e.refs?.length?`<div class="sub">refs: ${e.refs.map(esc).join(", ")}</div>`:""}<div class="body ${op(k)}" onclick="tog('${k}',this)">${esc(e.body)}</div></div>`;
+    else if(e.kind==="analysis"){const rows=Object.entries(e.suppliers||{}).map(([id,x])=>`<tr><th>${esc(short(id))}</th><td>${x.tactics?.archetype?`<span class="pill live">${esc(x.tactics.archetype)}</span> `:""}open ${fmtv(x.price)} → anchor ${fmtv(x.anchor_price)}${x.tactics?.gives?.length?` · offers ${esc(x.tactics.gives.map(g=>g[0]+" "+g[1]).join(", "))}`:""}</td><td class="c">${eur(x.c_open)} → ${eur(x.aspiration_c)}</td><td>${x.floor_price!=null?"floor "+fmtv(x.floor_price):""}${x.relationship_optimum!=null?" · rel. optimum "+fmtv(x.relationship_optimum):""}</td></tr>`).join("");
+      const cl=Object.entries(e.suppliers||{}).flatMap(([id,x])=>(x.claims||[]).map(c=>`<li>${esc(short(id))}: ${esc(c)}</li>`)).join("");
+      b=`<div class="msg" style="border-left-color:var(--accent)"><h4>price analysis <span class="sub">${e.took}s · ${esc(e.goal)} · ${e.rounds} rounds, first ${e.explore} explore</span></h4>
+      <div class="sub">reserve ${eur(e.reserve)} · best opening ${eur(e.best_open)} · alternative ${eur(e.c_alt)}${e.justified_pct!=null?` · cost drivers justify ${e.justified_pct>0?"+":""}${e.justified_pct}%`:""}${e.letter?.asked_pct!=null?` (asked +${e.letter.asked_pct}%)`:""}</div>
+      <table>${rows}</table>${cl?`<details class="line" ${op(k)} ontoggle="this.open?S.open.add('${k}'):S.open.delete('${k}')"><summary>citable arguments</summary><ul>${cl}</ul></details>`:""}</div>`}
+    else if(e.kind==="plan"){
+      if(e.move==="send")b=`<div class="line"><span class="pill ${e.phase==="explore"?"live":"warn"}">${esc(e.phase)}</span> → ${esc(short(e.supplier))} · round ${e.round+1} · target <b class="c">${eur(e.target)}</b> · ${e.sheets?.length||0} package${e.sheets?.length===1?"":"s"} · ${e.arguments?.length||0} argument${e.arguments?.length===1?"":"s"} · planned in ${e.took}s</div>`;
+      else if(e.move==="hold")b=`<div class="line"><span class="pill">hold</span> → ${esc(short(e.supplier))}: keeping its offer alive while the others move</div>`;
+      else b=`<div class="line"><span class="pill ${e.move==="accept"?"ok":"bad"}">${esc(e.move)}</span> ${esc(short(e.supplier))}${e.c!=null?" at "+eur(e.c):""} · ${esc(e.why||"")}</div>`}
+    else if(e.kind==="backoffice")b=`<details class="line" ${op(k)} ontoggle="this.open?S.open.add('${k}'):S.open.delete('${k}')"><summary>supplier back office (${(e.items||[]).length} internal messages)</summary><pre>${esc((e.items||[]).map(m=>`r${m.round} ${short(m.supplier_id)} ${m.from}→${m.to}: ${m.text}`).join("\n"))}</pre></details>`;
     else if(e.kind==="thinking")continue;
     else if(e.kind==="decided")b=`<div class="line">agent decided <b>${esc(e.decision)}</b>${e.supplier?" → "+esc(short(e.supplier)):""} in ${e.took}s ${e.took>45?'<span class="pill bad">near the 60 s limit</span>':e.took>30?'<span class="pill warn">slow</span>':""}</div>`;
     else if(e.kind==="llm"){let out=e.output||e.error||"";try{out=JSON.stringify(JSON.parse(out.match(/\{[\s\S]*\}/)[0]),null,1)}catch{}
