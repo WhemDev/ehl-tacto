@@ -250,7 +250,8 @@ def _move(move):
         [{"term_sheet_id": move.get("offer_id"), "terms": move["terms"]}] if move.get("terms") else []
     )
     for ts in sheets:
-        lines.append(f"- term sheet `{ts.get('term_sheet_id') or ''}`: {_terms(ts.get('terms', ts))}")
+        tid = f" `{ts['term_sheet_id']}`" if ts.get("term_sheet_id") else ""
+        lines.append(f"- term sheet{tid}: {_terms(ts.get('terms', ts))}")
     if move.get("action"):
         lines.append(f"- action: `{json.dumps(move['action'])}`")
     if move.get("claim_results"):
