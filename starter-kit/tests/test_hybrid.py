@@ -8,12 +8,12 @@ from arena_kit.agents import hybrid
 from arena_kit.play import RemoteTable, play
 
 
-def test_case_types_go_to_the_agent_that_won_them(monkeypatch):
+def test_the_engine_plays_every_type_unless_told_otherwise(monkeypatch):
     monkeypatch.delenv("HYBRID_ENGINE_TYPES", raising=False)
-    assert hybrid.plays_engine({"type": "rfq"}) and hybrid.plays_engine({"type": "price_increase"})
-    assert not hybrid.plays_engine({"type": "raw_material"}) and not hybrid.plays_engine({"type": "quality"})
-    monkeypatch.setenv("HYBRID_ENGINE_TYPES", "all")
-    assert hybrid.plays_engine({"type": "capacity"})
+    for t in ("rfq", "price_increase", "raw_material", "quality", "capacity"):
+        assert hybrid.plays_engine({"type": t})  # A9 won or tied every type on practice
+    monkeypatch.setenv("HYBRID_ENGINE_TYPES", "rfq, price_increase")
+    assert hybrid.plays_engine({"type": "rfq"}) and not hybrid.plays_engine({"type": "raw_material"})
     monkeypatch.setenv("HYBRID_ENGINE_TYPES", "none")
     assert not hybrid.plays_engine({"type": "rfq"})
 

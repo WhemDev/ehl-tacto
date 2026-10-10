@@ -27,14 +27,17 @@ kanban-plugin: basic
 
 ## Doing
 
-- [ ] Decide the final agent with Tugra: `--agent hybrid` or his `proto/final.py` - [[Report 2026-10-10 - hybrid head to head on D01 D02]]
-- [ ] First practice pass of the chosen final build, one case per type (~7 sessions, needs the team's quota OK)
+- [ ] Decide the final runner with Tugra: `arena run --set final --agent hybrid` (A9 everywhere, our runner: resume, dashboard, cap) or his `proto/final.py` - [[Report 2026-10-10 - hybrid head to head on D01 D02]]
+- [ ] First practice pass of the chosen final build, one case per type (~7 sessions; quota is now 550/day, 470 left)
 - [ ] Final runner: retry `429 at most 10 open sessions` until the cap (`play_waves` and `proto/final.py`)
-- [ ] **Blocker:** the engine's RFQ accept must not wait on a rival (bug #9: a €13.90 final offer lost on sandbox D02) - A6's fix into the final build
+- [ ] A9: when every supplier's final offer is dearer than our alternative, walk at once instead of waiting for the cap (sim D02; the worktree's R-engine has it)
+- [ ] Merge or drop the worktree's uncommitted R4 engine (`.claude/worktrees/tugra`, sandbox D02 ~0.79): its fact allocation and supplier's-levers package are not in A9
 
 
 ## Done
 
+- [x] Bug #9 fixed: attachments no longer delay a reply (17-21 s per quote PDF), a best final offer is accepted within 15 s of its arrival, A9's accept recovery ([[Progress/Bugs]], `tests/test_engine_clock.py`)
+- [x] A6-A9 merged into `arda`; the hybrid plays A9h (A9's rules, A6's RFQ play) for every case type (A9 practice mean 0.688: P08 0.586, P18 0.485, P01 0.956; board 72.7; A9's RFQ settings lose 0.13 on fresh sandbox D02)
 - [x] Does an LLM writer pay for Tugra's engine? Sonnet 5.5 vs template, 5 runs/case: no (80.0-82.8 vs 83.3); templates stay ([[0005 Writer model]])
 - [x] `--agent hybrid`: Tugra's engine (merged from `tugra`) for price/renewal/RFQ/bundle, orchestra for the rest - sandbox 85.9 vs orchestra 80.7 ([[Report 2026-10-10 - hybrid head to head on D01 D02]])
 - [x] Final timing: close by the slowest round, round budget, watchdog, orchestra = default agent (`358a010`)

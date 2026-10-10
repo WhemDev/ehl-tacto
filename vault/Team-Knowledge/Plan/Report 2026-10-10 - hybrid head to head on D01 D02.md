@@ -50,6 +50,32 @@ tags: [report, sandbox, hybrid]
   cap, and nobody may hold sessions on our key during the final. When this test started, all 10 slots were held by
   a teammate's sandbox runs from another machine.
 
+## Evening update (19:00): A9 merged, bug #9 fixed, A9h is the hybrid's engine
+
+- `origin/tugra` (A6, A8, A9) is merged into `arda` (`ddd9b13`). A9 played all 10 practice cases at 18:15: mean
+  0.688, board 72.7 (#3); it won or tied every type against the orchestra, so **the hybrid now plays the engine for
+  every case** (`HYBRID_ENGINE_TYPES=none` gives it back to the orchestra).
+- **Bug #9 had three causes**, all fixed on `arda` ([[Progress/Bugs]]): a reply's attachments were downloaded and
+  parsed before the engine saw the reply (17-21 s per quote PDF under load); a best final offer rested up to 90 s
+  while a rival was still open; the accept call itself took 12 s. Now: attachments in the background, the reply
+  acted on at HTTP return, a final offer accepted at once (at most 15 s grace for a rival's reply already in flight).
+  Verified on fresh sandbox replies: reply-to-engine gap 0.0 s, accept 0.0 s after a final/agreed offer, 0 failed
+  accepts (6 sessions).
+- **A9's RFQ settings lose on fresh replies.** Tugra's D02 search (1 package, −8 % first ask, 3 pushes of 3 %) was
+  run on cached sandbox replies ("0.765 ×4 identical"). With fresh replies, 3 runs each:
+
+| Engine, D02 fresh replies | Scores | Mean |
+|---|---|---|
+| A3 (5 runs) | 0.66-0.70 | 0.691 |
+| A9 (the search settings) | 0.51 / 0.60 / 0.58 | 0.563 |
+| **A9h = A9 with A6's RFQ play** | 0.68 / 0.68 / 0.72 | **0.694** |
+
+  D01 is unaffected (A9 0.98 / 0.98 / 0.93). **The hybrid's default is A9h** (`proto/variants.py`). Tell Tugra:
+  his A9/`final.py` would play the search settings in the final.
+- The worktree `.claude/worktrees/tugra` holds another session's uncommitted "R4" engine (A3 + re-implemented
+  fixes + RFQ fact allocation + a package on the supplier's own levers; sandbox D02 ~0.79 fresh, never on
+  practice). It conflicts with A9 in the same files. Its two RFQ ideas are not in A9h: worth porting if time allows.
+
 ## Next
 - Decide the final agent with Tugra: `--agent hybrid` (his engine for price increase, renewal, RFQ and bundle; ours
   for raw material, capacity and quality), or his `proto/final.py` everywhere.

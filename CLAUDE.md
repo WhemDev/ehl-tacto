@@ -31,7 +31,8 @@ uv run arena me                                   # key works? practice quota
 # free - use these for development
 uv run arena play case:D01 --agent orchestra -v         # hosted sandbox: real-style suppliers, no quota
 uv run arena run --set sandbox --agent orchestra        # both sandbox cases (D01 price increase, D02 RFQ)
-uv run arena run --set sandbox --agent hybrid           # Tugra's engine (proto/) for price/renewal/RFQ/bundle cases, orchestra for the rest
+uv run arena run --set sandbox --agent hybrid           # Tugra's engine (proto/, A9h = A9 with A6's RFQ play) for every case, orchestra as fallback
+ENGINE_VARIANT=A8 uv run arena run --set sandbox --agent hybrid   # another algorithm from proto/variants.py
 ENGINE_WRITER=llm uv run arena run --set sandbox --agent hybrid   # the engine's e-mails rewritten by LLM_MODEL (template on any rule break)
 ../scripts/sim.sh play case:P05 --agent orchestra -v    # local arena-sim, any case P01-P19/D01/D02, scripted supplier
 ../scripts/sim.sh run --set practice --parallel 10   # every case locally (plumbing, timing)
@@ -41,8 +42,8 @@ ENGINE_WRITER=llm uv run arena run --set sandbox --agent hybrid   # the engine's
 uv run arena play case:P01 --agent orchestra -v --practice
 uv run arena run --set practice --agent orchestra --parallel 8 --practice
 
-# the Live Final (start before 12:00, leave it running; orchestra is also the default agent)
-uv run arena run --set final --agent orchestra --parallel 10 -v > ../logs/final.log 2>&1
+# the Live Final (start before 12:00, leave it running): the hybrid = Tugra's A9 with the orchestra as fallback
+uv run arena run --set final --agent hybrid --parallel 10 -v > ../logs/final.log 2>&1
 
 uv run arena dashboard                            # live view of every play/run: http://127.0.0.1:8765 (logs/events.jsonl)
 uv run arena vault suppliers|cases|runs           # regenerate vault notes

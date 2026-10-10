@@ -74,6 +74,13 @@ VARIANTS = {
                    price_freeze=True, rfq_anchor=-0.08, rfq_holds=2, rfq_pushes=3, rfq_push_pct=0.03, rfq_meso_n=1,
                    rfq_facts=1, breakdown_arg=True, meet_cheapest=True, lead_cap=True, evidence_plus=True,
                    answer_plus=True)),
+    # The D02 search settings (1 package, -8 %, 3 pushes of 3 %, 2 holds, 1 fact) were found on cached sandbox replies.
+    # On fresh replies (a tag in the subject) they lose: D02 0.563 (0.51/0.60/0.58) vs 0.694 (0.68/0.68/0.72) with
+    # A6's RFQ play, A3 0.691 (arda, 2026-10-10 19:00, `arena run --set sandbox --agent hybrid`). The hybrid plays this.
+    "A9h": ("A9 with A6's RFQ play (no RFQ-only overrides, no breakdown argument)",
+            replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                    bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                    price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True)),
     "A9nolead": ("A9 without the lead-time cap (to price it on D02)",
            replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                    bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,

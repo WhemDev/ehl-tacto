@@ -27,6 +27,7 @@ from arena_kit.play import ENDED
 from proto.target import lever_grid, price_for_c, target
 
 LOG_DIR = Path("proto/runs")
+FINAL_GRACE_S = 15  # how long a best final offer may wait for a rival's reply that is already in flight
 
 
 @dataclass(frozen=True)
@@ -712,7 +713,9 @@ class Negotiator:
 
         cfg, limit = self.cfg, self.case.get("round_limit", 10)
         lock, state = threading.RLock(), {"done": None, "prev_c": None, "holds": 0, "estimated": False}
-        IDLE = 90  # seconds a resting (final-offer) thread may wait before we must act on it
+        # a resting final offer is ours to lose: its 60-second clock runs from its reply, and under load a reply
+        # reaches us 20-50 s after that. It waits only while a rival's reply is in flight, FINAL_GRACE_S at most
+        # (sandbox D02 095febf129ec15fd: a €13.90 final offer lost while we rested 37 s for the rival; bug #9)
 
         def finish(kind, t=None, sh=None):
             if state["done"] is None:
@@ -783,7 +786,8 @@ class Negotiator:
                         self.note("accept", why="goal" if c <= next_goal else "agreed", c=c, goal=next_goal)
                         return ("close", (bt, sh))
                 idle = time.time() - bt.replied_at
-                if bt.status == "final_offer" and (not open_rivals or idle > IDLE):
+                rival_pending = any(x.in_flight for x in open_rivals)
+                if bt.status == "final_offer" and (not open_rivals or not rival_pending or idle > FINAL_GRACE_S):
                     allowed = cfg.push == "all" or (cfg.push == "rfq" and len(live) > 1)
                     if allowed and bt.pushes < cfg.pushes and bt.sent() < limit - 1:
                         return ("push", (bt, sh))

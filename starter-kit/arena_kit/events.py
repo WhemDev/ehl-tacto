@@ -59,6 +59,10 @@ class RecordingTable:
 
     def __init__(self, table):
         self._t, self.case, self.history = table, None, {}
+        # replies: download their attachments before handing the reply over (play() reads the text). An agent that
+        # fetches in the background sets this False: a quote PDF took 17-21 s on the hosted arena under load, all
+        # of it off the supplier's 60-second clock before the agent even saw the offer (bug #9). Openings stay eager.
+        self.eager_documents = True
 
     def __getattr__(self, name):  # session_id, done, attachment, ... come from the real table
         return getattr(self._t, name)
@@ -69,7 +73,8 @@ class RecordingTable:
     def _supplier(self, sid, m, took=None):
         from .play import fetch_documents  # play imports this module
 
-        fetch_documents(self._t, m)  # the quote PDF gives the standard terms; play() reuses the text
+        if self.eager_documents or took is None:  # the opening quote PDF gives the standard terms
+            fetch_documents(self._t, m)
         self.history.setdefault(sid, []).append(m)
         sheets = m.get("term_sheets") or []
         terms = sheets[0]["terms"] if sheets else {}
