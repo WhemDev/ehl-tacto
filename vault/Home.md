@@ -19,6 +19,12 @@
 - `Progress/Standups/` – daily updates
 - `Progress/People/` – one note per teammate
 
+## 🧠 [[Team-Knowledge/Home|Team-Knowledge]] – what our agents learned
+- [[Team-Knowledge/Plan/Board|Board]] and [[Team-Knowledge/Plan/Timeline|Timeline]] – plan and status
+- [[Team-Knowledge/Playbook/README|Playbook]] – negotiation learnings (practice runs, cost levers, rules of engagement)
+- `Team-Knowledge/Suppliers/` – one note per supplier; `Cases/` and `Runs/` – generated from the arena (`uv run arena vault ...`)
+- `Team-Knowledge/Decisions/` – numbered decisions; `Plan/` – reviews and A/B reports
+
 ## Rules of thumb
 - Edit your own rows/notes freely; keep edits to shared tables small.
 - Obsidian Git auto-pulls and pushes, so if you see a conflict, ask in chat before resolving.

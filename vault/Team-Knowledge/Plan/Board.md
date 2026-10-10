@@ -26,6 +26,7 @@ kanban-plugin: basic
 
 - [x] Kit cloned, repo + vault set up
 - [x] Research: negotiation techniques and sources → [[Research - negotiation techniques]] (experiments list inside)
+- [x] Review of the practice standings and the zeros → [[Review 2026-10-10 - where the points are]]
 
 
 
