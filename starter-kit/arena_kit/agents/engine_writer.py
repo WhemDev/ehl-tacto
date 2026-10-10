@@ -49,6 +49,16 @@ def mode():
     return m if m in ("llm", "vary") else None
 
 
+def style():
+    """ENGINE_STYLE: an extra instruction on tone and wording (the knob a style search turns); empty = none."""
+    return os.environ.get("ENGINE_STYLE", "").strip()
+
+
+def system():
+    s = style()
+    return SYSTEM + (f"\n\nSTYLE (how to write, within the rules above): {s}" if s else "")
+
+
 def _numbers(text):
     out = set()
     for n in NUM_RE.findall(text):
@@ -100,7 +110,7 @@ def prepare(complete, msg, case, their_last):
 
     def call():
         event_log.ctx.case, event_log.ctx.session = ctx  # the model's call is logged with this case
-        return complete(SYSTEM, prompt(case, draft, their_last))
+        return complete(system(), prompt(case, draft, their_last))
 
     one = ThreadPoolExecutor(max_workers=1, thread_name_prefix="engine-writer")
     try:

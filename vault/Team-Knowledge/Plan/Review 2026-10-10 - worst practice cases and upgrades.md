@@ -119,3 +119,22 @@ Other teams prove P18, P05 and P08 can be pushed much further. P18 and P08 alone
 
 **Validation:** unit tests and arena-sim for plumbing (free). The suppliers' reactions can only be checked on
 practice: P18, P08, P10, P05 (4 sessions), then the per-type pass of the final build (~7).
+
+## Evening findings (19:00-19:40, practice, fresh replies)
+
+- **Upgrades 1-6 are in A9 (Tugra) and played:** P08 0.586-0.607, P18 0.485-0.532, P05 0.665-0.688 (team bests).
+  The raw-material suppliers answered the falling-index facts with *"not our reality: our AS-14404 is covered at
+  fixed prices until March 2027"* (verified, not decisive) and the cheaper-elsewhere orders with *"does not change
+  our calculation"*. They stop at €5.42 (P08) and €5.40-5.50 (P18) in every run; the records (0.73, 0.68) sit at
+  about €5.35 and €5.20.
+- **We accepted too early.** In P02 and P08 the engine took the deal at round 3-4 of 10 while the supplier was still
+  open and giving 0.3-0.5 % a round (its goal curve reaches the standing offer at round 4). **3 holds while the
+  supplier gives ≥ 0.3 %: P02 0.425 → 0.677, P08 0.592 → 0.607.** A slower curve (T = 6) lost instead (0.373,
+  0.560): the suppliers go final while our asks are still far away. Default since 19:40 (`A9h`).
+- **P02: the copper clause is the key, and the supplier's health charge sets the price.** Tacto's own agent in the
+  kit (Opus 5.5, high effort) got Nordmark to **agree at once to €350 with a clause** - and scored 0.23: the arena
+  charged ~€100k of "supplier health", so Nordmark's sustainable price is about **€363-365** (the engine estimates
+  €367 from the capped should-cost). Against no-clause packages it holds €372-374. A clause package at the widest
+  deadband at €364-366 would score 0.87-0.92 (`total_cost`); with 3 holds the engine got the clause package agreed
+  at €360.42 (0.677). A6's tight equal-cost filter (E26) is what had removed the clause package from our offers.
+- **The house agent is not the kit's `llm` agent:** P08 0.204, P02 0.229, P07 0.617 (vs 0.75 / 0.74 / 0.78).

@@ -87,6 +87,13 @@ def test_a_failed_or_slow_model_keeps_the_template(monkeypatch):
         assert time.monotonic() - t0 < 0.9
 
 
+def test_a_style_instruction_is_added_to_the_system_prompt(monkeypatch):
+    monkeypatch.delenv("ENGINE_STYLE", raising=False)
+    assert engine_writer.system() == engine_writer.SYSTEM
+    monkeypatch.setenv("ENGINE_STYLE", "Brief and factual.")
+    assert engine_writer.system().startswith(engine_writer.SYSTEM) and "Brief and factual." in engine_writer.system()
+
+
 def test_vary_tags_the_subject_only_and_off_changes_nothing(monkeypatch):
     monkeypatch.setenv("ENGINE_WRITER", "vary")
     out = engine_writer.prepare(None, MSG, CASE, "")
