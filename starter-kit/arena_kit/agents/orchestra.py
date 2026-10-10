@@ -236,8 +236,9 @@ class Orchestra:
         return self.a["suppliers"].get(sid, {})
 
     def _c(self, sid, terms):
+        """The arena's C of these terms with this supplier's standard terms (one measure everywhere)."""
         s = self._sup(sid)
-        return cost(self.case, terms, s.get("standard") or standard_terms(self.threads[sid]), s.get("estimate"))
+        return cost(self.case, terms, s.get("standard") or standard_terms(self.threads[sid]))
 
     def _offer_seen(self, sid):
         m = latest(self.threads[sid])
@@ -320,27 +321,28 @@ class Orchestra:
         if not live:
             return self._closing("every thread has ended")
         target = self._target(sid, r)
-        # accept (AC_next): the cheapest offer is already where our curve for that supplier would be
-        # next - and never a first offer: we have written to that supplier at least once
         if best:
-            r_best = sum(m.get("from") == "buyer" for m in self.threads[best[1]])
-            curve = self._curve(best[1], r_best)
-            if r_best >= 1 and curve is not None and best[0] <= curve:
-                return {
-                    "kind": "accept",
-                    "supplier": best[1],
-                    "sheet": best[2],
-                    "c": best[0],
-                    "why": "offer meets our concession curve",
-                }
-        if status == "agreed" and best and best[1] == sid and best[0] <= self._limit():
-            return {
-                "kind": "accept",
-                "supplier": sid,
-                "sheet": best[2],
-                "c": best[0],
-                "why": "supplier agreed to our terms",
-            }
+            bsid = best[1]
+            r_best = sum(m.get("from") == "buyer" for m in self.threads[bsid])
+            curve = self._curve(bsid, r_best)
+            agreed = latest(self.threads[bsid]).get("status") == "agreed" and best[0] <= self._limit()
+            # AC_next: the cheapest offer is where our curve for that supplier would be next - never a first offer
+            good = r_best >= 1 and curve is not None and best[0] <= curve
+            # an RFQ stays open while another supplier can still move: the best offer is held as the bar
+            # (practice P05: we took an instant agreement while a cheaper rival was still talking)
+            rivals_open = [
+                o
+                for o in live
+                if o != bsid
+                and latest(self.threads[o]).get("status") not in ("final_offer", "agreed")
+                and moves_left(self.case, self.threads[o]) > 0
+            ]
+            keep_going = bool(rivals_open) and moves_left(self.case, self.threads[bsid]) > 2
+            if (good or agreed) and not keep_going:
+                why = "supplier agreed to our terms" if agreed else "offer meets our concession curve"
+                return {"kind": "accept", "supplier": bsid, "sheet": best[2], "c": best[0], "why": why}
+            if (good or agreed) and keep_going and bsid == sid:
+                return {"kind": "hold"}
         others_open = [
             o
             for o in live
@@ -360,8 +362,29 @@ class Orchestra:
         _, theirs = standing(evs)
         tac = self.tactics.get(sid) or {}
         protect = list(dict.fromkeys([*(model.protected() if phase == "exploit" else []), *tac.get("protect", [])]))
-        gives = strategy.give_values(self.case, tac.get("gives", []), {**sup.get("standard", {}), **theirs})
+        # what it asks for comes first: a field it moved to since its opening (practice P18: it added an
+        # index clause and we never offered one back) - offered at equal C, so the price drops for it
+        asked = {
+            f: theirs[f]
+            for f in model.moved()
+            if f in theirs and f in self.case["negotiable"] and theirs[f] != sup.get("ideal_levers", {}).get(f)
+        }
+        profile_gives = strategy.give_values(self.case, tac.get("gives", []), {**sup.get("standard", {}), **theirs})
+        gives = {**asked, **{f: v for f, v in profile_gives.items() if f not in asked}}
         sheets = meso(self.case, sup, target, theirs, protect=protect, probe=r, gives=gives)
+        # never offer what costs us more than its own standing offer (practice P02 offered 371.83 against
+        # its 370.96 - and it agreed); if nothing is left, its offer already beats what we would ask
+        own = self.models[sid].offers[-1]["c"] if self.models[sid].offers else None
+        if own is not None and math.isfinite(own):
+            sheets = [t for t in sheets if self._c(sid, t) < own - max(1.0, own * 0.0005)]
+            if not sheets and best and best[1] == sid and best[0] <= self._limit():
+                return {
+                    "kind": "accept",
+                    "supplier": sid,
+                    "sheet": best[2],
+                    "c": best[0],
+                    "why": "its offer beats what we would ask",
+                }
         if not sheets:
             return self._closing("no valid term sheet")
         args = self._arguments(sid, r, phase)
@@ -377,19 +400,13 @@ class Orchestra:
         }
 
     def _arguments(self, sid, r, phase):
-        """Up to three claims, strongest first, each ID cited once per supplier; in an RFQ's second
-        half, the best rival's standing offer."""
+        """Up to three claims, strongest first, each ID cited once per supplier; in an RFQ from the
+        second message on, the best rival's standing offer if it beats this supplier's."""
         used = self.used.setdefault(sid, set())
         out = []
         rival = self._best(exclude=sid)
-        own_price = (standing(self.threads[sid])[1] or {}).get("unit_price")
-        if (
-            phase == "exploit"
-            and rival
-            and own_price
-            and rival[3].get("unit_price", math.inf) < own_price
-            and rival[2] not in used
-        ):
+        own_c = self.models[sid].offers[-1]["c"] if self.models[sid].offers else None
+        if r >= 1 and rival and own_c is not None and rival[0] < own_c and rival[2] not in used:
             out.append(
                 {
                     "sentence": f"We hold another offer at EUR {rival[3]['unit_price']:.2f} per unit ({rival[2]}).",

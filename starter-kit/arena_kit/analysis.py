@@ -311,6 +311,11 @@ def analyse(case, opening, package=None, tactics=None):
     moves = index_moves(case, package)
     justified = round(sum(m["weight"] * m["change_pct"] for m in moves), 2) if moves else None
     sups = {}
+    # an RFQ's cheapest quote is market evidence for every supplier (practice P05: 70210 agreed at once to
+    # 8 % below its own 36.00 while a rival had opened at 31.50 - our anchor ignored it)
+    prices = [(o.get("terms") or {}).get("unit_price") for o in opening.values()]
+    prices = [x for x in prices if x]
+    market = min(prices) if len(prices) > 1 else None
     for sid, o in opening.items():
         std, terms = o.get("standard") or {}, o.get("terms") or {}
         tac = (tactics or {}).get(sid) or {}
@@ -323,6 +328,8 @@ def analyse(case, opening, package=None, tactics=None):
         if margin is None:
             margin = (b.get("sustainable_margin_pct") or 3) / 100
         floor = round(unit_cost * (1 + margin), 2) if unit_cost else None
+        if floor and not next(iter(sc.values())).get("own_plant"):
+            floor = round(floor * 0.85, 2)  # a generic (German-base, 5-15 % error) estimate is a weak floor
         # strategic and bottleneck goals charge for squeezing the supplier: with a should-cost we can
         # price that, and the best package for us is where the charge outweighs any further saving
         # its standard terms as the margin estimate needs them: a quote PDF may list only some (e.g. ppm),
@@ -332,9 +339,14 @@ def analyse(case, opening, package=None, tactics=None):
             for k, v in closing_terms(case, {k: v for k, v in terms.items() if k != "unit_price"}, std).items()
             if k != "unit_price"
         }
+        # its full cost: the should-cost, but no more than its opening price leaves a sustainable margin
+        # on (practice P02: should-cost 374.95 above an opening of 370.96 made even its own price look
+        # like a squeeze; the arena charged nothing there)
+        sustainable = (b.get("sustainable_margin_pct") or 3) / 100
+        full_cost = min(unit_cost, price * (1 - sustainable)) if unit_cost and price else unit_cost
         est = (
             {
-                "full_cost": unit_cost,
+                "full_cost": full_cost,
                 "interest_rate": tac.get("interest_rate") or b["interest_rate"],
                 "standard": full_std,
             }
@@ -343,7 +355,7 @@ def analyse(case, opening, package=None, tactics=None):
         )
         p_opt, ideal = None, ideal_levers(case, std, price) if price else {}
         if est and price:
-            fit = best_fit(case, std, est, unit_cost * 0.85, max(price, unit_cost * 1.2))
+            fit = best_fit(case, std, est, full_cost * 0.85, max(price, full_cost * 1.2))
             if fit[0] is None:  # nothing priced: no relationship estimate, the plain levers
                 est = None
             else:
@@ -352,6 +364,8 @@ def analyse(case, opening, package=None, tactics=None):
         anchor = price * (1 - tac.get("anchor", goal["anchor"])) if price else None
         if anchor and case.get("type") == "price_increase" and b.get("current_unit_price"):
             anchor = min(anchor, b["current_unit_price"] * (1 + max(justified or 0.0, 0.0) / 100))
+        if anchor and market and market < price:
+            anchor = min(anchor, market * (1 - tac.get("anchor", goal["anchor"]) / 2))
         if anchor and p_opt:  # never below the relationship optimum (it would cost us more), and not
             # further than twice the supplier type's discount (a bottleneck that barely moves)
             anchor = max(p_opt, min(anchor, price * (1 - 2 * tac.get("anchor", goal["anchor"]))))
@@ -359,11 +373,16 @@ def analyse(case, opening, package=None, tactics=None):
             anchor = max(anchor, floor * (0.97 if b.get("category_goal") == "leverage" else 1.0))
         if anchor:  # always below its own offer: a supplier already under our floor estimate proves it wrong
             anchor = min(anchor, price * (1 - tac.get("anchor", goal["anchor"]) / 2))
-        min_price = None if est else (round(min(floor * 0.97, anchor), 2) if floor and anchor else None)
+        # one measure everywhere: the arena's C. The relationship estimate only sets a floor - never ask
+        # below the price where squeezing it would cost us more than the price saves.
+        if est and p_opt:
+            min_price = round(min(p_opt, anchor), 2) if anchor else p_opt
+        else:
+            min_price = round(min(floor * 0.97, anchor), 2) if floor and anchor else None
         if anchor and not est:
             ideal = ideal_levers(case, std, anchor)
         aspiration = (
-            cost(case, complete_offer(case, {**ideal, "unit_price": round(anchor, 2)}), std, est) if anchor else None
+            cost(case, complete_offer(case, {**ideal, "unit_price": round(anchor, 2)}), std) if anchor else None
         )
         base = complete_offer(case, {**terms, "unit_price": price}) if price else None
         sups[sid] = {
@@ -437,7 +456,7 @@ def meso(case, sup, target_c, theirs, protect=(), probe=0, gives=None):
     levers, ours except the fields the supplier protects, and the supplier's own levers.
     `sup` is the supplier's entry of `analyse()`; `theirs` its standing terms. `gives` {field: value}:
     trades its profile says it values; then the 2nd sheet offers the first, the 3rd all of them."""
-    fields, std, est = lever_fields(case), sup["standard"], sup.get("estimate")
+    fields, std, est = lever_fields(case), sup["standard"], None  # plain C; sup["min_price"] is the floor
     ours = sup["ideal_levers"]
     theirs = {**std, **(theirs or {})}
     lo = (est or {}).get("full_cost", 0) * 0.85
