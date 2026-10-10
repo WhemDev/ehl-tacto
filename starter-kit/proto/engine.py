@@ -133,6 +133,11 @@ class Config:
     # ... priced with this cost of money for a good-credit supplier (the arena-implied 6.1-6.6 %, not our 5 %): at 5 %
     # the cheapest price for us came out at EUR 358.92 and the supplier-health charge jumped to EUR 52.5k (0.701)
     clause_pay_rate: float | None = None
+    # A supplier's priced payment alternatives (differing from its standing offer only in payment days) reveal what
+    # money is worth to it: P02 0.066 (= the rate behind the arena's supplier-health charges), P07 0.072-0.087, P08
+    # 0.065, P01 0.139 - we assumed 0.05 / 0.10 from credit bands. Used only to rank our equal-cost packages by their
+    # value to the supplier (with its opening payment term as its standard), never in our own cost or the target.
+    pay_rate_learn: bool = False
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -491,7 +496,7 @@ class Negotiator:
                 continue
             near = sum(terms.get(k) != offered.get(k) for k in terms if k != "unit_price" and k in offered)
             terms["_capped"] = capped
-            sv = supplier_value(self.case, {k: v for k, v in terms.items() if k != "_capped"}, t.est)
+            sv = supplier_value(self.case, {k: v for k, v in terms.items() if k != "_capped"}, self.rank_est(t))
             if self.cfg.penalty_aversion:  # suppliers price penalty clauses far above their expected cost (P11)
                 sv -= self.cfg.penalty_aversion * (terms.get("chargeback_eur_per_complaint") or 0) * (terms.get("ppm_commitment") or 0) / 1e6
             priced.append((sv, near, terms, c))
@@ -640,6 +645,34 @@ class Negotiator:
     def facts_for(self, t):
         """[(ref or [refs], sentence)] to drip into the e-mails; subclasses build them from data."""
         return FACTS.get(self.case_id, {}).get(t.sid, [])
+
+    def learn_rate(self, t):
+        """Its own priced payment alternatives: the price step per year of payment term is its cash rate."""
+        if not self.cfg.pay_rate_learn or len(t.sheets) < 2:
+            return
+        base = t.sheets[0].get("terms") or {}
+        for alt in t.sheets[1:]:
+            a = alt.get("terms") or {}
+            diff = [k for k in set(base) | set(a) if k != "unit_price" and base.get(k) != a.get(k)]
+            if diff != ["payment_days"] or not base.get("unit_price") or not a.get("unit_price"):
+                continue
+            dd = (a["payment_days"] - base["payment_days"]) / 360
+            r = (a["unit_price"] - base["unit_price"]) / ((a["unit_price"] + base["unit_price"]) / 2) / dd
+            if 0.02 <= r <= 0.30:
+                t.learned_rate = round(r, 4)
+                self.note("cash_rate", supplier=t.sid, rate=t.learned_rate, days=(base["payment_days"], a["payment_days"]))
+
+    def rank_est(self, t):
+        """The supplier estimate that ranks equal-cost packages by their value to it (Config.pay_rate_learn)."""
+        if not self.cfg.pay_rate_learn or not t.est:
+            return t.est
+        est = dict(t.est)
+        if getattr(t, "learned_rate", None):
+            est["interest_rate"] = t.learned_rate
+        first = ((t.events[0].get("term_sheets") or [{}])[0].get("terms") or {}) if t.events else {}
+        if first.get("payment_days") is not None:
+            est["standard"] = {**est.get("standard", {}), "payment_days": first["payment_days"]}
+        return est
 
     def moving(self, t):
         """Its own last two offers differ by more than a stall (or it has answered fewer than twice)."""
@@ -817,6 +850,7 @@ class Negotiator:
         t.replied_at = time.time()
         self.slowest = max(self.slowest, t.replied_at - t0)
         t.events += [{**msg, "from": "buyer"}, r]
+        self.learn_rate(t)
         new = (r.get("term_sheets") or [{}])[0].get("terms", {})
         t.moves.append({k: (prev.get(k), new.get(k)) for k in new if prev.get(k) != new.get(k)})
         self.note("reply", supplier=t.sid, status=r.get("status"), claims=r.get("claim_results"),

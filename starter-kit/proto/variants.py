@@ -146,6 +146,13 @@ VARIANTS = {
                                price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                                holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
                                clause_pay_best=True, clause_pay_rate=0.064)),
+    # 01:05, the supplier's cash rate learned from its own priced payment alternatives, for ranking packages only
+    "A9h-payrate": ("A9h + cash rate learned from the supplier's payment-only alternatives (package ranking only)",
+                    replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                            bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                            price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                            holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
+                            clause_pay_best=True, clause_pay_rate=0.064, pay_rate_learn=True)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
