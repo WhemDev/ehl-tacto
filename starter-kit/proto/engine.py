@@ -80,6 +80,7 @@ class Config:
     rfq_pushes: int | None = None
     rfq_push_pct: float | None = None
     rfq_meso_n: int | None = None
+    rfq_facts: int | None = None
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -202,7 +203,11 @@ class Negotiator:
         for m in events:
             for a in m.get("attachments") or []:
                 if a.get("attachment_id") and "text" not in a:
-                    a["text"] = read_document(a["name"], self.c.attachment(self.sid, a["attachment_id"]))
+                    try:
+                        a["text"] = read_document(a["name"], self.c.attachment(self.sid, a["attachment_id"]))
+                    except ArenaError as e:  # e.g. 404 after the session ended (a late reply in an RFQ thread)
+                        a["text"] = ""
+                        self.note("attachment_missing", attachment=a.get("attachment_id"), status=e.status)
 
     def C(self, t, terms):
         return total_cost(self.case, terms, t.std, t.est if self.relationship and t.est else None)
@@ -899,7 +904,12 @@ def play(case_id, cfg=Config(), client=None, log_dir=LOG_DIR, quiet=False, deadl
     except Exception as e:  # never leave a session open: it blocks one of our 10 slots
         n.note("crash", error=repr(e)[:500])
         try:
-            res = n.walk()
+            st = client.session(n.sid)
+            if st.get("status") == "ended" and st.get("result"):  # the deal may already be done: report the arena's result
+                res = st["result"]
+                n.note("result_after_crash", score=res.get("score"), deal=res.get("deal"))
+            else:
+                res = n.walk()
         except Exception:
             res = {"score": 0.0, "error": repr(e)[:200]}
     finally:

@@ -17,7 +17,8 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 | A2 (+ fixes from practice) | 0.979 | 0.626 | safe push, bottleneck anchor, say-fixed, meet supplier terms, RFQ in-flight guard |
 | A3 (+ staggered RFQ opening) | 0.979 | 0.728 (0.740, 0.740, 0.703) | the D02 friend replay scored 0.661 (with hand-written sandbox facts) |
 | A5 (+ practice fixes 2, generic code path only) | 0.982 | 0.706 (5 runs) | practice: 0.614 over 10 cases, P03 0.923 / P01 0.881 records |
-| **A6 (+ fixes for every A5 practice problem)** | **0.982** | **0.696** (0.703, 0.703, 0.682) | **main algorithm**; generic code path (what the final runs) |
+| A6 (+ fixes for every A5 practice problem) | 0.982 | 0.696 (0.703, 0.703, 0.682) | generic code path (what the final runs) |
+| **A8 (+ D02 search: RFQ-only 1 package, 1 fact, anchor −8 %, 3 pushes of 3 %, breakdown argument)** | **0.982** | **0.765** (4/4 identical) | **main algorithm**; generic code path |
 
 ## Run
 
@@ -26,10 +27,10 @@ directory, so copy or symlink it if needed):
 
 ```bash
 # sandbox (free): A3 once on D01, three times on D02 (D02 is noisy)
-PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A6
+PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A8
 
 # hosted practice (COSTS QUOTA - ask the team first): facts and floors from the data package
-PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A6
+PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A8
 
 # one case, any Config as JSON
 ENGINE_CFG='{"e": 2, "T": 4, "rfq_stagger": true}' PYTHONPATH=. uv run python proto/engine.py case:D02
@@ -66,8 +67,8 @@ PYTHONPATH=. uv run python proto/cleanup.py proto/runs/variants
 | `engine.py` | `Config` (every tactic is a field), `Negotiator` (`goal`, `meso`, `write`, `run`, `run_rfq`, guards), `play()` |
 | `target.py` | target C and price-for-C solver |
 | `practice.py` | practice/final adapter: facts and floors from the data package |
-| `variants.py` | named algorithms (A … **A6**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
-| `search.py`, `report.py` | evolutionary tactic search on the sandbox and its report |
+| `variants.py` | named algorithms (A … **A8**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
+| `search.py`, `report.py` | evolutionary tactic search on the sandbox and its report (`--base A6 --cases case:D02 --space rfq` searches RFQ-only settings) |
 | `smoke.py` | offline smoke test on all practice case files (no quota) |
 | `inspect_run.py` | every message, decision and claim of a variant's practice sessions |
 | `practice_report.py`, `summarize.py`, `cleanup.py`, `chat.py` | practice report, run summaries, safe cleanup, manual play |
