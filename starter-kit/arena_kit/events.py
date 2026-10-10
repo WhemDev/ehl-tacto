@@ -254,6 +254,18 @@ def install():
         )
 
 
+def sessions_of_this_run():
+    """The session IDs this process has played (from its own lines in the event log)."""
+    found = set()
+    try:
+        for line in Path(PATH).read_text(encoding="utf-8").splitlines():
+            if f'"run": "{RUN}"' in line and '"kind": "case"' in line:
+                found.add(json.loads(line).get("session"))
+    except (OSError, ValueError):
+        pass
+    return found
+
+
 def wrap(table, agent):
     if not ENABLED or isinstance(table, RecordingTable):
         return table, agent

@@ -266,3 +266,89 @@ def test_profiles_never_soften_the_goals_anchor():
     from arena_kit.analysis import GOALS
 
     assert strategy.tactics(c, timid)["anchor"] >= GOALS[c["buyer"]["category_goal"]]["anchor"]
+
+
+# --- the teammate's engine, ported (target from the floor, alternatives, no lonely pushes) ------------------
+
+
+def test_floor_from_the_suppliers_own_letter():
+    from arena_kit.analysis import floor_estimate
+
+    c = case("D01")  # today 48.60, sustainable margin 4 %, the letter: wages +3.1 % at 28 % of its cost
+    body = "In light of current market conditions, WAGES-METAL rose 3.1 % in twelve months and is 28 % of our cost."
+    assert floor_estimate(c, 52.9, 52.9, None, body) == 47.14
+    assert floor_estimate(case("D02"), 17.1, 16.0, None, "") == 13.6  # nothing known: 85 % of the lowest quote
+
+
+def test_engine_targets_sit_below_the_floor(monkeypatch):
+    monkeypatch.setenv("ORCH_CURVE", "engine")
+    c = case("D02")
+    opening = {
+        "sup:DEMO-J1": {"terms": {"unit_price": 17.1, "payment_days": 30, "lead_time_days": 28}, "standard": {}},
+        "sup:DEMO-C1": {"terms": {"unit_price": 16.0, "payment_days": 45, "incoterm": "EXW"}, "standard": {}},
+    }
+    a = analyse(c, opening, None)
+    assert all(s["anchor_price"] == 13.19 for s in a["suppliers"].values())  # 3 % below 85 % of 16.00
+
+
+def offers(*sheets, status="open"):
+    return {
+        "from": "sales@x",
+        "status": status,
+        "body": "",
+        "term_sheets": [{"term_sheet_id": i, "terms": t} for i, t in sheets],
+    }
+
+
+def engine_orchestra(c, threads):
+    o = orchestra.Orchestra()
+    o.case, o.threads, o.closed, o.inflight, o.deadline = c, threads, False, set(), None
+    o.limit_rounds, o.explore, o.slowest, o.round_times = 8, 4, 0.0, []
+    o.last_target, o.holds, o.pushes, o.used, o.tactics = {}, {}, {}, {}, {}
+    o.models = {sid: orchestra.SupplierModel(sid) for sid in threads}
+    opening = {sid: {"terms": ev[0]["term_sheets"][0]["terms"], "standard": {}} for sid, ev in threads.items()}
+    o.a = analyse(c, opening, None)
+    for sid in threads:
+        o._offer_seen(sid)
+    return o
+
+
+def test_a_better_alternative_is_sent_back_to_be_agreed():
+    c = case("D01")
+    std = {"payment_days": 30, "contract_months": 24, "effective_date": "2026-12-01"}
+    t = engine_orchestra(c, {"sup:DEMO-F1": [offers(("offer:F1-0", {**std, "unit_price": 52.9}))]})
+    t.threads["sup:DEMO-F1"].append({"from": "buyer"})
+    t.threads["sup:DEMO-F1"].append(
+        offers(
+            ("offer:F1-1", {**std, "unit_price": 51.0}),
+            ("offer:F1-1-a", {**std, "unit_price": 49.6}),
+            status="final_offer",
+        )
+    )
+    t._offer_seen("sup:DEMO-F1")
+    move = t.next_move("sup:DEMO-F1")
+    assert (
+        move["kind"] == "send"
+        and move["sheets"][0]["unit_price"] == 49.6
+        and "exactly as offered" in move["fixed_text"]
+    )
+
+
+def test_no_push_after_a_final_offer_without_a_fallback():
+    c = case("D01")
+    std = {"payment_days": 30, "contract_months": 24, "effective_date": "2026-12-01"}
+    t = engine_orchestra(c, {"sup:DEMO-F1": [offers(("offer:F1-0", {**std, "unit_price": 52.9}))]})
+    t.threads["sup:DEMO-F1"] += [
+        {"from": "buyer"},
+        offers(("offer:F1-1", {**std, "unit_price": 50.0}), status="final_offer"),
+    ]
+    t._offer_seen("sup:DEMO-F1")
+    assert t.next_move("sup:DEMO-F1")["kind"] == "accept"  # practice P10: a push made a lone supplier walk
+
+
+def test_asks_never_retreat():
+    c = case("D01")
+    std = {"payment_days": 30, "contract_months": 24, "effective_date": "2026-12-01"}
+    t = engine_orchestra(c, {"sup:DEMO-F1": [offers(("offer:F1-0", {**std, "unit_price": 52.9}))]})
+    t.last_target["sup:DEMO-F1"] = 420000.0  # we already asked this much
+    assert t._target("sup:DEMO-F1", 1) >= 420000.0

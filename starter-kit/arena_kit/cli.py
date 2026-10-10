@@ -112,7 +112,9 @@ def log_runs(client, set_, agent, session_id=None):
             path = vault.log_session(state, os.environ.get("ARENA_URL", ""), agent, commit())
             new = [path] if path else []
         else:
-            new = vault.sync_runs(client, set_, agent, commit())
+            from . import events
+
+            new = vault.sync_runs(client, set_, agent, commit(), mine=events.sessions_of_this_run())
         for path in new:
             print(f"vault: {path.relative_to(vault.VAULT.parent)}")
     except Exception as e:  # the notes must never cost a run

@@ -1,0 +1,165 @@
+---
+case: "case:D02"
+session: "fddfb6b07677effc"
+set: "sandbox"
+score: 0.229
+deal: true
+supplier: "sup:DEMO-C1"
+end_reason: "accepted"
+rounds: 5
+c_open: 214296.0
+c_deal: 201088.0
+c_best: 156738.78
+agent: "another teammate"
+tags: ["run"]
+---
+# D02 · score 0.229
+
+[Replay](https://arena.tacto.ai/replay/fddfb6b07677effc) · deal with sup:DEMO-C1 · accepted
+
+## Result
+- terms: payment_days 45, lead_time_days 35, volume_per_year 6000, contract_months 24, effective_date null, index_clause null, incoterm "EXW", tooling_eur 0.0, ppm_commitment 2600, chargeback_eur_per_complaint 0.0, unit_price 16.0
+- C open 214296.0 · C deal 201088.0 · C alt 238800.0 · C best 156738.78
+
+| item | eur |
+|---|---|
+| price | 192000.0 |
+| uncovered_need | 0.0 |
+| fallback_risk | 0.0 |
+| payment_terms | 640.0 |
+| freight | 7200.0 |
+| late_delivery | 0.0 |
+| quality | 1248.0 |
+| tooling | 0.0 |
+| index_clause | 0.0 |
+| index_risk | 0.0 |
+| relationship | 0.0 |
+
+## Negotiation
+### Round 0 · sup:DEMO-J1
+**open**
+- term sheet `offer:DEMO-J1-0`: unit_price 17.1, payment_days 30, lead_time_days 28
+- signals: {"reply_delay_days": 4, "validity_days": null}
+> Hallo,
+> here is our price.
+> Our terms: a price of €17.10 per unit, Zahlungsziel 30 days net, Lieferzeit 28 days.
+> Back to the machines now.
+> Gruß
+> Claudia Aigner
+> Owner, Demo Drehteile GmbH
+### Round 0 · sup:DEMO-C1
+**open**
+- term sheet `offer:DEMO-C1-0`: unit_price 16.0, payment_days 45, incoterm "EXW"
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear partner,
+> 
+> Thank you for your enquiry. Please find our Angebot below.
+> 
+> We are delighted to submit our proposal for your consideration. We offer a price of €16.00 per unit, with a Zahlungsziel 45 days net, and delivery EXW.
+> 
+> As a growing supplier, we are very eager to build a strong partnership with your company and to prove ourselves as a reliable, long-term partner for your manufacturing needs. 
+> 
+> Please note that this offer remains valid for 30 days. We remain at your full disposal should you have any questions or require any further information, and we look forward to the prospect of working together.
+> 
+> Best regards
+> Joanna Kaczmarek
+> Export Manager, Demo Machining Sp. z o.o.
+### Round 1 · buyer
+New stainless pump shaft SH-220: award one of two suppliers
+- term sheet: unit_price 14.4, payment_days 45, lead_time_days 35, incoterm "EXW"
+> Thank you for your offer. We need a better price to go ahead.
+### Round 1 · sup:DEMO-C1
+**open**
+- term sheet `offer:DEMO-C1-1`: unit_price 16.4, payment_days 45, lead_time_days 35, incoterm "EXW"
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear partner,
+> 
+> We appreciate your feedback and are keen to move forward with this project. We have reviewed your offer and can adjust our Angebot as follows. 
+> 
+> Our current Angebot stands at a price of €16.40 per unit, Zahlungsziel 45 days net, Lieferzeit 35 days, delivery EXW. 
+> 
+> To support your cost targets, we can offer a revised price of €15.50 per unit, provided we maintain our standard 45-day lead time. This option features a price of €15.50 per unit, Zahlungsziel 45 days net, Lieferzeit 45 days, delivery EXW at our standard terms. This represents a significant concession on our part while ensuring we can meet your requirements reliably. Please note that our offer stays valid for 30 days.
+> 
+> Best regards
+> Joanna Kaczmarek
+> Export Manager, Demo Machining Sp. z o.o.
+
+**Reasons:**
+- We appreciate your feedback and are keen to move forward with this project.
+- To support your cost targets, we can offer a revised price of €… per unit, provided we maintain our standard 45-day lead time.
+- This represents a significant concession on our part while ensuring we can meet your requirements reliably.
+### Round 2 · buyer
+New stainless pump shaft SH-220: award one of two suppliers
+- term sheet: unit_price 15.4, payment_days 45, lead_time_days 35, incoterm "EXW"
+> Thank you for your offer. We need a better price to go ahead.
+### Round 2 · sup:DEMO-C1
+**open**
+- term sheet `offer:DEMO-C1-2`: unit_price 16.0, payment_days 45, lead_time_days 35, incoterm "EXW"
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear partner,
+> 
+> We have reviewed your offer and can adjust our Angebot as follows. We appreciate your revised target and are pleased to offer a further concession to support your requirements.
+> 
+> We can reduce our price to €16.00 per unit while maintaining the 35-day lead time. Therefore, our current offer stands at a price of €16.00 per unit, Zahlungsziel 45 days net, Lieferzeit 35 days, and delivery EXW.
+> 
+> We trust this significant step demonstrates our commitment to building a strong partnership. Please note that this offer remains valid for 30 days.
+> 
+> Best regards
+> Joanna Kaczmarek
+> Export Manager, Demo Machining Sp. z o.o.
+
+**Reasons:**
+- We appreciate your revised target and are pleased to offer a further concession to support your requirements.
+- We can reduce our price to €… per unit while maintaining the 35-day lead time.
+- We trust this significant step demonstrates our commitment to building a strong partnership.
+### Round 3 · buyer
+New stainless pump shaft SH-220: award one of two suppliers
+- term sheet: unit_price 15.7, payment_days 45, lead_time_days 35, incoterm "EXW"
+> Thank you for your offer. We need a better price to go ahead.
+### Round 3 · sup:DEMO-C1
+**open**
+- term sheet `offer:DEMO-C1-3`: unit_price 16.0, payment_days 45, lead_time_days 35, incoterm "EXW"
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear partner,
+> 
+> We have reviewed your offer and can adjust our Angebot as follows. We appreciate your revised offer and are eager to reach an agreement.
+> 
+> Our offer is a price of €16.00 per unit, Zahlungsziel 45 days net, Lieferzeit 35 days, delivery EXW. To move closer to your target, we can offer a price of €15.90 per unit if we adjust the payment terms to 30 days net, with Lieferzeit 35 days, delivery EXW. 
+> 
+> We believe this is a fair compromise that supports your goals while ensuring our reliable service. This proposal remains valid for 30 days.
+> 
+> Best regards
+> Joanna Kaczmarek
+> Export Manager, Demo Machining Sp. z o.o.
+
+**Reasons:**
+- We appreciate your revised offer and are eager to reach an agreement.
+- To move closer to your target, we can offer a price of €… per unit if we adjust the payment terms to … days net.
+- We believe this is a fair compromise that supports your goals while ensuring our reliable service.
+### Round 4 · buyer
+New stainless pump shaft SH-220: award one of two suppliers
+- term sheet: unit_price 15.85, payment_days 45, lead_time_days 35, incoterm "EXW"
+> Thank you for your offer. We need a better price to go ahead.
+### Round 4 · sup:DEMO-C1
+**open**
+- term sheet `offer:DEMO-C1-4`: unit_price 16.0, payment_days 45, lead_time_days 35, incoterm "EXW"
+- signals: {"reply_delay_days": 4, "validity_days": 30}
+> Dear partner,
+> 
+> We have reviewed your offer and can adjust our Angebot as follows. We are pleased to present our offer of a price of €16.00 per unit, Zahlungsziel 45 days net, Lieferzeit 35 days, delivery EXW. This proposal remains valid for 30 days.
+> 
+> Our price follows our main cost drivers: BAR-14021, WAGES-METAL. To help us work together effectively, please share the specific data or competing offers that form the basis of your target price, as we need to understand the reasoning behind your requests. Please kindly note that any further step needs approval from our management.
+> 
+> Best regards
+> Joanna Kaczmarek
+> Export Manager, Demo Machining Sp. z o.o.
+
+**Reasons:**
+- Please share the specific data or competing offers that form the basis of your target price, as we need to understand the reasoning behind your requests.
+- Any further step needs approval from our management.
+- Our price follows our main cost drivers: BAR-14021, WAGES-METAL.
+### Round 4 · buyer
+
+## Team notes
+
+_Observations from replays, calls with Tacto, hunches. Kept when the note is regenerated._

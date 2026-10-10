@@ -314,8 +314,9 @@ def log_session(state, base_url="", agent=None, commit=None, root=None):
     return path
 
 
-def sync_runs(client, set_="practice", agent=None, commit=None, root=None):
-    """Log every ended session of a set that has no note yet."""
+def sync_runs(client, set_="practice", agent=None, commit=None, root=None, mine=None):
+    """Log every ended session of a set that has no note yet. `mine`: the session IDs this process played -
+    only they get `agent` (the team shares one key: the rest were played by someone else)."""
     folder = (root or VAULT) / "Runs"
     seen = (
         {frontmatter(p.read_text(encoding="utf-8"))[0].get("session") for p in folder.glob("*.md")}
@@ -325,7 +326,14 @@ def sync_runs(client, set_="practice", agent=None, commit=None, root=None):
     new, listed = [], client.sessions(set_)
     for s in listed.get("sessions", []) if isinstance(listed, dict) else listed:
         if s.get("status") == "ended" and s["session_id"] not in seen:
-            path = log_session(client.session(s["session_id"]), os.environ.get("ARENA_URL", ""), agent, commit, root)
+            who = agent if mine is None or s["session_id"] in mine else "another teammate"
+            path = log_session(
+                client.session(s["session_id"]),
+                os.environ.get("ARENA_URL", ""),
+                who,
+                commit if who == agent else None,
+                root,
+            )
             if path:
                 new.append(path)
     return new

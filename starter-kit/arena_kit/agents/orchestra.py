@@ -30,9 +30,9 @@ from pathlib import Path
 
 from .. import events as event_log
 from .. import strategy
-from ..analysis import analyse, boulware, cost, meso
+from ..analysis import analyse, boulware, cost, curve_mode, meso
 from ..client import ArenaError
-from ..cost import must_haves_ok
+from ..cost import complete_offer, must_haves_ok
 from ..docs import standard_terms
 from ..play import ENDED, closing_move, fetch_documents, latest, moves_left, standing
 
@@ -43,6 +43,15 @@ OBSERVATIONS = Path(os.environ.get("ARENA_OBSERVATIONS") or Path(event_log.PATH)
 # decision plus the supplier's reply - plus a margin, at least 90 s); a watchdog accepts the best standing
 # offer this long before the cap if every thread is still waiting for a reply
 CLOSE_BEFORE_CAP_S, ROUND_MARGIN_S, WATCHDOG_S = 90, 15, 20
+# Concession, from the teammate's engine (92 hosted sandbox sessions): concede early - exponent e=2 - from our
+# aspiration towards the supplier's *standing* offer, meeting it at round T=4. It beat slow curves clearly
+# (D01: e=2 0.85, e=1 0.79, e=0.5 0.70) and our own small-steps try (D01 0.75 vs 0.77).
+CURVE_E = float(os.environ.get("ORCH_E", "2.0"))
+CURVE_T = int(os.environ.get("ORCH_T", "4"))
+# Hold: an offer that meets our curve is not taken while the supplier still gives >= 0.5 % per reply (up to 2
+# rounds at an unchanged goal). Push: one ask 1 % below a final offer, but only with another acceptable offer
+# as a fallback - practice P10: a push made a bottleneck supplier walk away (no deal).
+HOLDS, HOLD_GAVE, PUSH_PCT = 2, 0.005, 0.01
 NARRATE_S = 25  # the model gets this long to write; then the template writes
 POSTURE = {
     "leverage": "Competitive and firm. Several capable suppliers exist; the lowest total cost wins.",
@@ -136,7 +145,7 @@ class SupplierModel:
 class Orchestra:
     """The agent: `play_case(table, case_id, deadline)` plays a whole case (play() calls it)."""
 
-    def __init__(self, complete=None, package=None, rounds=5):
+    def __init__(self, complete=None, package=None, rounds=8):
         self.complete, self.package, self.rounds = complete, package, rounds
         self.lock = threading.RLock()
 
@@ -152,11 +161,12 @@ class Orchestra:
         self.table, self.case, self.threads, self.deadline = table, case, threads, deadline
         self.closed, self.result, self.used, self.inflight = False, None, {}, set()
         self.slowest, self.round_times = 0.0, []  # seconds per round: our decision + the supplier's reply
+        self.last_target, self.holds, self.pushes = {}, {}, {}  # per supplier: our last ask (C), holds, pushes
         self.models = {sid: SupplierModel(sid) for sid in threads}
         self.limit_rounds = min(case.get("round_limit", 10), self.rounds)
         self.explore = max(1, self.limit_rounds // 2)  # the first half: learn and anchor
         opening = {
-            sid: {"terms": standing(ev)[1], "standard": standard_terms(ev)}
+            sid: {"terms": standing(ev)[1], "standard": standard_terms(ev), "body": latest(ev).get("body")}
             for sid, ev in threads.items()
             if latest(ev).get("status") not in ENDED
         }
@@ -353,6 +363,10 @@ class Orchestra:
         if own is not None and math.isfinite(own):
             lim = min(lim, own) if math.isfinite(lim) else own
         lim = max(lim if math.isfinite(lim) else asp * 1.1, asp)
+        if (
+            curve_mode(self.case) == "engine"
+        ):  # goal(r) = target + (standing - target) * (r / T) ** (1 / e): round 0 = target
+            return boulware(r, min(CURVE_T, self._rounds_by_time(r)), asp, lim, CURVE_E)
         return boulware(r + 1, self._rounds_by_time(r), asp, lim, s.get("e", self.a["e"]))
 
     def _target(self, sid, r):
@@ -362,12 +376,15 @@ class Orchestra:
         if t is None:
             return None
         asp = self._sup(sid)["aspiration_c"]
+        own = self.models[sid].offers[-1]["c"] if self.models[sid].offers else None
         rival = self._best(exclude=sid)
         if rival and len(self.threads) > 1:
             t = min(t, rival[0] * 0.995)  # beat the best rival, or there is nothing to talk about
-        own = self.models[sid].offers[-1]["c"] if self.models[sid].offers else None
         if own is not None and math.isfinite(own):
             t = min(t, own - max(1.0, own * 0.002))
+        prev = self.last_target.get(sid)
+        if prev is not None and (own is None or prev < own):
+            t = max(t, prev)  # never retreat: an ask that gets tougher after it moved stops the supplier
         return max(t, asp)
 
     def next_move(self, sid):
@@ -399,11 +416,26 @@ class Orchestra:
                 and moves_left(self.case, self.threads[o]) > 0
             ]
             keep_going = bool(rivals_open) and moves_left(self.case, self.threads[bsid]) > 2
-            if (good or agreed) and not keep_going:
-                why = "supplier agreed to our terms" if agreed else "offer meets our concession curve"
-                return {"kind": "accept", "supplier": bsid, "sheet": best[2], "c": best[0], "why": why}
+            holding = (
+                good
+                and not agreed
+                and self._still_giving(bsid)
+                and self.holds.get(bsid, 0) < HOLDS
+                and moves_left(self.case, self.threads[bsid]) > 1
+            )
+            if (good or agreed) and not keep_going and not holding:
+                alt = self._alternative(bsid)
+                if alt and not agreed:  # only its first sheet can be accepted: send the better one back
+                    if bsid == sid:
+                        return self._mirror(sid, alt)
+                else:
+                    why = "supplier agreed to our terms" if agreed else "offer meets our concession curve"
+                    return {"kind": "accept", "supplier": bsid, "sheet": best[2], "c": best[0], "why": why}
             if (good or agreed) and keep_going and bsid == sid:
                 return {"kind": "hold"}
+            if holding and bsid == sid:  # it still moves: one more round at an unchanged goal
+                self.holds[sid] = self.holds.get(sid, 0) + 1
+                target = self.last_target.get(sid) or target
         others_open = [
             o
             for o in live
@@ -412,6 +444,14 @@ class Orchestra:
             and moves_left(self.case, self.threads[o]) > 0
         ]
         out_of_rounds = r >= self.limit_rounds or moves_left(self.case, evs) <= 0
+        if status == "final_offer" and moves_left(self.case, evs) > 0:
+            alt = self._alternative(sid)
+            if alt:
+                return self._mirror(sid, alt)
+            fallback = self._best(exclude=sid)
+            if fallback and self.pushes.get(sid, 0) < 1 and not self._deadline_near():
+                self.pushes[sid] = self.pushes.get(sid, 0) + 1
+                return self._push(sid)
         if status == "final_offer" or out_of_rounds:
             if others_open:  # keep this offer alive while the others still move
                 return {"kind": "hold"} if moves_left(self.case, evs) > 0 else {"kind": "wait"}
@@ -448,7 +488,7 @@ class Orchestra:
                 }
         if not sheets:
             return self._closing("no valid term sheet")
-        args = self._arguments(sid, r, phase)
+        args = self._notes(sid, r, sheets) + self._arguments(sid, r, phase)
         return {
             "kind": "send",
             "phase": phase,
@@ -488,16 +528,94 @@ class Orchestra:
 
     def _questions(self, sid, r, phase):
         if r == 0:
-            return ["Could you send us a cost breakdown for this part?"]
-        if phase == "explore":
-            return ["Which of the packages works best for you, and what would it take to make it work?"]
-        protected = self.models[sid].protected()
-        if protected:
-            return [
-                f"We understand {LABEL.get(protected[0], protected[0])} matters to you - "
-                "how could we meet in the middle on price?"
-            ]
-        return ["How could we get closer together on the price?"]
+            return ["Could you also send us your cost breakdown, so we can see which costs really moved?"]
+        if r == 1:
+            return ["What would you need from us to get closer to these numbers?"]
+        return ["How could we close the remaining gap today?"]
+
+    def _still_giving(self, sid):
+        """Its last reply moved at least HOLD_GAVE of its previous offer."""
+        cs = [o["c"] for o in self.models[sid].offers if o["c"] is not None and math.isfinite(o["c"])]
+        return len(cs) >= 2 and cs[-2] > 0 and (cs[-2] - cs[-1]) / cs[-2] >= HOLD_GAVE
+
+    def _alternative(self, sid):
+        """(C, id, terms) of an alternative sheet the supplier offered next to its standing one, if cheaper
+        for us - the arena accepts only the first sheet, so we send it back as our terms."""
+        msg = latest(self.threads[sid])
+        sheets = msg.get("term_sheets") or []
+        std = self._sup(sid).get("standard") or standard_terms(self.threads[sid])
+        own = self.models[sid].offers[-1]["c"] if self.models[sid].offers else None
+        best = None
+        for ts in sheets[1:]:
+            terms = ts.get("terms") or {}
+            if terms.get("unit_price") and must_haves_ok(self.case, terms, std):
+                c = self._c(sid, terms)
+                if math.isfinite(c) and (best is None or c < best[0]):
+                    best = (c, ts.get("term_sheet_id"), terms)
+        return best if best and own is not None and best[0] < own - 1.0 else None
+
+    def _mirror(self, sid, alt):
+        terms = complete_offer(self.case, alt[2])
+        said = ", ".join(f"{LABEL.get(k, k)} {v}" for k, v in alt[2].items() if v is not None)
+        return {
+            "kind": "send",
+            "phase": "close",
+            "round": sum(m.get("from") == "buyer" for m in self.threads[sid]),
+            "target": round(alt[0], 2),
+            "sheets": [terms],
+            "sheet_c": [round(self._c(sid, terms), 2)],
+            "arguments": [],
+            "questions": [],
+            "fixed_text": f"Thank you - we take your alternative exactly as offered: {said}. "
+            "Please confirm and we sign today.",
+        }
+
+    def _push(self, sid):
+        _, terms = standing(self.threads[sid])
+        ask = complete_offer(self.case, {**terms, "unit_price": round(terms["unit_price"] * (1 - PUSH_PCT), 2)})
+        return {
+            "kind": "send",
+            "phase": "close",
+            "round": sum(m.get("from") == "buyer" for m in self.threads[sid]),
+            "target": round(self._c(sid, ask), 2),
+            "sheets": [ask],
+            "sheet_c": [round(self._c(sid, ask), 2)],
+            "arguments": [],
+            "questions": [],
+            "fixed_text": "Thank you, we are very close and would like to close this with you today. On exactly "
+            f"your terms, can you do EUR {ask['unit_price']:.2f}? If yes, we sign immediately.",
+        }
+
+    def _notes(self, sid, r, sheets):
+        """Sentences without data IDs: thanks for the supplier's movement, and our volume commitment when it
+        asks for one (practice P01/P03: "we appreciate your binding commitment ... allows us to adjust")."""
+        out = []
+        offers = self.models[sid].offers
+        if r >= 1 and len(offers) >= 2:
+            a, b = offers[-2]["terms"], offers[-1]["terms"]
+            moved = []
+            if (b.get("unit_price") or 0) < (a.get("unit_price") or 0):
+                moved.append("price")
+            if (b.get("payment_days") or 0) > (a.get("payment_days") or 0):
+                moved.append("payment terms")
+            if a.get("effective_date") and b.get("effective_date") and b["effective_date"] != a["effective_date"]:
+                moved.append("the start date")
+            if b.get("contract_months") != a.get("contract_months") and b.get("contract_months"):
+                moved.append("contract length")
+            if moved:
+                out.append({"sentence": f"Thank you for moving on {' and '.join(moved)}. That helps.", "ids": []})
+        asked = re.search(r"volume|commit|stückzahl|menge", (latest(self.threads[sid]).get("body") or "").lower())
+        if r >= 1 and (asked or r == 1) and sheets:
+            v = sheets[0].get("volume_per_year") or self.case["buyer"]["need_per_year"]
+            months = sheets[0].get("contract_months") or round(12 * self.case["buyer"]["horizon_years"])
+            out.append(
+                {
+                    "sentence": f"On volume: we commit bindingly to {int(v):,} pieces a year for {int(months)} "
+                    "months. That is our entire need for this part, all of it with you.",
+                    "ids": [],
+                }
+            )
+        return out
 
     # --- the worker ---------------------------------------------------------------------------
 
@@ -539,6 +657,8 @@ class Orchestra:
                 if self.closed:
                     return
                 self.models[sid].asks.append(move.get("sheets") or [])
+                if move["kind"] == "send" and move.get("target") is not None:
+                    self.last_target[sid] = move["target"]
                 self.inflight.add(sid)
             try:
                 reply = self.table.send(sid, msg)
@@ -598,6 +718,12 @@ class Orchestra:
 
     def _write(self, sid, move):
         sheets = move["sheets"]
+        if move.get("fixed_text"):  # closing moves: short, exact, no model
+            return {
+                "subject": f"Re: {self.case.get('title', '')}"[:300],
+                "body": "Hello,\n\n" + move["fixed_text"] + "\n\nBest regards\nHollerau Pumpenwerke, Purchasing",
+                "term_sheets": [{"terms": t} for t in sheets],
+            }
         allowed = {i for c in move["arguments"] for i in c["ids"]}
         body = subject = None
         if self.complete:
@@ -675,16 +801,15 @@ class Orchestra:
         return out
 
     def _template(self, move):
-        lines = ["Dear Sir or Madam,", "", "Thank you for your offer."]
+        lines = ["Hello,", ""]
         lines += [c["sentence"] for c in move["arguments"]]
-        if len(move["sheets"]) > 1:
-            lines.append(
-                f"We attach {len(move['sheets'])} alternative packages that work equally well for us; "
-                "please let us know which suits you best."
-            )
-        else:
-            lines.append("We attach our proposal.")
-        lines += move["questions"] + ["", "Best regards", "Purchasing, Hollerau Pumpenwerke"]
+        n = len(move["sheets"])
+        lines.append(
+            f"We put together {n} packages; each works equally well for us, so pick the one that suits you best."
+            if n > 1
+            else "Please find our proposal attached."
+        )
+        lines += move["questions"] + ["", "Best regards", "Hollerau Pumpenwerke, Purchasing"]
         return "\n".join(lines)
 
     # --- the data set -------------------------------------------------------------------------
