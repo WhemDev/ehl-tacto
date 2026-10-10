@@ -1,0 +1,208 @@
+{
+  "supplier_id": "sup:70640",
+  "name": "Kugellager-Vertrieb Inntal GmbH",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "group_approval_ladder",
+  "confidence": 0.6,
+  "summary": "Kugellager-Vertrieb Inntal is a family-owned Austrian bearing distributor (80 staff, ~37 M EUR turnover) with solid finances (equity 43.4 %, stable credit index 180). It has spare capacity: its second shift has been on hold since spring and it says it can take more parts at short notice. It is also reviewing small accounts and wants customers with volume, and we are only 0.3 % of its turnover. It has opened renewal of the framework agreement (expires 2027-06-30) and asked for our expected volumes. Its latest quote for 6306-2Z is 20 % above the current price.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "under_used",
+    "dependency_on_us": 0.15,
+    "our_dependency": 0.25,
+    "relationship": "neutral",
+    "decision_maker": "key account manager up to 2 % price change; above 2 % their pricing committee (meets every two weeks); sales director sets account/portfolio policy"
+  },
+  "negotiation_pattern": "Opens with moderate asks (mean 3.88 %) and settles at about 1.5 % (mean -2.35 pts). It tends to alternate: a part settled at 0 % one year gets an increase the next. Part 360020 went 0 → 3.4 → 0 %, so it is 'due' now, which matches the 5.04 quote. Part 360021 went 1.8 → 0 → 4.0 %. Only two settlements went above its 2 % approval threshold (3.4 % and 4.0 %). No record of hard pressure tactics; it accepts 0 % outcomes.",
+  "wants": [
+    "volume and forecast security (fill idle second-shift capacity; focus on customers with volume)",
+    "contract continuity / renewal of framework ctr:4600070640",
+    "price increase on part:360020 (settled 0 % last round; quote 5.04 vs 4.20)",
+    "punctual payment (we pay late 85 % of the time)"
+  ],
+  "protects": [
+    "unit_price moves above 2 % (needs pricing committee; slow, about 2-week cycles)",
+    "being treated as a small, low-value account (may deprioritise or price us out)"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: shift quota on part:360020 from 30 % toward 60 % (taken from the other source) and share a firm annual forecast",
+      "get": "unit_price on 360020 held at 4.20 or at most +2 %; 360021 flat",
+      "why": "It has idle capacity, wants volume accounts and has asked for our volumes; extra volume lifts us out of the 'small account' bucket.",
+      "ids": [
+        "doc:20260201-70640-M5",
+        "doc:20260715-70640-M4",
+        "doc:20260819-70640-M1",
+        "doc:20260925-70640-P19"
+      ]
+    },
+    {
+      "give": "contract_months: renew the framework for 24-36 months early",
+      "get": "unit_price fixed for 2027 and 2028, no index_clause",
+      "why": "Gives it planning security on a contract it already wants to renew; a fixed-price basis is the current norm.",
+      "ids": [
+        "ctr:4600070640#8.1",
+        "ctr:4600070640#3.1",
+        "doc:20260925-70640-P19"
+      ]
+    },
+    {
+      "give": "payment_days: keep 30 net but commit to paying on time (we are late 85 % of the time, about 3 days on average)",
+      "get": "price change kept within 2 %, so the KAM can agree without the committee",
+      "why": "A cheap concession for us that removes a real irritant.",
+      "ids": [
+        "ctr:4600070640#4.1"
+      ]
+    },
+    {
+      "give": "volume commitment / forecast",
+      "get": "OTD commitment of 95 % with lead_time_days 10, plus ppm_commitment of about 0-50 ppm; chargeback stays at EUR 150",
+      "why": "OTD of 86.5 % misses the 95 % target; its current ppm of 0 makes a ppm commitment cheap for it to give.",
+      "ids": [
+        "sc:70640@2026Q3",
+        "ctr:4600070640#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "The price clause requires written notice of changes at least 90 days before year-end, i.e. by 2 Oct 2026. Its 25 Sep email contains no price notice, so 2027 prices stay at 4.20 / 7.21 unless it sends one by then.",
+      "ids": [
+        "ctr:4600070640#3.1",
+        "doc:20260925-70640-P19",
+        "quote:7200004"
+      ]
+    },
+    {
+      "point": "The 5.04 quote is +20 % on the current 4.20 and +17 % on its own April 2025 quote of 4.29. No cost data justifies this, and its past settlements average about 1.5 %.",
+      "ids": [
+        "quote:7200004",
+        "quote:7100059"
+      ]
+    },
+    {
+      "point": "We can bring more volume quickly: it says it has free capacity and wants volume customers, and our second-source quota on 360020 is available to shift.",
+      "ids": [
+        "doc:20260201-70640-M5",
+        "doc:20260819-70640-M1"
+      ]
+    },
+    {
+      "point": "Quality is now excellent (ppm 0), but OTD of 86.5 % is still well below the contractual 95 %. Use this to temper price expectations.",
+      "ids": [
+        "sc:70640@2026Q3",
+        "ctr:4600070640#6.1"
+      ]
+    },
+    {
+      "point": "Keeping any change within 2 % lets its KAM close without waiting for the pricing committee.",
+      "ids": [
+        "doc:20260228-70640-M3",
+        "doc:20260512-70640-M2"
+      ]
+    }
+  ],
+  "avoid": [
+    "threatening to move volume away; we are only 0.3 % of its turnover, and it is already pruning small accounts",
+    "asking for longer payment terms while we routinely pay late",
+    "anchoring talks on the 5.04 quote as if it were a serious basis",
+    "pushing for more than 2 % in one step, which pushes the decision to the committee and adds delay"
+  ],
+  "tone": "Businesslike and constructive, framed as growing the partnership: lead with volume and forecasts, be firm on price with the contract clause in hand.",
+  "red_flags": [
+    "Small-account review: it may deprioritise us or price us out (the 20 % quote may be the signal). Keep the second source active.",
+    "OTD is chronically below the 95 % target (80.8 → 86.5 %).",
+    "It may send a price-change notice before 2 Oct 2026 to preserve its right to raise prices for 2027."
+  ],
+  "evidence": [
+    {
+      "claim": "Second shift on hold since spring; can take extra parts at short notice",
+      "ids": [
+        "doc:20260201-70640-M5",
+        "doc:20260715-70640-M4"
+      ]
+    },
+    {
+      "claim": "Reviewing small accounts, focusing on customers with volume",
+      "ids": [
+        "doc:20260819-70640-M1"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing-committee approval (meets every two weeks)",
+      "ids": [
+        "doc:20260228-70640-M3",
+        "doc:20260512-70640-M2"
+      ]
+    },
+    {
+      "claim": "Renewal requested; it asks for expected volumes and will make its offer at the meeting",
+      "ids": [
+        "doc:20260925-70640-P19",
+        "ctr:4600070640#8.1"
+      ]
+    },
+    {
+      "claim": "Prices fixed per calendar year; changes need 90 days' written notice before year-end",
+      "ids": [
+        "ctr:4600070640#3.1"
+      ]
+    },
+    {
+      "claim": "Latest 360020 quote 5.04 vs current 4.20 (+20 %)",
+      "ids": [
+        "quote:7200004"
+      ]
+    },
+    {
+      "claim": "History: 360020 settled 0 % last round after a 3.4 % ask; 360021 settled 4.0 % after a 6.4 % ask",
+      "ids": []
+    },
+    {
+      "claim": "Quality now ppm 0; OTD 86.5 % vs 95 % target",
+      "ids": [
+        "sc:70640@2026Q3",
+        "ctr:4600070640#6.1"
+      ]
+    },
+    {
+      "claim": "One alternative source per part; quotas 30 % (360020) and 60 % (360021)",
+      "ids": [
+        "part:360020",
+        "part:360021"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.3,
+    "our_spend_eur": {
+      "FY2024": 89213,
+      "FY2025": 98867,
+      "FY2026": 98435
+    },
+    "credit_index": "180 (12 months ago 180; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 3.88,
+    "history_mean_settled_pct": 1.53,
+    "history_settled_minus_asked_pct": -2.35,
+    "we_pay_days_after_due_mean": 3.1,
+    "we_pay_late_share_pct": 85,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 80.8, ppm 292) → 2026Q1 green (otd 84.3, ppm 175) → 2026Q2 green (otd 84.9, ppm 171) → 2026Q3 green (otd 86.5, ppm 0)"
+  },
+  "practice_cases": [
+    "P19"
+  ],
+  "meta": {
+    "key": "ac2f0fbac42dfb04",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:11",
+    "seconds": 41.8,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70640-360020",
+      "EV-2026-70640-360020",
+      "EV-2026-70640-360021"
+    ]
+  }
+}

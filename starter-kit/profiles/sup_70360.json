@@ -1,0 +1,183 @@
+{
+  "supplier_id": "sup:70360",
+  "name": "Kantteile Strasser GmbH",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "family_relationship",
+  "confidence": 0.65,
+  "summary": "Kantteile Strasser is a small founder-owned Austrian sheet-metal shop (25 staff, 2-5 M EUR turnover) with stable, unremarkable finances. Its second shift has been on hold since spring and it offered to take more parts at short notice. It calls Hollerau an important reference customer. Its delivery performance is weak (OTD 76 % against a 95 % target) and ppm is rising again.",
+  "situation": {
+    "cash_pressure": 0.2,
+    "capacity": "under_used",
+    "dependency_on_us": 0.6,
+    "our_dependency": 0.3,
+    "relationship": "neutral",
+    "decision_maker": "owner (founder); he handles price discussions personally"
+  },
+  "negotiation_pattern": "It opens with modest increases and folds. It asked +3.7 % and +3.6 % in the last two renewals and settled at 0.0 % both times. In 2023 it offered -3.1 % and accepted -6.0 %. On average it settles 3.4 pts below its ask. It does not push back hard. Its pricing rests on the owner's own spreadsheet, last updated two years ago.",
+  "wants": [
+    "additional volume to restart the idle second shift",
+    "award of part:330020 (qualified, 0 % quota)",
+    "longer, secure relationship with a reference customer",
+    "respectful, owner-level treatment and help on index data",
+    "on-time payment (we pay late 88 % of the time)"
+  ],
+  "protects": [
+    "unit_price below its cost view (small shop, limited margin; but history shows price does move)",
+    "lead_time_days (quoted 34 days vs 28-day contract standard)"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: award part:330020 and/or raise part:330030 quota above 50 %",
+      "get": "unit_price -4 to -6 % on part:330030 and part:330020 well below the 21.00 quote",
+      "why": "Idle second shift; volume is worth more to it than margin.",
+      "ids": [
+        "doc:20260527-70360-M2",
+        "quote:7100033",
+        "quote:7100034"
+      ]
+    },
+    {
+      "give": "contract_months up: extend the framework beyond 2027-06-30 by 24 months",
+      "get": "unit_price fixed for 2027 at or below 16.11, no increase",
+      "why": "Forecast security for a small owner-led firm that values a reference customer.",
+      "ids": [
+        "ctr:4600070360#8.1",
+        "ctr:4600070360#3.1",
+        "doc:20260812-70360-M3"
+      ]
+    },
+    {
+      "give": "payment_days: commit to genuinely paying at 30 days net (we average 4.9 days late)",
+      "get": "price hold plus lead_time_days 28 or better",
+      "why": "Costs us little, and it is a fairness gesture the owner will notice.",
+      "ids": [
+        "ctr:4600070360#4.1"
+      ]
+    },
+    {
+      "give": "extra volume made conditional on delivery performance",
+      "get": "ppm_commitment ≤500, OTD plan toward 95 %, closure of overdue 8D, chargeback_eur_per_complaint kept at 150 or raised",
+      "why": "Extra volume must not worsen already-amber delivery and quality.",
+      "ids": [
+        "sc:70360@2026Q3",
+        "ctr:4600070360#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can fill your idle capacity: part:330020 is qualified and ready to award if price and delivery are right.",
+      "ids": [
+        "doc:20260527-70360-M2",
+        "quote:7100033"
+      ]
+    },
+    {
+      "point": "As our reference supplier we want to grow with you, but OTD 76 % vs the agreed 95 % and ppm back up to 762 must improve before more volume moves.",
+      "ids": [
+        "sc:70360@2026Q3",
+        "ctr:4600070360#6.1",
+        "doc:20260812-70360-M3"
+      ]
+    },
+    {
+      "point": "Offer to share our index sources. His spreadsheet is two years old, and current material indices support a hold or reduction rather than an increase.",
+      "ids": [
+        "doc:20260606-70360-M1"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year. Any 2027 change needed written notice 90 days before year-end (about 2 Oct 2026). Use this to anchor at a price hold.",
+      "ids": [
+        "ctr:4600070360#3.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Blunt price ultimatums or resourcing threats as the opener: the owner-led shop responds to respect, not pressure.",
+    "Asking for longer payment_days while we are already paying late in 88 % of cases.",
+    "Handing over volume without OTD/ppm commitments.",
+    "Lecturing on his outdated spreadsheet; offer help instead."
+  ],
+  "tone": "Personal, respectful note to the owner. Partnership and growth framing, with concrete numbers and clear performance conditions.",
+  "red_flags": [
+    "OTD 76 % vs 95 % target; ppm rose from 640 to 762; 1 overdue 8D and 2 open 8D (last complaint 2026-08-20).",
+    "Small firm (25 staff), dependent on one owner (key-person risk).",
+    "Quoted lead time 34 days exceeds the 28-day contract standard; more volume could worsen delivery.",
+    "Price increase notice window closes around 2026-10-02; watch for a late increase request."
+  ],
+  "evidence": [
+    {
+      "claim": "Second shift on hold since spring; can take extra parts at short notice.",
+      "ids": [
+        "doc:20260527-70360-M2"
+      ]
+    },
+    {
+      "claim": "Considers Hollerau an important reference customer.",
+      "ids": [
+        "doc:20260812-70360-M3"
+      ]
+    },
+    {
+      "claim": "Owner prices from a self-made spreadsheet last updated two years ago.",
+      "ids": [
+        "doc:20260606-70360-M1"
+      ]
+    },
+    {
+      "claim": "Last two renewals: asked +3.7 % and +3.6 %, settled 0 %; 2023: asked -3.1 %, settled -6.0 %.",
+      "ids": []
+    },
+    {
+      "claim": "Scorecard amber: OTD 76.0 %, ppm 762, 1 overdue 8D.",
+      "ids": [
+        "sc:70360@2026Q3"
+      ]
+    },
+    {
+      "claim": "Contract: 30 days net, DAP, 28-day lead time, OTD target 95 %, EUR 150 per complaint, prices fixed per calendar year with 90-day notice.",
+      "ids": [
+        "ctr:4600070360#3.1",
+        "ctr:4600070360#4.1",
+        "ctr:4600070360#5.1",
+        "ctr:4600070360#6.1"
+      ]
+    },
+    {
+      "claim": "Current price on part:330030 is 16.11 (valid from 2026-01-01).",
+      "ids": []
+    },
+    {
+      "claim": "Part:330020 quote of 21.00 was not awarded; the part is qualified with 0 % quota.",
+      "ids": [
+        "quote:7100033"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "223 (12 months ago 223; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.4,
+    "history_mean_settled_pct": -2.0,
+    "history_settled_minus_asked_pct": -3.4,
+    "we_pay_days_after_due_mean": 4.9,
+    "we_pay_late_share_pct": 88,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 amber (otd 76.9, ppm 858) → 2026Q1 green (otd 80.0, ppm 753) → 2026Q2 amber (otd 76.0, ppm 640) → 2026Q3 amber (otd 76.0, ppm 762)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "b3cd72c58d12c82b",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:26",
+    "seconds": 42.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70360-330030",
+      "EV-2025-70360-330030",
+      "EV-2024-70360-330030",
+      "EV-2026-70360-330030"
+    ]
+  }
+}

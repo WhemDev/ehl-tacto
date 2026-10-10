@@ -1,0 +1,212 @@
+{
+  "supplier_id": "sup:70510",
+  "name": "Antriebstechnik Nordmark AG",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": null,
+  "confidence": 0.85,
+  "summary": "Antriebstechnik Nordmark AG is a large, financially stable motor maker within Nordmark Gruppe (EUR 1.38 bn turnover, 4,800 staff, credit index 147 and flat). We are only 0.2 % of its turnover. It has sent a formal 6.5 % increase on part:350011 effective 2027-01-01, citing copper and electronics costs. Its key account manager can move only up to 2 %; anything above goes to a pricing committee that meets every two weeks.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "normal",
+    "dependency_on_us": 0.05,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 % price change; above 2 % the pricing committee (meets every two weeks)"
+  },
+  "negotiation_pattern": "It opens high on annual renewals (asks of 3.5-4.7 %) and settles at about a third of the ask (1.2-1.4 %), i.e. inside the KAM's 2 % authority. In the 2024 round it accepted a -2.6 % cut against its own ask of -0.4/-1.2 %. Its mean ask is +2.35 % and its mean settlement 0.0 %. It concedes steadily rather than walking away. This year's 6.5 % ask is well above its usual opening, so expect a fallback towards about 2 % to avoid the committee.",
+  "wants": [
+    "Price increase on part:350011 that clears the copper/electronics cost argument",
+    "Volume growth and new business (part:350012 and part:350013 are qualified but have 0 % quota)",
+    "Contract continuity beyond 2026-12-31 and planning security",
+    "Payment on time (we pay late on 62 % of invoices)",
+    "A settlement inside KAM authority (≤2 %) to avoid the committee loop"
+  ],
+  "protects": [
+    "unit_price above the 2 % KAM authority (list/committee policy)",
+    "unit_price on part:350011, which may already be thin margin (priced 7.1 % below estimated own no-margin cost, low-confidence estimate)",
+    "payment_days (no skonto offered, standard 30 net)"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year: award part:350012 and/or part:350013 (qualified, 0 % quota) or a higher share of part:350010",
+      "get": "unit_price on part:350011 held at ≤1.5 %, ideally 0-1.2 %",
+      "why": "Group sales are measured on volume, and new parts are the cheapest currency we have for a price concession.",
+      "ids": [
+        "quote:7100047",
+        "quote:7100049"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework by 24 months",
+      "get": "price fixed for 2027 at ≤2 %, with effective_date pushed to 2027-04-01",
+      "why": "Term security is a term-side move it can grant without the committee, and the delay cuts the cost in 2027.",
+      "ids": [
+        "ctr:4600070510#8.1",
+        "ctr:4600070510#3.1",
+        "doc:20260914-70510-P02"
+      ]
+    },
+    {
+      "give": "index_clause: a copper index on the material share (~34 % of cost), symmetric with a deadband",
+      "get": "base price increase limited to ≤1 % now",
+      "why": "It answers its stated copper argument transparently and protects us when copper falls.",
+      "ids": [
+        "doc:20260914-70510-P02",
+        "cost:350011"
+      ]
+    },
+    {
+      "give": "payment_days: commit to strict on-time payment at 30 days (fix our 62 % late share)",
+      "get": "ppm_commitment ≤200 and an OTD plan to the 95 % target",
+      "why": "This costs us nothing real and removes a legitimate grievance.",
+      "ids": [
+        "ctr:4600070510#4.1",
+        "ctr:4600070510#6.1",
+        "sc:70510@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "History: in each of the last two renewals the ask settled at 1.2-1.4 %. Keep this round within the KAM's 2 % authority so there is no committee delay.",
+      "ids": [
+        "doc:20260410-70510-M1"
+      ]
+    },
+    {
+      "point": "There is a competitive alternative on the 4 kW motor. The sup:70520 plant cost estimate is 8 % below the current price, and a second source is qualified for each part, so share can move.",
+      "ids": [
+        "cost:350010-70520",
+        "cost:350010"
+      ]
+    },
+    {
+      "point": "Delivery is below the contractual 95 % target: OTD was 90.4 % in Q3 and 82.7 % a year ago. ppm rose from 181 to 273. An increase is hard to justify while performance is below agreement.",
+      "ids": [
+        "sc:70510@2026Q3",
+        "sc:70510@2025Q4",
+        "ctr:4600070510#6.1"
+      ]
+    },
+    {
+      "point": "We have grown our spend with them from EUR 2.68 M (FY2024) to EUR 3.21 M (FY2026) and are a loyal, growing account.",
+      "ids": [
+        "sup:70510"
+      ]
+    },
+    {
+      "point": "6.5 % is not substantiated. Ask for a cost breakdown showing the copper and electronics share and the index movement before any figure above 2 % is discussed.",
+      "ids": [
+        "doc:20260914-70510-P02"
+      ]
+    }
+  ],
+  "avoid": [
+    "Do not lead with should-cost on part:350011. The estimate puts our price 7.1 % below its own no-margin cost (confidence only 5 %), which would support its case.",
+    "Do not issue ultimatums or demand price cuts. We are 0.2 % of its turnover, and pressure just escalates to the committee.",
+    "Do not expect fast answers on anything above 2 %. Committee cycles are two weeks; plan the timeline before 2027-01-01.",
+    "Do not complain about payment terms; we are the ones paying late."
+  ],
+  "tone": "Factual, structured and businesslike. Give a clear package the KAM can sign off within 2 %, with data requests rather than emotion.",
+  "red_flags": [
+    "The termination notice deadline under ctr:4600070510#8.1 is about 2026-10-02 (90 days before 2026-12-31). After that the contract auto-extends 12 months, so decide immediately whether to serve protective notice.",
+    "The increase notice (dated 2026-09-14) appears valid under the 90-day clause, so the 2027 price change is formally on the table.",
+    "We hold 100 % quota on part:350011, which makes a short-term switch hard even with one alternate source.",
+    "Quotes show lead times of 41-43 days vs the 35-day contract, and OTD is below target, so watch delivery risk if relations sour.",
+    "ppm is creeping up (181 → 273) while the scorecard is still green."
+  ],
+  "evidence": [
+    {
+      "claim": "6.5 % increase on part:350011 from EUR 348.32 to 370.96, effective 2027-01-01, citing copper/electronics",
+      "ids": [
+        "doc:20260914-70510-P02"
+      ]
+    },
+    {
+      "claim": "KAM authority up to 2 %; above that the pricing committee, meeting every two weeks",
+      "ids": [
+        "doc:20260227-70510-M2",
+        "doc:20260410-70510-M1"
+      ]
+    },
+    {
+      "claim": "Past renewals: asked 3.5-4.7 %, settled 1.2-1.4 %",
+      "ids": []
+    },
+    {
+      "claim": "Part of Nordmark Gruppe, EUR 1.38 bn turnover, credit index 147 stable; we are 0.2 % of its turnover",
+      "ids": [
+        "sup:70510"
+      ]
+    },
+    {
+      "claim": "part:350011 priced 7.1 % below its estimated own no-margin cost; part:350010 priced 8.0 % above the sup:70520 cost estimate",
+      "ids": [
+        "cost:350011",
+        "cost:350010-70520"
+      ]
+    },
+    {
+      "claim": "OTD 90.4 % vs 95 % contractual target; ppm 273",
+      "ids": [
+        "sc:70510@2026Q3",
+        "ctr:4600070510#6.1"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2026-12-31 and auto-extends 12 months unless terminated with 90 days' notice; prices fixed per calendar year with 90-day change notice",
+      "ids": [
+        "ctr:4600070510#8.1",
+        "ctr:4600070510#3.1"
+      ]
+    },
+    {
+      "claim": "Quoted for part:350012 (EUR 709.85) and part:350013 (EUR 1495.59), neither awarded, so this is volume we can offer",
+      "ids": [
+        "quote:7100047",
+        "quote:7100049"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.2,
+    "our_spend_eur": {
+      "FY2024": 2684552,
+      "FY2025": 3173291,
+      "FY2026": 3213573
+    },
+    "credit_index": "147 (12 months ago 147; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.35,
+    "history_mean_settled_pct": -0.0,
+    "history_settled_minus_asked_pct": -2.35,
+    "we_pay_days_after_due_mean": 1,
+    "we_pay_late_share_pct": 62,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350010: price 239.21 vs cost:350010 244.39 (its own plant): -2.1 %",
+      "part:350010: price 239.21 vs cost:350010-70520 221.47 (plant of sup:70520): +8.0 %",
+      "part:350011: price 348.32 vs cost:350011 374.95 (its own plant): -7.1 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 82.7, ppm 181) → 2026Q1 green (otd 89.8, ppm 185) → 2026Q2 green (otd 94.1, ppm 270) → 2026Q3 green (otd 90.4, ppm 273)"
+  },
+  "practice_cases": [
+    "P02"
+  ],
+  "meta": {
+    "key": "aa36df597ff07eb8",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:04",
+    "seconds": 43.0,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70510-350011",
+      "EV-2026-70510-350011",
+      "EV-2025-70510-350011",
+      "EV-2026-70510-350010",
+      "EV-2026-70510-350011",
+      "EV-2025-70510-350010",
+      "EV-2025-70510-350011"
+    ]
+  }
+}

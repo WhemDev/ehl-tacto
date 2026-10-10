@@ -1,0 +1,213 @@
+{
+  "supplier_id": "sup:70630",
+  "name": "Normteile Brucker KG",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": null,
+  "confidence": 0.75,
+  "summary": "Normteile Brucker KG is a family-owned standard-parts maker founded in 1966, with 60 staff, EUR 29.1 M turnover and stable, sound finances. It runs a strict list-price policy: head office has frozen all price reductions until December 2027, the price list applies to all customers, and changes above 2 % go to a pricing committee that meets every two weeks. It openly invites talks on payment, logistics and call-off flexibility instead of price.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.05,
+    "our_dependency": 0.3,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 %; above 2 % the pricing committee (meets every two weeks); head office has frozen price reductions until Dec 2027."
+  },
+  "negotiation_pattern": "On part:360013 (stud bolt) it offered small cuts itself and settled lower each year: asked -5.1 % and settled -6.3 %, asked -1.1 % and settled -2.8 %, asked -0.7 % and settled -3.8 %. On part:360030 (washer) it asked +1.7 %, +3.5 % and +1.2 % and always settled at 0 %. So it accepts zero instead of fighting for increases and gives about 2 % more than its opening. Since 2026 it has hardened. It cites a head-office freeze, re-quoted 360013 unchanged on 2026-09-04, and steers talks to payment and logistics. It said only multi-year volume agreements change prices.",
+  "wants": [
+    "payment discipline and better payment conditions (it offered to discuss them; we pay late on 90 % of invoices)",
+    "multi-year volume security (its stated only route to price changes)",
+    "a larger quota on part:360030 (currently 50 %, one alternative source)",
+    "call-off and logistics efficiency (returnable boxes, flexible call-offs)",
+    "uniform list-price discipline across customers"
+  ],
+  "protects": [
+    "unit_price (list-price policy, reductions frozen until Dec 2027, applies to all customers)",
+    "any price move above 2 % (needs pricing committee)",
+    "uniform treatment of all customers"
+  ],
+  "trades": [
+    {
+      "give": "payment discipline: pay on time at 30 days net, or faster payment (e.g. 10–14 days)",
+      "get": "skonto (e.g. 2 % for 14 days) as a price-neutral discount instead of a list-price cut",
+      "why": "It openly offers to discuss payment terms; a skonto leaves its list price untouched.",
+      "ids": [
+        "doc:20260706-70630-M3",
+        "doc:20260724-70630-M1",
+        "ctr:4600070630#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30 to a multi-year term, plus volume_per_year: move part:360030 from 50 % to 100 % quota",
+      "get": "unit_price -2 % on both parts from 2027-01-01 (within account-manager authority, no committee)",
+      "why": "It said only multi-year volume agreements change prices, and 2 % stays below its committee threshold.",
+      "ids": [
+        "doc:20260327-70630-M2",
+        "doc:20260923-70630-M4",
+        "ctr:4600070630#8.1"
+      ]
+    },
+    {
+      "give": "call-off flexibility and a rolling forecast",
+      "get": "lead_time_days held at 7 with an OTD commitment toward the 95 % target, plus prices fixed through 2027 with no index_clause",
+      "why": "It is open on call-off flexibility; its OTD of 88 % is below the contract target.",
+      "ids": [
+        "doc:20260724-70630-M1",
+        "ctr:4600070630#6.1",
+        "sc:70630@2026Q3"
+      ]
+    },
+    {
+      "give": "the larger quota and longer term from the second trade",
+      "get": "ppm_commitment ≤200, closure of the open 8D, and chargeback_eur_per_complaint kept at 150 or raised",
+      "why": "ppm rose from 216 to 257 (peak 293) over the year; quality terms cost it no list price.",
+      "ids": [
+        "sc:70630@2025Q4",
+        "sc:70630@2026Q2",
+        "sc:70630@2026Q3",
+        "ctr:4600070630#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "You told us only multi-year volume agreements change prices. Here is one: a longer term plus 100 % of the washer volume.",
+      "ids": [
+        "doc:20260327-70630-M2",
+        "part:360030"
+      ]
+    },
+    {
+      "point": "We keep the request at 2 %, so your key account manager can approve it without waiting for the pricing committee.",
+      "ids": [
+        "doc:20260923-70630-M4"
+      ]
+    },
+    {
+      "point": "You invited a discussion on payment conditions. We commit to on-time or faster payment in exchange for skonto.",
+      "ids": [
+        "doc:20260706-70630-M3",
+        "doc:20260724-70630-M1"
+      ]
+    },
+    {
+      "point": "OTD of 88 % is well below the 95 % contract target, and ppm has risen over the year. We expect a firm delivery and quality commitment in return for more volume.",
+      "ids": [
+        "sc:70630@2026Q3",
+        "sc:70630@2025Q4",
+        "ctr:4600070630#6.1"
+      ]
+    },
+    {
+      "point": "In past renewals you settled below your opening on the stud bolt and held the washer at 0 %. We ask for the same constructive approach.",
+      "ids": []
+    }
+  ],
+  "avoid": [
+    "Demanding a straight list-price cut without a counter-offer; it will cite the head-office freeze and stall.",
+    "Asking for more than 2 % in one step; that triggers the biweekly pricing committee and delays.",
+    "Threatening to move volume; we are only 0.3 % of its turnover, so the threat carries little weight.",
+    "Pressing on payment terms while we pay late on 90 % of invoices; fix our own discipline first.",
+    "Treating it as a cost-plus case; no should-cost data exists."
+  ],
+  "tone": "Factual, respectful and structured. Package each ask as a term-for-term trade, keep price asks within 2 %, and acknowledge its policy.",
+  "red_flags": [
+    "part:360013 is single-sourced (100 % quota, 0 other sources); it is a standard part, but requalifying takes time.",
+    "OTD is 88 % against a 95 % target and has been flat to falling for four quarters.",
+    "ppm is rising (216 → 257, peak 293), 19 complaints in 12 months, 1 open 8D, last complaint 2026-09-09.",
+    "We pay late on 90 % of invoices (mean 4.4 days after due), which weakens our position and the relationship.",
+    "Price-change notice under the contract is 90 days before year end, so the window for 2027 effectively closes around 2026-10-02.",
+    "It cites a 'head office' although no group parent is recorded; treat it as internal family management policy, not a group rule."
+  ],
+  "evidence": [
+    {
+      "claim": "Head office froze all price reductions until December 2027; the sales director was open on payment terms and call-off flexibility.",
+      "ids": [
+        "doc:20260724-70630-M1"
+      ]
+    },
+    {
+      "claim": "The price list applies to all customers without exception until December 2027; it is happy to discuss logistics and payment conditions.",
+      "ids": [
+        "doc:20260706-70630-M3"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval; the committee meets every two weeks.",
+      "ids": [
+        "doc:20260923-70630-M4"
+      ]
+    },
+    {
+      "claim": "Only multi-year volume agreements change prices on standard items.",
+      "ids": [
+        "doc:20260327-70630-M2"
+      ]
+    },
+    {
+      "claim": "The latest quote re-offers part:360013 at the current 29.23/100 with 'no discounts this year (head-office directive)'.",
+      "ids": [
+        "quote:7300052"
+      ]
+    },
+    {
+      "claim": "Finances are stable: credit index 185, unchanged from 12 months ago, and equity ratio 36.2 %.",
+      "ids": [
+        "sup:70630"
+      ]
+    },
+    {
+      "claim": "OTD is 88 % against the 95 % contract target, with ppm at 257 in 2026Q3.",
+      "ids": [
+        "sc:70630@2026Q3",
+        "ctr:4600070630#6.1"
+      ]
+    },
+    {
+      "claim": "Historically it settled about 2 % below its opening; washer increase asks always ended at 0 %.",
+      "ids": []
+    },
+    {
+      "claim": "The framework runs to 2027-06-30 and auto-extends 12 months; prices are fixed per calendar year with 90 days' notice.",
+      "ids": [
+        "ctr:4600070630#8.1",
+        "ctr:4600070630#3.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.3,
+    "our_spend_eur": {
+      "FY2024": 84963,
+      "FY2025": 85923,
+      "FY2026": 81302
+    },
+    "credit_index": "185 (12 months ago 185; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.08,
+    "history_mean_settled_pct": -2.15,
+    "history_settled_minus_asked_pct": -2.07,
+    "we_pay_days_after_due_mean": 4.4,
+    "we_pay_late_share_pct": 90,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 89.6, ppm 216) → 2026Q1 green (otd 89.6, ppm 270) → 2026Q2 green (otd 88.0, ppm 293) → 2026Q3 green (otd 88.0, ppm 257)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "9965eeb032e33df5",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:12",
+    "seconds": 44.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70630-360013",
+      "EV-2025-70630-360013",
+      "EV-2026-70630-360030",
+      "EV-2024-70630-360013",
+      "EV-2025-70630-360013",
+      "EV-2026-70630-360013",
+      "EV-2025-70630-360030",
+      "EV-2026-70630-360030"
+    ]
+  }
+}

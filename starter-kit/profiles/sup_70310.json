@@ -1,0 +1,188 @@
+{
+  "supplier_id": "sup:70310",
+  "name": "Blechtechnik Aichbauer GmbH",
+  "archetype": "quality_problem",
+  "secondary_archetype": "cash_short",
+  "confidence": 0.8,
+  "summary": "Blechtechnik Aichbauer is a family-owned sheet-metal shop (founded 1982, 70 staff, about 7.5 M EUR turnover). It is our 100% single source for the welded, painted base frame HN 50/65. Its performance has fallen four quarters in a row, from amber to red (OTD 70.4% to 63.0%, ppm 1197 to 4118), and our Supplier Quality sent a formal escalation on 2026-09-24. Two weeks earlier it asked us to pay within 10 days in exchange for a cash discount, which signals a need for liquidity.",
+  "situation": {
+    "cash_pressure": 0.5,
+    "capacity": "unknown",
+    "dependency_on_us": 0.6,
+    "our_dependency": 0.55,
+    "relationship": "strained",
+    "decision_maker": "Likely the owner / managing director (family GmbH, 70 staff, no group parent). The dossier does not name a contact."
+  },
+  "negotiation_pattern": "It opens with modest asks and settles below them. Three renewals: asked -2.2% and settled -6.0%; asked +2.2% and settled 0.0%; asked +3.6% and settled 0.0%. On average it asked +1.2% and settled -2.0%. It has always given in under pressure and has never received an increase. Its latest move came unprompted: it offered a cash discount in return for 10-day payment.",
+  "wants": [
+    "Faster payment (10 days, offered with a cash discount); we currently pay late 95% of the time, on average 6 days after due",
+    "Keeping the A-part volume (we are 11.3% of its turnover, about 0.85 M EUR a year)",
+    "A price increase for 2027 (its asks in the last two rounds were +2.2% and +3.6%)",
+    "Continuity of the framework agreement beyond 2027-06-30"
+  ],
+  "protects": [
+    "chargeback_eur_per_complaint (currently a flat EUR 150; it will resist a higher fee)",
+    "ppm_commitment (it will avoid binding numeric ppm targets given its current 4118 ppm)",
+    "unit_price downward, only moderately (past settlements show it does concede)"
+  ],
+  "trades": [
+    {
+      "give": "payment_days down from 45 net to 10 days, with a cash discount, plus a commitment to pay on time",
+      "get": "A cash-discount percentage clearly above our cost of money, plus a binding ppm_commitment and an OTD improvement plan with milestones",
+      "why": "This is its own explicit request and costs us little. It is our strongest lever and should be tied to quality.",
+      "ids": [
+        "doc:20260911-70310-M1",
+        "ctr:4600070310#4.1",
+        "sc:70310@2026Q3"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30, conditional on reaching green",
+      "get": "unit_price held flat (0%) for 2027 and a ppm/OTD glide path back to the 95% OTD target",
+      "why": "It wants volume security. Making the extension conditional on performance protects our sole supply.",
+      "ids": [
+        "ctr:4600070310#8.1",
+        "ctr:4600070310#6.1",
+        "sc:70310@2026Q3"
+      ]
+    },
+    {
+      "give": "volume_per_year: confirm current volume and keep the 100% quota while it improves",
+      "get": "chargeback_eur_per_complaint raised above the flat EUR 150, and cost recovery for the quality failures",
+      "why": "Only EUR 750 has been recharged for 7 complaints and 35 parts in 12 months, which is far below our real cost.",
+      "ids": [
+        "ctr:4600070310#6.1",
+        "sc:70310@2026Q3",
+        "doc:20260924-70310-P12"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "The scorecard has worsened every quarter: OTD 70.4% to 63.0% and ppm 1197 to 4118. It is now red and class C, against a contractual 95% OTD target. A price increase is not justifiable at this level.",
+      "ids": [
+        "sc:70310@2025Q4",
+        "sc:70310@2026Q3",
+        "ctr:4600070310#6.1"
+      ]
+    },
+    {
+      "point": "Supplier Quality has formally escalated and expects a binding improvement plan. Our commercial terms will follow its performance.",
+      "ids": [
+        "doc:20260924-70310-P12"
+      ]
+    },
+    {
+      "point": "We own the tooling for part:330010, so resourcing is feasible if it does not improve.",
+      "ids": [
+        "sc:70310@2026Q3"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year. Any 2027 change needs written notice at least 90 days before year end, which means by about 2026-10-02. A late request is not contractually valid.",
+      "ids": [
+        "ctr:4600070310#3.1"
+      ]
+    },
+    {
+      "point": "We can accept its own proposal of fast payment for a cash discount, but only within a package that includes quality commitments.",
+      "ids": [
+        "doc:20260911-70310-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Granting fast payment on its own, without tying it to ppm/OTD commitments and a price hold",
+    "Accepting any 2027 price increase while the scorecard is red",
+    "Squeezing cash so hard that it puts at risk our only source for an A-part (equity ratio 24.1%)",
+    "Continuing to pay late. It undermines our credibility on performance demands.",
+    "Humiliating, purely punitive language toward a family owner. Keep pressure firm but fair."
+  ],
+  "tone": "Firm, factual and performance-focused. Acknowledge the long relationship and its cash-discount offer, and make every concession conditional on measurable quality and delivery improvement.",
+  "red_flags": [
+    "Single source with a 100% quota and no other approved source, so a quality collapse or supplier failure would stop production",
+    "ppm has more than tripled in 12 months and OTD keeps falling, with no sign of a turnaround yet",
+    "The request for 10-day payment may point to liquidity strain (equity ratio 24.1%, credit index 232, stable but not strong)",
+    "1 open 8D in the complaint record",
+    "Our own late payments (95% late) weaken our position and may add to its cash stress"
+  ],
+  "evidence": [
+    {
+      "claim": "Red scorecard: OTD 63.0%, 4118 ppm, 7 QNs, score 60.9, class C",
+      "ids": [
+        "sc:70310@2026Q3"
+      ]
+    },
+    {
+      "claim": "Four-quarter decline from amber (OTD 70.4%, 1197 ppm)",
+      "ids": [
+        "sc:70310@2025Q4",
+        "sc:70310@2026Q1",
+        "sc:70310@2026Q2",
+        "sc:70310@2026Q3"
+      ]
+    },
+    {
+      "claim": "Formal quality escalation sent 2026-09-24",
+      "ids": [
+        "doc:20260924-70310-P12"
+      ]
+    },
+    {
+      "claim": "Supplier asked for 10-day payment in exchange for a cash discount",
+      "ids": [
+        "doc:20260911-70310-M1"
+      ]
+    },
+    {
+      "claim": "Contract: 45 days net, OTD target 95%, EUR 150 per complaint, prices fixed per year with a 90-day notice period",
+      "ids": [
+        "ctr:4600070310#4.1",
+        "ctr:4600070310#6.1",
+        "ctr:4600070310#3.1"
+      ]
+    },
+    {
+      "claim": "Price history: settled 0.0% against a +3.6% ask and 0.0% against a +2.2% ask; earlier settled -6.0%",
+      "ids": []
+    },
+    {
+      "claim": "Framework agreement runs to 2027-06-30 and extends automatically by 12 months unless terminated with 90 days' notice",
+      "ids": [
+        "ctr:4600070310#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 11.3,
+    "our_spend_eur": {
+      "FY2024": 828503,
+      "FY2025": 856497,
+      "FY2026": 851190
+    },
+    "credit_index": "232 (12 months ago 232; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.2,
+    "history_mean_settled_pct": -2.0,
+    "history_settled_minus_asked_pct": -3.2,
+    "we_pay_days_after_due_mean": 6.0,
+    "we_pay_late_share_pct": 95,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 amber (otd 70.4, ppm 1197) → 2026Q1 red (otd 67.9, ppm 2903) → 2026Q2 red (otd 65.5, ppm 3175) → 2026Q3 red (otd 63.0, ppm 4118)"
+  },
+  "practice_cases": [
+    "P12"
+  ],
+  "meta": {
+    "key": "6bf60584c8b91008",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:10",
+    "seconds": 38.5,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70310-330010",
+      "EV-2025-70310-330010",
+      "EV-2024-70310-330010"
+    ]
+  }
+}

@@ -1,0 +1,208 @@
+{
+  "supplier_id": "sup:70410",
+  "name": "Dichtungswerk Ravensteiner GmbH",
+  "archetype": "capacity_constrained",
+  "secondary_archetype": "group_approval_ladder",
+  "confidence": 0.85,
+  "summary": "Dichtungswerk Ravensteiner is a 650-staff, EUR 151 M seal maker owned by Ravensteiner Holding AG, financially stable (credit index 159, unchanged). It is running at very high utilisation: it allocates standard mechanical seals based on last year's call-offs, cannot confirm our full forecast for single-sourced part:340010, quotes longer lead times and serves customers with firm long-term commitments first. We are only 0.5 % of its turnover, so it does not need us, while we depend on it for part:340010.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "full",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.75,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 % price change; above that the pricing committee, which meets every two weeks (group: Ravensteiner Holding AG)"
+  },
+  "negotiation_pattern": "Asks moderate annual increases of 1.1-7.0 % (mean 3.18 %) and settles far lower (mean 1.01 %, settled minus asked -2.17 pp). In the last round (Nov/Dec 2025) it accepted 0 % on all three parts, and 0 % was also the outcome in 5 of 9 renewals overall. It does not fight hard on price. Its leverage now is capacity: it links extra or confirmed volume to a binding 12-month commitment rather than to price.",
+  "wants": [
+    "binding long-term commitment (12+ months) and firm forecasts to plan scarce capacity",
+    "contract security / extension beyond 2027-06-30",
+    "reliable on-time payment (we pay late 76 % of the time)",
+    "a modest price increase for 2027, kept under the 2 % committee threshold"
+  ],
+  "protects": [
+    "capacity allocation and delivery confirmations (allocates by last year's call-offs)",
+    "lead_time_days (currently longer than the agreed 42 days)",
+    "unit_price reductions (no reason to cut while sold out; anything above 2 % goes to the pricing committee)"
+  ],
+  "trades": [
+    {
+      "give": "contract_months up: binding 12-month volume commitment / extend framework beyond 2027-06-30",
+      "get": "confirmed full forecast allocation for part:340010 and lead_time_days back to the contractual 42 days",
+      "why": "It explicitly prioritises customers with firm long-term commitments.",
+      "ids": [
+        "doc:20260327-70410-M2",
+        "doc:20260918-70410-P10",
+        "ctr:4600070410#5.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: firm rolling 12-month forecast with frozen near-term call-offs",
+      "get": "unit_price held flat for 2027 (0 %, as in the last renewal)",
+      "why": "Planning security is worth more to a full plant than a small price increase; past settlements were 0 %.",
+      "ids": [
+        "news:20260822-23"
+      ]
+    },
+    {
+      "give": "payment discipline: pay strictly on day 30 (no late payments)",
+      "get": "no price increase, or any increase capped below 2 %",
+      "why": "Cheap for us; removes a reason for them to rank us low in allocation.",
+      "ids": [
+        "ctr:4600070410#4.1"
+      ]
+    },
+    {
+      "give": "effective_date: accept a small increase only if forced, effective no earlier than 2027-04-01",
+      "get": "capacity reservation for part:340010 in the commitment",
+      "why": "Staying under the 2 % approval line avoids slow committee loops and secures supply first.",
+      "ids": [
+        "doc:20260310-70410-M1",
+        "ctr:4600070410#3.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Allocation follows last year's call-offs. Our spend grew from EUR 700k (FY2024) to EUR 816k (FY2026), so our allocation share should cover the full forecast.",
+      "ids": [
+        "news:20260822-23"
+      ]
+    },
+    {
+      "point": "The framework agreement runs to 2027-06-30 with auto-extension, and the 42-day lead time is contractual. Longer lead times break the agreement.",
+      "ids": [
+        "ctr:4600070410#5.1",
+        "ctr:4600070410#8.1"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year, and changes require written notice at least 90 days before year-end (about 2026-10-02). No notice is on file, so 2027 prices should stay unchanged.",
+      "ids": [
+        "ctr:4600070410#3.1"
+      ]
+    },
+    {
+      "point": "OTD of 79.5 % is well below the 95 % contractual target. Acknowledge the ppm improvement (412 to 270), but ask for a delivery recovery plan.",
+      "ids": [
+        "sc:70410@2026Q3",
+        "sc:70410@2025Q4",
+        "ctr:4600070410#6.1"
+      ]
+    },
+    {
+      "point": "Part:340011 has a second source (sup:70440, 60 % quota). We can shift volume there, which frees Ravensteiner capacity for part:340010.",
+      "ids": [
+        "cost:340011"
+      ]
+    }
+  ],
+  "avoid": [
+    "Price-down demands based on should-cost: the +23 % gap on part:340010 rests on an estimate with only 5 % confidence, and a sold-out supplier will not cut.",
+    "Threatening to resource part:340010: there is no alternative source, and we are only 0.5 % of its turnover.",
+    "Requests needing over 2 % movement: they trigger the pricing committee and delays.",
+    "Asking for extra volume without offering a binding commitment."
+  ],
+  "tone": "Professional and partnership-oriented. Lead with commitment and planning security, firm on the contract terms, no threats.",
+  "red_flags": [
+    "Supply risk on single-sourced part:340010: full forecast not confirmed, lead times above the agreed 42 days.",
+    "Volumes allocated across customers.",
+    "OTD trending down (81.8 to 79.5 %) against the 95 % target; 1 open 8D, last complaint 2026-09-02.",
+    "We pay late 76 % of the time (avg 1.9 days), which could lower our priority in allocation.",
+    "The supplier can terminate with 90 days' notice ahead of the 2027-06-30 end; we have low leverage at 0.5 % of its turnover."
+  ],
+  "evidence": [
+    {
+      "claim": "Very high utilisation; full forecast for part:340010 cannot be confirmed; lead times longer; firm long-term commitments get priority",
+      "ids": [
+        "doc:20260918-70410-P10"
+      ]
+    },
+    {
+      "claim": "Standard mechanical seals allocated in line with last year's call-offs",
+      "ids": [
+        "news:20260822-23"
+      ]
+    },
+    {
+      "claim": "Strong order intake; additional volume only against a binding 12-month commitment",
+      "ids": [
+        "doc:20260327-70410-M2"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval (meets every two weeks)",
+      "ids": [
+        "doc:20260310-70410-M1"
+      ]
+    },
+    {
+      "claim": "Last renewal settled at 0 % on all three parts despite asks of 1.1-2.5 %",
+      "ids": []
+    },
+    {
+      "claim": "Prices fixed per calendar year; 90-day notice before year-end required for changes",
+      "ids": [
+        "ctr:4600070410#3.1"
+      ]
+    },
+    {
+      "claim": "OTD 79.5 % vs 95 % target; ppm improved to 270; scorecard green, class A",
+      "ids": [
+        "sc:70410@2026Q3",
+        "ctr:4600070410#6.1"
+      ]
+    },
+    {
+      "claim": "Part:340010 price 29.89 vs should-cost 24.31 (+23 %), estimate confidence only 5 %",
+      "ids": [
+        "cost:340010"
+      ]
+    },
+    {
+      "claim": "Group-owned, financially stable (credit index 159 unchanged, equity ratio 28.8 %)",
+      "ids": [
+        "sup:70410"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.5,
+    "our_spend_eur": {
+      "FY2024": 700405,
+      "FY2025": 808344,
+      "FY2026": 816441
+    },
+    "credit_index": "159 (12 months ago 159; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 3.18,
+    "history_mean_settled_pct": 1.01,
+    "history_settled_minus_asked_pct": -2.17,
+    "we_pay_days_after_due_mean": 1.9,
+    "we_pay_late_share_pct": 76,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:340010: price 29.89 vs cost:340010 24.31 (its own plant): +23.0 %",
+      "part:340011: price 38.29 vs cost:340011 34.74 (plant of sup:70440): +10.2 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 81.8, ppm 412) → 2026Q1 green (otd 81.6, ppm 405) → 2026Q2 green (otd 79.7, ppm 366) → 2026Q3 green (otd 79.5, ppm 270)"
+  },
+  "practice_cases": [
+    "P10"
+  ],
+  "meta": {
+    "key": "a83e613ea5206797",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:45",
+    "seconds": 38.0,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70410-340010",
+      "EV-2026-70410-340011",
+      "EV-2026-70410-340030",
+      "EV-2026-70410-340010",
+      "EV-2026-70410-340011",
+      "EV-2026-70410-340030"
+    ]
+  }
+}

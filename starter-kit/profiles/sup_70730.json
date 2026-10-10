@@ -1,0 +1,205 @@
+{
+  "supplier_id": "sup:70730",
+  "name": "Inox Center Ostalpen GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": "family_relationship",
+  "confidence": 0.5,
+  "summary": "Inox Center Ostalpen is a privately owned Austrian stainless steel service center: 150 staff, 76.3 M EUR turnover, 34.2 % equity and a stable credit index of 167. It supplies our single 1.4301 sheet part at 100 % quota. It bought nickel and alloys forward until January 2027 and is quoting a flat 4.05 EUR on that basis, even though our framework contract has a quarterly index clause with no deadband. The framework runs to 2026-12-31 and auto-extends unless notice is given 60 days ahead. Its key account manager can move price by up to 2 %; anything larger goes to a pricing committee.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.3,
+    "relationship": "good",
+    "decision_maker": "Key account manager up to 2 %. Above 2 %, the pricing committee, which meets every two weeks. The owner is personally involved and has offered to walk us through the cost calculation."
+  },
+  "negotiation_pattern": "Every annual renewal has ended below its own opening position, on average 2.3 pp lower. Asks were -6.4 %, +1.2 % and -0.8 %; settlements were -8.9 %, -1.2 % and -2.8 %. Mean settlement is -4.3 %. It even opened with an increase once and still settled on a decrease. It does not dig in. It negotiates through cost arguments: the material hedge ('market price not our reality'), and an offer by the owner to show hourly rates and material. Moves above 2 % are slower because they need committee approval.",
+  "wants": [
+    "Recognition of its forward-bought material cost until January 2027 (no immediate pass-through of falling market prices)",
+    "A fact-based price settlement using its own calculation (open-book offer from the owner)",
+    "Continuity of the framework (auto-extension) and stable volume",
+    "Punctual payment at net 30 (low priority; it is not cash-short)"
+  ],
+  "protects": [
+    "unit_price until January 2027 (material hedged; quote held flat at 4.05)",
+    "Any price move above 2 % without pricing committee approval"
+  ],
+  "trades": [
+    {
+      "give": "contract_months: extend 24 months instead of the automatic 12",
+      "get": "unit_price -2 % from 2027-01-01, within the key account manager's authority, plus the index clause unchanged (45 % material share, quarterly, 0 % deadband)",
+      "why": "A 2 % move needs no committee, and a longer contract secures the account for the supplier after its hedge expires.",
+      "ids": [
+        "ctr:4600070730#8.1",
+        "ctr:4600070730#3.2",
+        "doc:20260308-70730-M2"
+      ]
+    },
+    {
+      "give": "Accept the open-book walk-through offered by the owner; effective_date 2027-01-01 for any reduction beyond the index",
+      "get": "unit_price reduction on the 55 % non-material share (conversion and margin), justified by its own hourly-rate data",
+      "why": "Its hedge argument only covers material; conversion cost is open to discussion and the owner volunteered the data.",
+      "ids": [
+        "doc:20260806-70730-M3",
+        "doc:20260727-70730-M1",
+        "ctr:4600070730#3.2"
+      ]
+    },
+    {
+      "give": "payment_days: commit to paying punctually at net 30 (we are late on 84 % of invoices, mean 2.9 days)",
+      "get": "ppm_commitment ≤ 50 and chargeback_eur_per_complaint kept at 150",
+      "why": "This is a cheap goodwill gesture from us that removes a weak point in our position, and it answers ppm nearly doubling.",
+      "ids": [
+        "ctr:4600070730#4.1",
+        "ctr:4600070730#6.1",
+        "sc:70730@2026Q3",
+        "sc:70730@2025Q4"
+      ]
+    },
+    {
+      "give": "volume_per_year: a firm forecast or commitment for the 1.4301 sheet",
+      "get": "lead_time_days kept at 14 contractually and price held through 2027 except for index moves",
+      "why": "Gives the supplier planning security on a small, declining account.",
+      "ids": [
+        "ctr:4600070730#5.1",
+        "quote:7300063"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "The index clause is contractual: quarterly adjustment on 1 Oct and 1 Jan for any change above 0 %. Its forward purchasing is its own risk and does not override the formula. The 4.05 quote valid until January must be checked against the AS-14301 index for the 1 October adjustment.",
+      "ids": [
+        "ctr:4600070730#3.2",
+        "quote:7300063",
+        "doc:20260727-70730-M1"
+      ]
+    },
+    {
+      "point": "Every past renewal ended in a reduction, average -4.3 %. A modest step from 2027 is consistent with the relationship.",
+      "ids": []
+    },
+    {
+      "point": "We accept the owner's offer to review the calculation and want to settle on facts, especially hourly rates on the non-material 55 %.",
+      "ids": [
+        "doc:20260806-70730-M3"
+      ]
+    },
+    {
+      "point": "Quality is still green but ppm rose from 46 to 89 within a year, with 6 complaints in the last 12 months. We want a ppm commitment in the renewal.",
+      "ids": [
+        "sc:70730@2025Q4",
+        "sc:70730@2026Q3"
+      ]
+    },
+    {
+      "point": "A second source exists for this standard material.",
+      "ids": [
+        "part:370021"
+      ]
+    }
+  ],
+  "avoid": [
+    "Threatening to pull volume as the main lever. We are only 0.3 % of its turnover and this will not frighten it.",
+    "Demanding more than 2 % and expecting a same-week answer. This needs the pricing committee, which meets every two weeks; plan for it.",
+    "Dismissing its hedge outright. Acknowledge it, then point to the contract formula.",
+    "Presenting ourselves as a reliable payer. We pay late 84 % of the time."
+  ],
+  "tone": "Factual, respectful and partnership-oriented. Accept the owner's transparency offer and anchor firmly on the contract's index formula.",
+  "red_flags": [
+    "Deadline: price-change notice and termination notice are both due 60 days before 2026-12-31, roughly 1 Nov 2026. If we miss it, the contract rolls over 12 months at the current terms.",
+    "The flat 4.05 quote 'valid until January 2027' may ignore the 1 Oct index adjustment owed under clause 3.2. Verify the AS-14301 move.",
+    "ppm has nearly doubled (46 to 89). It is still green, but the trend is worsening.",
+    "Our spend is declining (288 k to 278 k to 267 k EUR), which shrinks our weight further."
+  ],
+  "evidence": [
+    {
+      "claim": "Price changes above 2 % need pricing committee approval; the committee meets every two weeks.",
+      "ids": [
+        "doc:20260308-70730-M2"
+      ]
+    },
+    {
+      "claim": "Nickel and alloys are bought forward until January 2027; the supplier calls the market price 'not our reality'.",
+      "ids": [
+        "doc:20260727-70730-M1"
+      ]
+    },
+    {
+      "claim": "The owner offered to walk us through hourly rates and material.",
+      "ids": [
+        "doc:20260806-70730-M3"
+      ]
+    },
+    {
+      "claim": "Current price is 4.05, set by index adjustment on 2026-07-01; the latest quote holds 4.05 until January 2027.",
+      "ids": [
+        "quote:7300063"
+      ]
+    },
+    {
+      "claim": "Index clause: 45 % material share on AS-14301, quarterly adjustment, 0 % deadband.",
+      "ids": [
+        "ctr:4600070730#3.2"
+      ]
+    },
+    {
+      "claim": "Contract ends 2026-12-31 and auto-extends 12 months unless terminated with 60 days' notice.",
+      "ids": [
+        "ctr:4600070730#8.1",
+        "ctr:4600070730#3.1"
+      ]
+    },
+    {
+      "claim": "Financially stable: equity 34.2 %, credit index 167 unchanged; we are 0.3 % of its turnover.",
+      "ids": [
+        "sup:70730"
+      ]
+    },
+    {
+      "claim": "Scorecard is green with A class, OTD 96 %, but ppm rose from 46 to 89.",
+      "ids": [
+        "sc:70730@2025Q4",
+        "sc:70730@2026Q3"
+      ]
+    },
+    {
+      "claim": "Past renewals settled at -8.9 %, -1.2 % and -2.8 %, each below the supplier's opening ask.",
+      "ids": []
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.3,
+    "our_spend_eur": {
+      "FY2024": 288138,
+      "FY2025": 278282,
+      "FY2026": 267004
+    },
+    "credit_index": "167 (12 months ago 167; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -2.0,
+    "history_mean_settled_pct": -4.3,
+    "history_settled_minus_asked_pct": -2.3,
+    "we_pay_days_after_due_mean": 2.9,
+    "we_pay_late_share_pct": 84,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 95.8, ppm 46) → 2026Q1 green (otd 95.7, ppm 64) → 2026Q2 green (otd 100.0, ppm 90) → 2026Q3 green (otd 96.0, ppm 89)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "7d7297b8ea87a599",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:49",
+    "seconds": 45.0,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70730-370021",
+      "EV-2025-70730-370021",
+      "EV-2024-70730-370021",
+      "EV-2026-70730-370021-Q3",
+      "EV-2024-70730-370021",
+      "EV-2025-70730-370021",
+      "EV-2026-70730-370021"
+    ]
+  }
+}

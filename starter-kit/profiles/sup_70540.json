@@ -1,0 +1,209 @@
+{
+  "supplier_id": "sup:70540",
+  "name": "Konvertek Antriebselektronik GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": "capacity_constrained",
+  "confidence": 0.8,
+  "summary": "Konvertek is a group-owned Austrian maker of frequency converters with 800 staff and EUR 196 M turnover, and financially sound (credit index 178, stable; equity 38.4 %). Its list price is head-office policy: no discounts this year, one list for all customers until June 2027, and moves above 2 % go to a pricing committee. It openly invites talks on logistics and payment terms. It is also dealing with a power-semiconductor shortage and is reviewing small accounts, and we are a small account at 0.6 % of its turnover.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "full",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 % price change; above 2 % the pricing committee (meets every two weeks); discount policy set by head office; sales director decides account focus"
+  },
+  "negotiation_pattern": "Asked for small annual increases (3.2 %, 1.0 %, 2.8 %) and settled at 0.0 % every time, so it does not fight hard on increases. Defends the list price by policy rather than by argument: 'discounts not possible this year (head-office directive)' and 'price list applies to all customers without exception'. It redirects to payment and logistics conditions. Price on part:350021 fell from 702.43 (2024 award) to 684.92 and has been held flat since.",
+  "wants": [
+    "Keep list-price integrity (no customer-specific discounts)",
+    "Volume and account size (focus on customers with volume)",
+    "Reliable, on-time payment (we pay late on 85 % of invoices)",
+    "Forecast and allocation planning under the semiconductor shortage",
+    "Room for a list-price move after June 2027"
+  ],
+  "protects": [
+    "unit_price (group list-price policy, head-office directive; anything above 2 % needs the pricing committee)",
+    "lead_time_days (chip shortage; lead times extended)"
+  ],
+  "trades": [
+    {
+      "give": "Skonto structure on payment_days (e.g. payment within 10 days) plus strict on-time payment",
+      "get": "Skonto percentage as an effective price reduction without touching the list price",
+      "why": "It offers to discuss payment conditions; skonto is not a list-price discount, so it fits the head-office policy.",
+      "ids": [
+        "doc:20260906-70540-M1",
+        "quote:7300067",
+        "ctr:4600070540#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend beyond 2027-06-30 (e.g. +12-24 months) with a rolling volume_per_year forecast",
+      "get": "Price hold through the extension (no increase after June 2027) and lead_time_days / allocation commitment",
+      "why": "The list is only fixed until June 2027 and it is prioritising volume accounts; forecast security helps its shortage planning.",
+      "ids": [
+        "doc:20260906-70540-M1",
+        "doc:20260223-70540-M2",
+        "ctr:4600070540#8.1",
+        "news:20260302-01"
+      ]
+    },
+    {
+      "give": "volume_per_year: open a share of part:350020 (currently quota 0, quoted 466.99)",
+      "get": "Better 350020 price within the KAM's 2 % authority or via the committee, plus a delivery-priority commitment",
+      "why": "Bundling volume makes us a bigger account; its 350020 quote rose 8.8 % from 429.18 to 466.99.",
+      "ids": [
+        "quote:7200003",
+        "quote:7100051",
+        "doc:20260223-70540-M2"
+      ]
+    },
+    {
+      "give": "incoterm / logistics flexibility (e.g. consolidated call-offs, FCA pickup if cheaper for us)",
+      "get": "Logistics credit or a shorter, firmer lead_time_days",
+      "why": "It explicitly offered to discuss logistics.",
+      "ids": [
+        "doc:20260906-70540-M1",
+        "ctr:4600070540#5.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Our spend is growing (EUR 0.99 M → 1.26 M → 1.27 M) and could grow further with part:350020, which makes us a volume account worth keeping.",
+      "ids": [
+        "doc:20260223-70540-M2",
+        "quote:7200003"
+      ]
+    },
+    {
+      "point": "OTD is 81.5 % against the 95 % contractual target, so we need firm lead-time and allocation commitments before adding volume.",
+      "ids": [
+        "sc:70540@2026Q3",
+        "ctr:4600070540#6.1"
+      ]
+    },
+    {
+      "point": "Keep requested price moves at or below 2 % so the KAM can agree without the pricing committee and the deal closes faster.",
+      "ids": [
+        "doc:20260711-70540-M3"
+      ]
+    },
+    {
+      "point": "Skonto and payment conditions are not list-price discounts, so they are compatible with its head-office directive.",
+      "ids": [
+        "quote:7300067",
+        "doc:20260906-70540-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a list-price cut on part:350021: policy blocks it, and the should-cost (no margin) is already 1.2 % above the price, although confidence in that estimate is only 5 %.",
+    "Threatening to switch over a few percent; we are 0.6 % of its turnover and it is pruning small accounts.",
+    "Asking for longer payment_days while we already pay late on 85 % of invoices.",
+    "Expecting quick answers on moves above 2 %; they wait for the biweekly committee."
+  ],
+  "tone": "Businesslike and structured. Accept its list policy, frame offers as payment, logistics and volume terms, and make it easy for the KAM to get internal approval.",
+  "red_flags": [
+    "Power-semiconductor shortage with extended lead times; OTD stuck at 81.5 % against a 95 % target.",
+    "It is reviewing small accounts, so there is a risk of deprioritisation or allocation cuts for us.",
+    "List price is guaranteed only until June 2027, the same date the contract ends (auto-extends unless terminated with 90 days' notice), so expect an increase push from July 2027.",
+    "Part:350021 is 100 % single-sourced here; the other source would need time given the 84-day lead times."
+  ],
+  "evidence": [
+    {
+      "claim": "Group-owned, list price is policy, no discounts this year",
+      "ids": [
+        "quote:7300067",
+        "doc:20260906-70540-M1"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need the pricing committee (biweekly)",
+      "ids": [
+        "doc:20260711-70540-M3"
+      ]
+    },
+    {
+      "claim": "Open to discussing logistics and payment conditions",
+      "ids": [
+        "doc:20260906-70540-M1"
+      ]
+    },
+    {
+      "claim": "Asked 3.2 %, 1.0 % and 2.8 % in past renewals; settled 0 % each time",
+      "ids": []
+    },
+    {
+      "claim": "Price 684.92 is 1.2 % below the no-margin should-cost of 692.92 (5 % confidence)",
+      "ids": [
+        "cost:350021"
+      ]
+    },
+    {
+      "claim": "Chip shortage, lead times extended",
+      "ids": [
+        "news:20260302-01"
+      ]
+    },
+    {
+      "claim": "OTD 81.5 % against the 95 % target; ppm 0, no complaints in the last 12 months",
+      "ids": [
+        "sc:70540@2026Q3",
+        "ctr:4600070540#6.1"
+      ]
+    },
+    {
+      "claim": "Focusing on volume customers; we are 0.6 % of its turnover",
+      "ids": [
+        "doc:20260223-70540-M2"
+      ]
+    },
+    {
+      "claim": "Part:350020 quote rose from 429.18 to 466.99",
+      "ids": [
+        "quote:7100051",
+        "quote:7200003"
+      ]
+    },
+    {
+      "claim": "Contract runs to 2027-06-30 with 12-month auto-extension; prices fixed per calendar year with 90-day change notice",
+      "ids": [
+        "ctr:4600070540#8.1",
+        "ctr:4600070540#3.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.6,
+    "our_spend_eur": {
+      "FY2024": 993134,
+      "FY2025": 1255458,
+      "FY2026": 1267102
+    },
+    "credit_index": "178 (12 months ago 178; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.33,
+    "history_mean_settled_pct": 0.0,
+    "history_settled_minus_asked_pct": -2.33,
+    "we_pay_days_after_due_mean": 1.9,
+    "we_pay_late_share_pct": 85,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350021: price 684.92 vs cost:350021 692.92 (its own plant): -1.2 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 81.5, ppm 543) → 2026Q1 green (otd 88.0, ppm 563) → 2026Q2 green (otd 81.5, ppm 0) → 2026Q3 green (otd 81.5, ppm 0)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "077d922f82c1a5b2",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:28",
+    "seconds": 43.3,
+    "release": false,
+    "dropped_ids": [
+      "EV-2024-70540-350021",
+      "EV-2025-70540-350021",
+      "EV-2026-70540-350021"
+    ]
+  }
+}

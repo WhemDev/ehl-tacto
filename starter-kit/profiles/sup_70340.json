@@ -1,0 +1,197 @@
+{
+  "supplier_id": "sup:70340",
+  "name": "Metallbau Steinfelder KG",
+  "archetype": "family_relationship",
+  "secondary_archetype": null,
+  "confidence": 0.7,
+  "summary": "Metallbau Steinfelder KG is a 40-person family KG founded in 1977, led by an owner who negotiates personally, and its finances are stable (credit index 230, equity 33 %). It calls Hollerau an important reference customer, offered to open its calculation, and works from its own price spreadsheet that is two years old. Delivery is still well below target (OTD 88.5 % vs 95 %) and two 8D reports are open, but ppm has improved every quarter.",
+  "situation": {
+    "cash_pressure": 0.2,
+    "capacity": "normal",
+    "dependency_on_us": 0.5,
+    "our_dependency": 0.35,
+    "relationship": "good",
+    "decision_maker": "Owner decides prices personally. The new inside-sales contact handles routine matters only."
+  },
+  "negotiation_pattern": "Opens with small asks and has settled about 2.5 pts below them every round. The last two renewals went 0.2 % asked to -1.3 % settled on 330020 and 3.2 % asked to 0.0 % settled on 330030; earlier rounds were -3.2 % asked to -6.1 % and -3.4 % to -7.4 %. It never forced an increase through. Its 2026-09-26 quote holds 330020 flat at 18.16. The owner engages personally and offers transparency (open calculation) rather than confrontation.",
+  "wants": [
+    "Fair, respectful treatment and being kept as a reference customer",
+    "Payment on time (we pay late 96 % of the time, about 9 days after due)",
+    "Long-term volume security: framework extension, possibly a higher share of the dual-sourced 330030",
+    "Help with price logic: index sources, recognition of its own calculation"
+  ],
+  "protects": [
+    "unit_price below its own cost calculation (it will argue with hourly rates and material)",
+    "Owner's pride in his own calculation; a forced cut without a cost argument will make him dig in"
+  ],
+  "trades": [
+    {
+      "give": "Commit to paying strictly on 30 days net (end the chronic late payment)",
+      "get": "Price hold on 330020 at 18.16 and a small cut on 330030 for 2027",
+      "why": "Paying on time costs us almost nothing, and for a family owner it is a fairness signal worth more than our interest cost.",
+      "ids": [
+        "ctr:4600070340#4.1",
+        "quote:7300074"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework by 24 months beyond 2027-06-30",
+      "get": "unit_price -1 to -2 % on both parts effective 2027-01-01",
+      "why": "Long-term commitment moves family firms, and history shows it settles below its ask.",
+      "ids": [
+        "ctr:4600070340#8.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: higher quota on 330030 (currently 50 %)",
+      "get": "OTD commitment ≥95 %, ppm_commitment ≤400, open 8Ds closed, plus a price cut on 330030",
+      "why": "Ties growth to fixing the delivery gap and rewards its improvement trend.",
+      "ids": [
+        "part:330030",
+        "sc:70340@2026Q3",
+        "ctr:4600070340#6.1"
+      ]
+    },
+    {
+      "give": "Accept the owner's open-book walk-through and share our index sources",
+      "get": "Cost-based price agreement on 330030 with a transparent, two-way index_clause",
+      "why": "The owner offered his calculation himself, and his spreadsheet is two years old, so current indices may favour us.",
+      "ids": [
+        "doc:20260721-70340-M2",
+        "doc:20260728-70340-M1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Hollerau values the partnership and wants to stay its reference customer long term, so let's set 2027 prices on a fair, transparent basis.",
+      "ids": [
+        "doc:20260418-70340-M3"
+      ]
+    },
+    {
+      "point": "Price changes need written notice 90 days before year-end (about 2026-10-02). The 330020 quote holds 18.16 and no increase notice is on file, so 2027 prices stay fixed unless agreed.",
+      "ids": [
+        "ctr:4600070340#3.1",
+        "quote:7300074"
+      ]
+    },
+    {
+      "point": "Acknowledge the ppm improvement (713 to 489), then point to the OTD gap: 88.5 % against the contractual 95 % target.",
+      "ids": [
+        "sc:70340@2025Q4",
+        "sc:70340@2026Q3",
+        "ctr:4600070340#6.1"
+      ]
+    },
+    {
+      "point": "Take up his offer to go through hourly rates and material together, and bring current index data to update his two-year-old sheet.",
+      "ids": [
+        "doc:20260721-70340-M2",
+        "doc:20260728-70340-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Threats to move volume to the second source or open tooling-transfer talk as an opener",
+    "Index or market jargon that makes the owner's outdated spreadsheet look amateurish",
+    "Asking for longer payment terms while we already pay late almost every time",
+    "Ultimatums or deadline pressure from junior contacts; address the owner directly"
+  ],
+  "tone": "Personal, respectful and partnership-oriented, addressed to the owner: thank him for the improvement and his transparency, and argue with facts and costs, not pressure.",
+  "red_flags": [
+    "OTD 88.5 % against the 95 % target; 2 open 8Ds; last complaint 2026-09-17",
+    "100 % quota on 330020 with a small 40-person, owner-dependent firm (mitigated: Hollerau owns the tooling and one alternative source exists)",
+    "Our chronic late payment (96 % late) can erode goodwill and invite pushback if raised by them"
+  ],
+  "evidence": [
+    {
+      "claim": "Family KG, founded 1977, 40 staff, turnover 2-5 M EUR, credit index 230 stable, equity 33 %",
+      "ids": [
+        "sup:70340"
+      ]
+    },
+    {
+      "claim": "Owner personally negotiates and offered an open calculation",
+      "ids": [
+        "doc:20260721-70340-M2"
+      ]
+    },
+    {
+      "claim": "Owner prices from his own spreadsheet, last updated two years ago",
+      "ids": [
+        "doc:20260728-70340-M1"
+      ]
+    },
+    {
+      "claim": "Calls Hollerau an important reference customer",
+      "ids": [
+        "doc:20260418-70340-M3"
+      ]
+    },
+    {
+      "claim": "Settled below its ask in every renewal (e.g. 3.2 % asked, 0.0 % settled; 0.2 % asked, -1.3 % settled)",
+      "ids": []
+    },
+    {
+      "claim": "Latest quote holds 330020 at 18.16 with 21 days lead time",
+      "ids": [
+        "quote:7300074"
+      ]
+    },
+    {
+      "claim": "Prices fixed per calendar year; changes need 90 days' notice before year-end",
+      "ids": [
+        "ctr:4600070340#3.1"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 with automatic 12-month extension",
+      "ids": [
+        "ctr:4600070340#8.1"
+      ]
+    },
+    {
+      "claim": "ppm improved from 713 to 489; OTD 88.5 % vs 95 % target; EUR 150 per complaint",
+      "ids": [
+        "sc:70340@2025Q4",
+        "sc:70340@2026Q3",
+        "ctr:4600070340#6.1"
+      ]
+    },
+    {
+      "claim": "Hollerau owns the tooling on both parts; 330030 is dual-sourced at 50 %",
+      "ids": [
+        "part:330020",
+        "part:330030"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "230 (12 months ago 230; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.12,
+    "history_mean_settled_pct": -2.65,
+    "history_settled_minus_asked_pct": -2.53,
+    "we_pay_days_after_due_mean": 9.2,
+    "we_pay_late_share_pct": 96,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 85.7, ppm 713) → 2026Q1 amber (otd 85.7, ppm 562) → 2026Q2 green (otd 88.0, ppm 531) → 2026Q3 green (otd 88.5, ppm 489)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "3ad0b55a8cb7e924",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:21",
+    "seconds": 44.3,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70340-330030",
+      "EV-2026-70340-330020",
+      "EV-2025-70340-330020",
+      "EV-2026-70340-330030",
+      "EV-2026-70340-330020",
+      "EV-2024-70340-330030"
+    ]
+  }
+}

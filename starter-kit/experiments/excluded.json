@@ -1,0 +1,4 @@
+{
+  "0c1e3125ffb3a494": "2026-10-10 14:47:07: session ended by a walk_away our agent never sent (no walk decision or action in experiments/out/events.jsonl); cause outside the agent, not the writer",
+  "d674a7e9b0b80e24": "2026-10-10 14:47:22: same: a walk_away 15 s after the one above, not sent by our agent"
+}

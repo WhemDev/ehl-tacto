@@ -1,0 +1,217 @@
+{
+  "supplier_id": "sup:70130",
+  "name": "Gießerei Wimbacher GmbH",
+  "archetype": "cash_short",
+  "secondary_archetype": "hungry_for_work",
+  "confidence": 0.8,
+  "summary": "Gießerei Wimbacher is a family-owned foundry (founded 1954, 120 staff, 19.3 M EUR turnover). It casts both our volute casings, on our tooling. The 66-year-old managing owner has no successor and is open to a sale. In 2026 the firm has asked for payment within 10 days at least four times, half its shop floor is idle with two shifts on short hours, and the MD says the bank is watching every month. Its formal credit metrics are still stable: credit index 231, unchanged over 12 months, equity ratio 39.9 %.",
+  "situation": {
+    "cash_pressure": 0.7,
+    "capacity": "under_used",
+    "dependency_on_us": 0.5,
+    "our_dependency": 0.45,
+    "relationship": "neutral",
+    "decision_maker": "Managing owner / MD decides on price and terms. The sales director handles account and portfolio questions."
+  },
+  "negotiation_pattern": "At each renewal it opens with a small ask, between -3.2 % and +1.4 %, and settles about 2.1 points lower. Settlements were -5.6 % (2023), -0.1 % (2024) and -1.4 % (2025). It repeatedly 'accepted below full cost to keep the volume.' For 2027 it has quoted prices flat and only asks for 10-day payment. The MD now says: 'I cannot sign anything that lowers our margin now.' Expect it to resist a plain price cut but trade readily for cash speed and volume.",
+  "wants": [
+    "Faster payment: 10 days instead of 30, with a cash discount offered in return",
+    "Reliable on-time payment from us (we pay late 82 % of the time, 2.8 days on average)",
+    "Volume security: fill idle capacity, keep or grow share as a 'customer with volume'",
+    "Contract continuity / longer term to show its bank and a potential buyer",
+    "No margin erosion: flat prices"
+  ],
+  "protects": [
+    "unit_price: price is already at or below its own estimated cost (310011 +0.2 %, 310012 -3.0 %) and the MD refuses margin cuts",
+    "payment_days: will not accept longer than 30; pushes for 10"
+  ],
+  "trades": [
+    {
+      "give": "payment_days 30 -> 10, and commit to paying on time",
+      "get": "A skonto on all invoices (target about 2 %), or an equivalent unit_price reduction. Also prices held flat for 2027.",
+      "why": "Cash is its top need. It offered a cash discount itself. 20 days of earlier payment cost us far less than a 2 % discount is worth.",
+      "ids": [
+        "doc:20260321-70130-M5",
+        "doc:20260607-70130-M2",
+        "doc:20260802-70130-M1",
+        "quote:7300078",
+        "quote:7300051"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework 24 months, with a volume_per_year forecast",
+      "get": "lead_time_days held at 45 or shorter, plus a binding OTD recovery commitment toward the 95 % target",
+      "why": "Its shop floor is idle and it is hunting volume customers. OTD has slipped from 92.2 % to 82.4 %.",
+      "ids": [
+        "doc:20260602-70130-M4",
+        "doc:20260911-70130-M3",
+        "ctr:4600070130#6.1",
+        "sc:70130@2026Q3"
+      ]
+    },
+    {
+      "give": "volume_per_year: raise the part:310012 quota above 60 %",
+      "get": "A unit_price move on 310012 toward the alternative plant's cost level. Its price is +3.4 % vs the cost:310012-70110 estimate (low-confidence estimate).",
+      "why": "It has always given price to keep volume. Extra tonnage covers fixed cost on idle capacity.",
+      "ids": [
+        "cost:310012-70110",
+        "doc:20260602-70130-M4"
+      ]
+    },
+    {
+      "give": "Hold or raise volume and keep the existing EUR 150 chargeback (no increase)",
+      "get": "ppm_commitment at or below 700 and closure of the open 8D",
+      "why": "ppm is already improving to 651, so it costs the supplier little to commit to that level.",
+      "ids": [
+        "sc:70130@2026Q3",
+        "ctr:4600070130#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can meet your liquidity request directly: 10-day payment, on time, every time, in return for a skonto. That is cash in your bank account now, not a margin cut.",
+      "ids": [
+        "doc:20260802-70130-M1",
+        "doc:20260607-70130-M2"
+      ]
+    },
+    {
+      "point": "We are a stable volume customer worth about 1.3 M EUR per year, about 6.7 % of your turnover. A multi-year commitment helps fill your idle shifts.",
+      "ids": [
+        "doc:20260911-70130-M3",
+        "doc:20260602-70130-M4"
+      ]
+    },
+    {
+      "point": "A longer framework with forecast volumes strengthens your position with the bank and with any potential buyer of the company.",
+      "ids": [
+        "news:20260322-05",
+        "doc:20260802-70130-M1"
+      ]
+    },
+    {
+      "point": "OTD at 82.4 % is well below the contractual 95 %. A volume extension requires a credible delivery recovery.",
+      "ids": [
+        "sc:70130@2026Q3",
+        "ctr:4600070130#6.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a straight unit_price cut without a cash or volume trade. The MD said explicitly he cannot sign margin reductions, and price is already near its estimated cost.",
+    "Leaning on the should-cost figures as hard proof. They carry only 5 % confidence.",
+    "Threatening to move volume away bluntly. It may push a cash-stressed family firm into distress and risk our supply on 310011 (100 % quota).",
+    "Ignoring the repeated payment requests again. Four asks with no answer harms goodwill.",
+    "Promising early payment and then paying late, as we do on 82 % of invoices today."
+  ],
+  "tone": "Respectful, partner-like and solution-oriented. Acknowledge its liquidity concern openly, propose concrete cash-for-terms trades, and keep it personal and steady as you would with a family owner.",
+  "red_flags": [
+    "Liquidity stress: the bank monitors monthly, the MD is preoccupied with cash, and two shifts are on short hours. Insolvency risk is not reflected in the stable credit index of 231.",
+    "Delivery deterioration: OTD fell from 92.2 % to 82.4 % over four quarters, and confirmed OTD is 88.2 %. This may be cash- or staffing-driven.",
+    "Succession: the 66-year-old owner has no family successor and is open to a sale. A change of control could reset terms or strategy.",
+    "part:310011 is 100 % single-quota here. The tooling is ours and one alternative source exists, but switching takes time.",
+    "Deadline: the framework ctr:4600070130 ends 2026-12-31 and auto-extends 12 months unless terminated with 90 days' notice. The notice deadline is about 2026-10-02, two days from now. Price changes also require 90 days' notice before year-end.",
+    "One 8D complaint is still open; the last complaint was on 2026-09-10."
+  ],
+  "evidence": [
+    {
+      "claim": "Repeated requests for 10-day payment in exchange for a cash discount",
+      "ids": [
+        "doc:20260321-70130-M5",
+        "doc:20260607-70130-M2",
+        "quote:7300078",
+        "quote:7300051"
+      ]
+    },
+    {
+      "claim": "MD asked twice to be paid earlier, said the bank watches monthly, and refuses margin cuts",
+      "ids": [
+        "doc:20260802-70130-M1"
+      ]
+    },
+    {
+      "claim": "Half the shop floor idle, two shifts on short hours, MD focused on cash and banks",
+      "ids": [
+        "doc:20260602-70130-M4"
+      ]
+    },
+    {
+      "claim": "Reviewing small accounts and focusing on volume customers",
+      "ids": [
+        "doc:20260322-70130-M6",
+        "doc:20260911-70130-M3"
+      ]
+    },
+    {
+      "claim": "History of accepting below full cost to keep the volume; settles about 2.1 points below its ask",
+      "ids": []
+    },
+    {
+      "claim": "Current prices are near or below its own estimated cost (low-confidence estimates)",
+      "ids": [
+        "cost:310011",
+        "cost:310012",
+        "cost:310012-70110"
+      ]
+    },
+    {
+      "claim": "OTD declining from 92.2 % to 82.4 % against a 95 % target; ppm improved to 651",
+      "ids": [
+        "sc:70130@2025Q4",
+        "sc:70130@2026Q3",
+        "ctr:4600070130#6.1"
+      ]
+    },
+    {
+      "claim": "Owner, 66, seeks a successor and is open to a sale",
+      "ids": [
+        "news:20260322-05"
+      ]
+    },
+    {
+      "claim": "Framework auto-renews unless terminated with 90 days' notice before 2026-12-31",
+      "ids": [
+        "ctr:4600070130",
+        "ctr:4600070130#8.1",
+        "ctr:4600070130#3.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 6.7,
+    "our_spend_eur": {
+      "FY2024": 1193486,
+      "FY2025": 1301472,
+      "FY2026": 1289396
+    },
+    "credit_index": "231 (12 months ago 231; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.27,
+    "history_mean_settled_pct": -2.37,
+    "history_settled_minus_asked_pct": -2.1,
+    "we_pay_days_after_due_mean": 2.8,
+    "we_pay_late_share_pct": 82,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310011: price 180.52 vs cost:310011 180.19 (its own plant): +0.2 %",
+      "part:310012: price 359.17 vs cost:310012 370.21 (its own plant): -3.0 %",
+      "part:310012: price 359.17 vs cost:310012-70110 347.27 (plant of sup:70110): +3.4 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 92.2, ppm 1486) → 2026Q1 green (otd 90.2, ppm 1163) → 2026Q2 green (otd 86.5, ppm 1290) → 2026Q3 green (otd 82.4, ppm 651)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "38fd2386490d7ea6",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:57",
+    "seconds": 44.9,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70130-310011",
+      "EV-2026-70130-310011",
+      "EV-2025-70130-310011",
+      "EV-2024-70130-310011"
+    ]
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "supplier_id": "sup:70140",
+  "name": "Odlewnia Kalwisz Sp. z o.o.",
+  "archetype": "quality_problem",
+  "secondary_archetype": "cash_short",
+  "confidence": 0.72,
+  "summary": "Odlewnia Kalwisz is a privately owned Polish foundry (210 staff, 9.8 M EUR turnover). It started a restructuring programme with its banks after two loss-making years, and its managing director is pushing for faster payment. Its delivery and quality performance with us is red: OTD 63.5 % against a 95 % target and 2376 ppm, and Supplier Quality formally escalated on 2026-09-21 for the bearing bracket, which is 100 % sourced here.",
+  "situation": {
+    "cash_pressure": 0.75,
+    "capacity": "unknown",
+    "dependency_on_us": 0.45,
+    "our_dependency": 0.55,
+    "relationship": "strained",
+    "decision_maker": "managing director (owner-run private firm); bank oversight constrains any margin-reducing deal"
+  },
+  "negotiation_pattern": "Annual renewals only. It usually opens mildly and settles lower: mean asked -0.18 %, settled -2.37 %. In Nov 2024 it asked +1.3 % and +3.8 % and both settled at 0 %. In Dec 2025 it asked -1.0 % and settled -2.5 % on 310020, and asked +2.8 % and settled 0 % on 310030. It has historically given in to pressure. That has now changed: in July 2026 the MD said he 'cannot sign anything that lowers our margin now', and its latest quote on 310020 holds the price at 45.15 but asks for 10-day payment.",
+  "wants": [
+    "faster payment (10 days requested), and simply being paid on time",
+    "stable price, with no margin erosion while under bank watch",
+    "volume and contract security to show its banks",
+    "avoiding loss of share and chargeback escalation after the red scorecard"
+  ],
+  "protects": [
+    "unit_price (no reductions; MD cannot sign margin cuts under bank watch; 310030 already sits below the no-margin should-cost estimate)",
+    "payment_days at 60 is the thing it wants to change, so it will not offer anything that lengthens it"
+  ],
+  "trades": [
+    {
+      "give": "payment_days 60 -> 10 (or 14), and pay on time",
+      "get": "a cash discount (skonto) plus a binding OTD/ppm improvement plan for part:310020",
+      "why": "Liquidity is its top need; it already offered a discount for 10-day payment.",
+      "ids": [
+        "doc:20260710-70140-M2",
+        "quote:7300011",
+        "doc:20260715-70140-M1",
+        "doc:20260921-70140-P11"
+      ]
+    },
+    {
+      "give": "unit_price held flat for 2027 (no reduction demand on 310020/310030)",
+      "get": "ppm_commitment (e.g. <1000 ppm) and a higher chargeback_eur_per_complaint than the current EUR 150",
+      "why": "Price is its red line; cost recovery on quality hurts it less than a margin cut and addresses our real problem.",
+      "ids": [
+        "doc:20260715-70140-M1",
+        "ctr:4600070140#6.1",
+        "sc:70140@2026Q3",
+        "quote:7300011"
+      ]
+    },
+    {
+      "give": "contract_months extension beyond 2027-06-30 / volume_per_year security, conditional on quarterly OTD and ppm milestones",
+      "get": "OTD recovery toward the 95 % target, a lead_time_days commitment of 56, and a firm price for the term",
+      "why": "Contract and volume visibility helps its bank story; the milestones protect us if it fails.",
+      "ids": [
+        "ctr:4600070140#8.1",
+        "news:20260911-28",
+        "ctr:4600070140#5.1",
+        "sc:70140@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We pay 93 % of invoices late, on average 8.8 days after due. Paying fast and on time is real liquidity we can offer in exchange for performance.",
+      "ids": [
+        "doc:20260710-70140-M2",
+        "doc:20260715-70140-M1"
+      ]
+    },
+    {
+      "point": "The scorecard is red and worsening. OTD fell from 78.0 % to 63.5 % against a 95 % contractual target, and ppm has stayed at 2376-3079 for a year. Its share is at stake.",
+      "ids": [
+        "sc:70140@2026Q3",
+        "sc:70140@2026Q2",
+        "ctr:4600070140#6.1",
+        "doc:20260921-70140-P11"
+      ]
+    },
+    {
+      "point": "We have alternatives. Part 310030 has 2 other sources and Kalwisz holds only 30 % quota. Part 310020 has 1 other source.",
+      "ids": [
+        "sc:70140@2026Q3"
+      ]
+    },
+    {
+      "point": "Its quote for part:310010 rose from 124.20 (Jan 2025) to 143.22 (Sep 2026). That is above the no-margin estimate of 132.64 (low confidence) and gives no basis for new volume at that price.",
+      "ids": [
+        "quote:7100002",
+        "quote:7200001",
+        "cost:310010"
+      ]
+    }
+  ],
+  "avoid": [
+    "demanding unit_price cuts: the MD has said he cannot sign them, and 310030 is already -16.2 % vs the no-margin estimate",
+    "open exit threats or a sudden quota cut on 310020; this could tip a restructuring firm and endanger supply of a 100 %-quota part",
+    "prepayment or unsecured advances to a company in bank restructuring",
+    "awarding new volume (310010) or a long extension without quality milestones",
+    "agreeing to 10-day payment without a stated skonto rate and quality commitments in return"
+  ],
+  "tone": "Firm and factual on quality, with numbers; constructive and partnership-minded on cash. Show a path where performance earns faster payment and security.",
+  "red_flags": [
+    "Insolvency risk: restructuring with banks after two loss-making years; 'bank is watching every month'",
+    "Supply risk on part:310020: 100 % quota, supplier-owned tooling, only 1 alternative; secure a tooling/second-source plan",
+    "Deteriorating delivery: OTD 63.5 % (confirmed 73.1 %), trending down",
+    "Quality: 2376 ppm, 13 complaints and 3 open 8D in the last 12 months",
+    "Contract price-change notice deadline (90 days before year end) falls around 2026-10-02; expect pressure before then"
+  ],
+  "evidence": [
+    {
+      "claim": "Restructuring programme with banks after two loss-making years",
+      "ids": [
+        "news:20260911-28"
+      ]
+    },
+    {
+      "claim": "MD asked twice for earlier payment; will not sign anything that lowers margin",
+      "ids": [
+        "doc:20260715-70140-M1"
+      ]
+    },
+    {
+      "claim": "Requested 10-day payment in exchange for a cash discount; latest 310020 quote holds price at 45.15 with 10-day terms",
+      "ids": [
+        "doc:20260710-70140-M2",
+        "quote:7300011"
+      ]
+    },
+    {
+      "claim": "Scorecard red: OTD 63.5 %, 2376 ppm, score 69.9, class C",
+      "ids": [
+        "sc:70140@2026Q3"
+      ]
+    },
+    {
+      "claim": "Formal escalation demanding an improvement plan for part:310020 and cost recovery",
+      "ids": [
+        "doc:20260921-70140-P11"
+      ]
+    },
+    {
+      "claim": "Contract: OTD target 95 %, EUR 150 per complaint, prices fixed per calendar year, 90-day notice, auto-extension after 2027-06-30",
+      "ids": [
+        "ctr:4600070140#6.1",
+        "ctr:4600070140#3.1",
+        "ctr:4600070140#8.1"
+      ]
+    },
+    {
+      "claim": "Historically settles about 2.2 pts below its ask; past increase requests settled at 0 %",
+      "ids": []
+    },
+    {
+      "claim": "310030 price 30.14 vs no-margin estimate 35.98 (low confidence, other plant)",
+      "ids": [
+        "cost:310030"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 7.0,
+    "our_spend_eur": {
+      "FY2024": 544678,
+      "FY2025": 648182,
+      "FY2026": 682716
+    },
+    "credit_index": "225 (12 months ago 225; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.18,
+    "history_mean_settled_pct": -2.37,
+    "history_settled_minus_asked_pct": -2.19,
+    "we_pay_days_after_due_mean": 8.8,
+    "we_pay_late_share_pct": 93,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310030: price 30.14 vs cost:310030 35.98 (plant of sup:70120): -16.2 %"
+    ],
+    "scorecard_trend": "2025Q4 amber (otd 78.8, ppm 3079) → 2026Q1 red (otd 74.5, ppm 2714) → 2026Q2 amber (otd 78.0, ppm 2379) → 2026Q3 red (otd 63.5, ppm 2376)"
+  },
+  "practice_cases": [
+    "P11"
+  ],
+  "meta": {
+    "key": "0a1cd44c16ebcdba",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:59",
+    "seconds": 47.0,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70140-310020",
+      "EV-2026-70140-310030",
+      "EV-2025-70140-310020",
+      "EV-2025-70140-310030"
+    ]
+  }
+}

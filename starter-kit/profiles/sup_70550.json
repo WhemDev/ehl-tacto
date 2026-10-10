@@ -1,0 +1,193 @@
+{
+  "supplier_id": "sup:70550",
+  "name": "Platinenwerk Lausitz GmbH",
+  "archetype": "near_monopolist",
+  "secondary_archetype": "group_approval_ladder",
+  "confidence": 0.6,
+  "summary": "Platinenwerk Lausitz is a privately owned PCBA maker founded in 1991, with 320 staff, EUR 88 M turnover and stable, sound finances. It is our only source for the HB smart pump control board, and we are only 0.7 % of its turnover. After four years of settling 'below full cost to keep the volume', it has given formal notice of +8.0 % (EUR 34.35 → 37.10) from 2027-01-01. Meanwhile its delivery and quality performance is slipping (OTD 85.7 % against a 95 % target, ppm up from 322 to 701).",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "unknown",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.85,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 %; anything above 2 % goes to their pricing committee, which meets every two weeks"
+  },
+  "negotiation_pattern": "Asks modestly and settles about 2 points below its ask: mean asked +0.93 %, mean settled -1.13 %. In 2026 it asked +2.1 % and got +0.4 %; in 2025 -0.5 → -2.0 %; in 2024 +1.2 → -1.8 %. Every event is noted 'accepted below full cost to keep the volume'. This year breaks the pattern: an +8 % letter, sent formally and inside the contract's 90-day notice window, which signals the margin squeeze has reached its limit. Expect it to concede from 8 %, but a much harder stance than before against flat refusal.",
+  "wants": [
+    "A real price correction (it has been below its own cost for years)",
+    "Protection against copper and component cost swings (index or pass-through mechanism)",
+    "Payment on time (we pay late on 88 % of invoices)",
+    "Volume and contract continuity beyond 2027-06-30"
+  ],
+  "protects": [
+    "unit_price: will not accept 0 % or a reduction again this time",
+    "Any settlement above 2 %, which needs pricing committee sign-off and slows the KAM down",
+    "effective_date 2027-01-01, since notice was validly given under clause 3.1"
+  ],
+  "trades": [
+    {
+      "give": "index_clause: copper/component index on the material share (~55 % of cost), with a deadband",
+      "get": "Fixed base increase of ≤2 % for 2027 instead of 8 %",
+      "why": "Turns its stated cost driver into a transparent mechanism and keeps the base move within KAM authority (no committee).",
+      "ids": [
+        "doc:20260919-70550-P17",
+        "cost:350030",
+        "doc:20260417-70550-M1"
+      ]
+    },
+    {
+      "give": "Pay strictly on the 45-day due date, or payment_days shortened to 30",
+      "get": "Lower increase or a later effective_date (e.g. 2027-04-01)",
+      "why": "We pay late 88 % of the time (mean +4.4 days), so on-time payment is a cheap, credible give for us.",
+      "ids": [
+        "ctr:4600070550#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30 (e.g. +24 months), plus a rolling forecast at ~18.5k pcs/year",
+      "get": "Increase capped well below 8 %, plus a price hold for the extension period",
+      "why": "Volume security has been its stated reason to accept low prices in every past event.",
+      "ids": [
+        "ctr:4600070550#8.1",
+        "sc:70550@2026Q3"
+      ]
+    },
+    {
+      "give": "Accept a moderate price step",
+      "get": "ppm_commitment (back to ≤350), an OTD recovery plan toward 95 %, closure of the 2 open 8Ds, and a higher chargeback_eur_per_complaint",
+      "why": "Ties any increase to reversing a clear quality and delivery decline.",
+      "ids": [
+        "sc:70550@2026Q3",
+        "sc:70550@2025Q4",
+        "ctr:4600070550#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Performance does not justify 8 %. OTD is 85.7 % against the contractual 95 % target, ppm has more than doubled from 322 to 701, 13 complaints were logged in the latest period, and 2 8Ds are still open.",
+      "ids": [
+        "sc:70550@2026Q3",
+        "sc:70550@2025Q4",
+        "ctr:4600070550#6.1"
+      ]
+    },
+    {
+      "point": "The letter claims copper and component cost increases but gives no figures. Ask for a cost breakdown (material/conversion) before any committee decision.",
+      "ids": [
+        "doc:20260919-70550-P17"
+      ]
+    },
+    {
+      "point": "We have been a steady A-part customer at ~EUR 600-675k a year for three years and want a long-term, predictable arrangement rather than one-off jumps.",
+      "ids": [
+        "ctr:4600070550#8.1"
+      ]
+    },
+    {
+      "point": "Propose a solution the KAM can sign alone: ≤2 % base plus an index mechanism, which avoids the pricing committee cycle.",
+      "ids": [
+        "doc:20260417-70550-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Flat refusal or demanding a reduction: our price is ~7.8 % below its estimated own cost, and as a sole source it can deprioritise us at 0.7 % of its turnover.",
+    "Threatening to resource: there are 0 other sources, a PCBA requalification is slow, and the threat is not credible.",
+    "Leaning on our should-cost figure as hard fact: its confidence is only 5 %.",
+    "Raising payment discipline as our strength: we are the late payer here.",
+    "Claiming the notice was invalid: it was sent 2026-09-19, inside the 90-day window of clause 3.1."
+  ],
+  "tone": "Respectful and partnership-oriented. Acknowledge the cost pressure, be firm and factual on quality data, and offer a structured package rather than haggling.",
+  "red_flags": [
+    "Single source (100 % quota, no alternative) for an A-class PCBA, with high supply risk if talks sour.",
+    "Price is below its estimated cost after four below-cost settlements, so the risk of a sustained margin squeeze leading to deprioritisation or walk-away is real.",
+    "Quality is deteriorating: ppm 322 → 701, OTD 85.7 % against the 95 % target, 2 open 8Ds, last complaint 2026-09-22.",
+    "Lead time is 56 days, so any disruption hits pump output fast.",
+    "Framework auto-extends from 2027-06-30 unless terminated with 90 days' notice, giving either side an exit window in early 2027."
+  ],
+  "evidence": [
+    {
+      "claim": "Asks +8.0 % (EUR 34.35 → 37.10) from 2027-01-01, citing copper and component prices.",
+      "ids": [
+        "doc:20260919-70550-P17"
+      ]
+    },
+    {
+      "claim": "The KAM can only approve price changes up to 2 %; above that the pricing committee decides, meeting every two weeks.",
+      "ids": [
+        "doc:20260417-70550-M1"
+      ]
+    },
+    {
+      "claim": "Current price is 7.8 % below the bottom-up own-plant cost of 37.24, though that estimate has only 5 % confidence.",
+      "ids": [
+        "cost:350030"
+      ]
+    },
+    {
+      "claim": "Every past event settled about 2 points below its ask, each noted as accepted below full cost to keep the volume.",
+      "ids": []
+    },
+    {
+      "claim": "OTD is 85.7 % and ppm 701, worsening from ppm 322; the scorecard is still green, class A.",
+      "ids": [
+        "sc:70550@2026Q3",
+        "sc:70550@2025Q4"
+      ]
+    },
+    {
+      "claim": "Contract terms: prices fixed per calendar year with 90-day notice for changes; 45 days net; OTD target 95 %; EUR 150 per complaint.",
+      "ids": [
+        "ctr:4600070550#3.1",
+        "ctr:4600070550#4.1",
+        "ctr:4600070550#6.1"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 and auto-extends 12 months unless terminated with 90 days' notice.",
+      "ids": [
+        "ctr:4600070550#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.7,
+    "our_spend_eur": {
+      "FY2024": 602033,
+      "FY2025": 674639,
+      "FY2026": 635796
+    },
+    "credit_index": "150 (12 months ago 150; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.93,
+    "history_mean_settled_pct": -1.13,
+    "history_settled_minus_asked_pct": -2.06,
+    "we_pay_days_after_due_mean": 4.4,
+    "we_pay_late_share_pct": 88,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350030: price 34.35 vs cost:350030 37.24 (its own plant): -7.8 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 84.0, ppm 322) → 2026Q1 green (otd 88.5, ppm 405) → 2026Q2 green (otd 91.7, ppm 451) → 2026Q3 green (otd 85.7, ppm 701)"
+  },
+  "practice_cases": [
+    "P17"
+  ],
+  "meta": {
+    "key": "b569b361fae1fbae",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:29",
+    "seconds": 41.8,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70550-350030",
+      "EV-2026-70550-350030",
+      "EV-2026-70550-350030",
+      "EV-2025-70550-350030",
+      "EV-2024-70550-350030",
+      "EV-2023-70550-350030"
+    ]
+  }
+}

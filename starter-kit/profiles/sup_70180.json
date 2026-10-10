@@ -1,0 +1,178 @@
+{
+  "supplier_id": "sup:70180",
+  "name": "Feinguss Allgäu-Reiter GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.75,
+  "summary": "Feinguss Allgäu-Reiter is a family-owned investment foundry founded in 1962, with 160 staff and €24.1 M turnover. It casts our volute casing and impeller from Hollerau-owned tooling. The owner visited on 2026-09-24, recalled that in 2022 they held the old price for a quarter, and said he expects 'partnership in return'. That reads as groundwork for a price request before the contractual notice deadline (~2026-10-02). Meanwhile their delivery performance is slipping: OTD fell to 73.1 % against a 95 % target, and one 8D report is overdue.",
+  "situation": {
+    "cash_pressure": 0.3,
+    "capacity": "unknown",
+    "dependency_on_us": 0.2,
+    "our_dependency": 0.5,
+    "relationship": "neutral",
+    "decision_maker": "owner (personally engaged, visited himself)"
+  },
+  "negotiation_pattern": "Opens modestly and accepts reductions. It asked roughly 0 % in the last two renewals and settled at -2.1 % and -3.0 %. In 2023 it asked -2.1 % and -5.1 % and settled at -3.7 % and -6.4 %. When it asked for increases (+1.5 % and +4.0 % in 2024), it settled at 0 %. On average it settles 2.26 pp below its ask. It does not fight hard on paper, but it keeps score: the owner now invokes past goodwill and expects reciprocity.",
+  "wants": [
+    "recognition and fairness for 2022 loyalty (partnership)",
+    "on-time payment (we pay late in 91 % of cases, on average 4.1 days after due)",
+    "long-term volume security and contract continuity beyond 2027-06",
+    "stable price, no further cuts after three years of net reductions"
+  ],
+  "protects": [
+    "unit_price against further steep cuts (has given -2 to -6 % repeatedly; will dig in if pushed again)",
+    "dignity of the relationship: will not accept being benchmarked against a Chinese should-cost"
+  ],
+  "trades": [
+    {
+      "give": "pay strictly on time; optionally shorten payment_days or add a small skonto",
+      "get": "price hold for 2027 (no increase) or a small reduction",
+      "why": "Our late payment is a concrete fairness grievance; fixing it is cheap goodwill for a family owner.",
+      "ids": [
+        "ctr:4600070180#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework (e.g. 24 months beyond 2027-06-30) and share a volume_per_year forecast",
+      "get": "unit_price hold or reduction plus a binding OTD recovery plan toward the 95 % target",
+      "why": "Long-term commitment is what 'partnership' means to an owner-led firm, and spend has grown every year.",
+      "ids": [
+        "ctr:4600070180#8.1",
+        "ctr:4600070180#6.1",
+        "sc:70180@2026Q3"
+      ]
+    },
+    {
+      "give": "quota security: keep 75 % / 60 % shares",
+      "get": "closure of the overdue 8D, an OTD commitment, and enforcement of the agreed €150/complaint chargeback (currently never recharged)",
+      "why": "Ties volume security to fixing the delivery slide without attacking price.",
+      "ids": [
+        "sc:70180@2026Q3",
+        "ctr:4600070180#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We have grown our business with them every year, from €584k to €751k to €799k, and want to keep doing so. That is the partnership we offer.",
+      "ids": [
+        "sc:70180@2026Q3"
+      ]
+    },
+    {
+      "point": "OTD has fallen to 73.1 % against a 95 % contractual target, and an 8D is overdue. Partnership works both ways, so a recovery plan is a precondition for any price discussion.",
+      "ids": [
+        "sc:70180@2026Q3",
+        "sc:70180@2026Q2",
+        "ctr:4600070180#6.1"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year, and changes need written notice 90 days before year-end. Any 2027 increase not notified by about 2026-10-02 is out of time.",
+      "ids": [
+        "ctr:4600070180#3.1"
+      ]
+    },
+    {
+      "point": "We acknowledge the 2022 goodwill explicitly. It costs nothing and matters to the owner.",
+      "ids": [
+        "doc:20260924-70180-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Quoting the cost:310051 should-cost (+39.7 %). It models a different, Chinese plant at only 5 % confidence and would insult the owner.",
+    "Threatening re-sourcing or tooling transfer as an opener. Keep it as a last resort only.",
+    "Hard, impersonal percentage demands, or ignoring the 2022 gesture.",
+    "Raising our own late payment only when they raise it. Fix it proactively."
+  ],
+  "tone": "Personal, respectful and long-term. Address the owner directly, acknowledge 2022, and be firm but fair on delivery performance.",
+  "red_flags": [
+    "OTD trend is deteriorating (81.5 → 78.8 → 73.1 %), scorecard is back to amber, and one 8D is overdue.",
+    "A price-increase request is likely imminent, signalled by the owner's 'partnership in return' remark. Check whether written notice arrives before ~2026-10-02.",
+    "Equity ratio is 25 % and the credit index is 244 (stable, not weak). There is moderate rather than acute financial risk.",
+    "We are only 3.3 % of its turnover, so it could deprioritise us or walk away if treated badly.",
+    "Each part has only one alternative source. Tooling is ours, so switching is feasible but not quick."
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned GmbH, founded 1962, 160 staff, turnover €24.1 M, equity ratio 25 %, credit index 244 unchanged over 12 months",
+      "ids": [
+        "sup:70180"
+      ]
+    },
+    {
+      "claim": "The owner visited on 2026-09-24, reminded us of the 2022 price hold for a quarter and expects partnership in return",
+      "ids": [
+        "doc:20260924-70180-M1"
+      ]
+    },
+    {
+      "claim": "Settled below its ask in every renewal: -2.1 % (ask 0 %) and -3.0 % (ask +0.1 %) for 2026; 0 % against asks of +1.5 % / +4 % for 2025",
+      "ids": []
+    },
+    {
+      "claim": "OTD 73.1 % with one overdue 8D, amber, against a contractual 95 % target and €150/complaint chargeback",
+      "ids": [
+        "sc:70180@2026Q3",
+        "ctr:4600070180#6.1"
+      ]
+    },
+    {
+      "claim": "Price changes need written notice 90 days before calendar year-end; the framework runs to 2027-06-30 with automatic 12-month extension",
+      "ids": [
+        "ctr:4600070180#3.1",
+        "ctr:4600070180#8.1"
+      ]
+    },
+    {
+      "claim": "Hollerau owns the tooling for both parts, each part has one other source, and quotas are 75 % and 60 %",
+      "ids": [
+        "part:310050",
+        "part:310051"
+      ]
+    },
+    {
+      "claim": "The impeller price of 118.73 is 39.7 % above a should-cost of 84.97, but that estimate models a Chinese plant (sup:70160) at 5 % confidence",
+      "ids": [
+        "cost:310051"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 3.3,
+    "our_spend_eur": {
+      "FY2024": 583594,
+      "FY2025": 751199,
+      "FY2026": 798960
+    },
+    "credit_index": "244 (12 months ago 244; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.27,
+    "history_mean_settled_pct": -2.53,
+    "history_settled_minus_asked_pct": -2.26,
+    "we_pay_days_after_due_mean": 4.1,
+    "we_pay_late_share_pct": 91,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310051: price 118.73 vs cost:310051 84.97 (plant of sup:70160): +39.7 %"
+    ],
+    "scorecard_trend": "2025Q4 amber (otd 79.6, ppm 1106) → 2026Q1 green (otd 81.5, ppm 542) → 2026Q2 green (otd 78.8, ppm 539) → 2026Q3 amber (otd 73.1, ppm 526)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "c90cf1789d6cb6e9",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:45",
+    "seconds": 33.0,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70180-310050",
+      "EV-2026-70180-310051",
+      "EV-2025-70180-310050",
+      "EV-2025-70180-310051",
+      "EV-2026-70180-310051"
+    ]
+  }
+}

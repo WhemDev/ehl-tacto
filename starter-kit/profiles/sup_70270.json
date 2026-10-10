@@ -1,0 +1,189 @@
+{
+  "supplier_id": "sup:70270",
+  "name": "Obrábění Kraslin s.r.o.",
+  "archetype": "family_relationship",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.7,
+  "summary": "Obrábění Kraslin is a founder-owned Czech machining shop (30 staff, 2-5 M EUR turnover, founded 2008) and the 100 % single source for adapter piece part:320050 at 15.88 EUR. The owner negotiates personally, remembers that he held the old price for a quarter in 2022, and expects partnership in return. Its delivery and quality scorecard has been amber for four quarters (OTD 84.6 % against a 95 % target, 1531 ppm), though it is improving, and its sales side is reviewing small accounts to focus on customers with volume.",
+  "situation": {
+    "cash_pressure": 0.2,
+    "capacity": "unknown",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "owner (founder) decides price; sales director drives account prioritisation"
+  },
+  "negotiation_pattern": "Opens with moderate asks (+2.8 %, +5.8 %) and settles well below them (0.0 %, +2.7 %). The average gap between ask and settlement is -2.4 points. In 2023 he even offered a decrease (-4.1 %) and accepted -5.4 %. He frames talks in terms of reciprocity and past favours rather than hard data. His cost basis is a personal spreadsheet last updated two years ago, and he questioned where our index figures come from. He has not used his contractual price-notice window aggressively.",
+  "wants": [
+    "being treated as a partner (recognition of the 2022 price hold)",
+    "on-time payment (we pay late 85 % of the time)",
+    "volume and continuity security (contract extension, forecasts)",
+    "transparent, trusted price/index basis",
+    "modest price increase to cover costs"
+  ],
+  "protects": [
+    "fairness and reciprocity: will dig in if pressured or lectured",
+    "unit_price below cost as he sees it (hard 0 % was already conceded last round)",
+    "the account itself: may drop small/low-margin customers rather than give more"
+  ],
+  "trades": [
+    {
+      "give": "payment_days: commit to genuinely paying on time at 45 days (stop the average 5.4 days late)",
+      "get": "unit_price held at 15.88 EUR for 2027",
+      "why": "Fixes a real fairness grievance at near-zero cost to us. For a reciprocity-driven owner, it is worth more than its interest value.",
+      "ids": [
+        "ctr:4600070270#4.1",
+        "sup:70270"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30 (e.g. +12-24 months) plus a rolling volume forecast",
+      "get": "price hold or a capped increase of 1 % or less",
+      "why": "The supplier is screening out small accounts. Committed continuity keeps us in the 'volume customer' group.",
+      "ids": [
+        "ctr:4600070270#8.1",
+        "doc:20260223-70270-M2"
+      ]
+    },
+    {
+      "give": "index_clause: offer a transparent, jointly agreed public index with a deadband, and share our data sources",
+      "get": "drop ad-hoc annual increase asks; settle 2027 on index facts",
+      "why": "The owner's spreadsheet is two years old and he asked about our sources. Shared data builds trust and anchors the price on facts.",
+      "ids": [
+        "doc:20260809-70270-M1",
+        "ctr:4600070270#3.1"
+      ]
+    },
+    {
+      "give": "chargeback_eur_per_complaint: keep the 150 EUR flat fee unchanged (no escalation)",
+      "get": "ppm_commitment below 1000 and an OTD improvement plan toward the 95 % target",
+      "why": "The trend is improving but still amber. A cooperative fix-plan fits the relationship better than penalties.",
+      "ids": [
+        "ctr:4600070270#6.1",
+        "sc:70270@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We acknowledge the 2022 quarter at the old price and want a long-term partnership. Here is what we offer in return: on-time payment and an extended contract.",
+      "ids": [
+        "doc:20260318-70270-M3",
+        "ctr:4600070270#8.1"
+      ]
+    },
+    {
+      "point": "Last year closed at 0 % and the price is fixed per calendar year. Any 2027 change needs written notice 90 days before year-end, i.e. by early October 2026.",
+      "ids": [
+        "ctr:4600070270#3.1"
+      ]
+    },
+    {
+      "point": "Delivery is still far from the agreed 95 % OTD (84.6 %) and ppm is around 1500. Price discussion should go hand in hand with continued improvement.",
+      "ids": [
+        "sc:70270@2026Q3",
+        "ctr:4600070270#6.1"
+      ]
+    },
+    {
+      "point": "Offer to walk him through the current index data. His figures are two years old, and updated numbers may not justify a large increase.",
+      "ids": [
+        "doc:20260809-70270-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Threatening resourcing or using the tooling ownership as a club in the opening: it triggers digging in from a founder who expects partnership.",
+    "Ignoring or dismissing the 2022 favour.",
+    "Condescension about his outdated spreadsheet; offer data as help instead.",
+    "Demanding longer payment terms while we already pay late most of the time.",
+    "Treating Hollerau as a small account that asks a lot and gives little, given he is pruning small customers."
+  ],
+  "tone": "Personal, respectful, owner-to-partner. Acknowledge history, be factual and fair, firm but never aggressive.",
+  "red_flags": [
+    "Single source (100 % quota, no other sources) for part:320050; a walk-away would hurt us, though we own the tooling.",
+    "Supplier is reviewing small accounts; Hollerau could be deprioritised or dropped.",
+    "Persistent amber scorecard: OTD 84.6 % vs 95 % target, ppm 1531.",
+    "Our chronic late payment (85 % late) undermines the partnership narrative and could fuel a price push.",
+    "The 90-day notice window for a 2027 change expires within days; expect a late increase request."
+  ],
+  "evidence": [
+    {
+      "claim": "Founder-owned s.r.o., 30 staff, 2-5 M EUR turnover; credit index stable at 245, equity ratio 44.8 % (no cash stress).",
+      "ids": [
+        "sup:70270"
+      ]
+    },
+    {
+      "claim": "Owner reminded us of the 2022 quarter at the old price and expects partnership.",
+      "ids": [
+        "doc:20260318-70270-M3"
+      ]
+    },
+    {
+      "claim": "Sales director is reviewing small accounts and focusing on volume customers.",
+      "ids": [
+        "doc:20260223-70270-M2"
+      ]
+    },
+    {
+      "claim": "Owner uses his own index spreadsheet, last updated two years ago.",
+      "ids": [
+        "doc:20260809-70270-M1"
+      ]
+    },
+    {
+      "claim": "Renewal history: asked +2.8 % and settled 0.0 %; asked +5.8 % and settled +2.7 %; asked -4.1 % and settled -5.4 %.",
+      "ids": []
+    },
+    {
+      "claim": "Scorecard amber for four quarters; OTD improving from 73.1 % to 84.6 %, ppm 1531 in the latest quarter.",
+      "ids": [
+        "sc:70270@2025Q4",
+        "sc:70270@2026Q1",
+        "sc:70270@2026Q2",
+        "sc:70270@2026Q3"
+      ]
+    },
+    {
+      "claim": "Contract: prices fixed per calendar year with 90-day notice before year-end, 45 days net, EXW, 150 EUR per complaint, runs to 2027-06-30 with auto-extension.",
+      "ids": [
+        "ctr:4600070270#3.1",
+        "ctr:4600070270#4.1",
+        "ctr:4600070270#6.1",
+        "ctr:4600070270#8.1"
+      ]
+    },
+    {
+      "claim": "Single source with 100 % quota and no alternatives, but Hollerau owns the tooling.",
+      "ids": [
+        "sup:70270"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "245 (12 months ago 245; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.5,
+    "history_mean_settled_pct": -0.9,
+    "history_settled_minus_asked_pct": -2.4,
+    "we_pay_days_after_due_mean": 5.4,
+    "we_pay_late_share_pct": 85,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 amber (otd 73.1, ppm 1557) → 2026Q1 amber (otd 74.1, ppm 1937) → 2026Q2 amber (otd 78.6, ppm 1661) → 2026Q3 amber (otd 84.6, ppm 1531)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "69fecd50ee4b2c38",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:37",
+    "seconds": 37.6,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70270-320050",
+      "EV-2026-70270-320050",
+      "EV-2025-70270-320050",
+      "EV-2024-70270-320050"
+    ]
+  }
+}

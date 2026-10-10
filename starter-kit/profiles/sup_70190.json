@@ -1,0 +1,208 @@
+{
+  "supplier_id": "sup:70190",
+  "name": "Gießerei Pfaffenreuth GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.6,
+  "summary": "Gießerei Pfaffenreuth is a family-owned foundry founded in 1949, with 95 staff, about EUR 14.8 M turnover and stable, sound finances (credit index 227, unchanged; equity 33.9 %). It has locked in electricity and material costs until December 2028 and is offering to hold the 310040 price on that basis. It is also bidding for more of our parts (310020 re-quoted lower). Its weak spot is delivery and quality: OTD is 85 % against a 95 % target, the scorecard fell back to amber in 2026Q3 and one 8D is overdue.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.65,
+    "relationship": "neutral",
+    "decision_maker": "Owning family / managing director for price and contract moves (inferred from family ownership, not stated); since Oct 2025 day-to-day contact is a new inside-sales colleague"
+  },
+  "negotiation_pattern": "Asks modestly (mean +0.5 %; asks of 1.3–4.0 % in the last two rounds) and usually settles at or below zero (mean -1.87 %). It held at 0.0 % three times and accepted -2.5 % on 310040 last round. It has never fought hard and does not escalate. It now argues from its hedges: market energy prices are 'not our reality' before 2029. The 310040 price is already at should-cost with no margin, so further cuts there will meet real resistance.",
+  "wants": [
+    "Long-term volume security matching its 2028 cost hedges (price hold offered until Dec 2028)",
+    "New business: award of qualified parts 310020 / 310030 / 310011 (re-quoted 310020 down from 57.40 to 53.56)",
+    "Higher quota on 310060 (currently 40 %)",
+    "Fair treatment: payment on time (we pay late on 81 % of invoices)"
+  ],
+  "protects": [
+    "unit_price on 310040 (already at no-margin should-cost; price only held, not cut)",
+    "index_clause tied to energy or material market prices (it hedged to 2028 and rejects market-price logic)",
+    "Relationship and reputation: digs in against hard pressure"
+  ],
+  "trades": [
+    {
+      "give": "contract_months: extend the framework (or fix prices) to Dec 2028",
+      "get": "310040 held at 33.94 until Dec 2028 and a 2–4 % reduction on 310060 toward should-cost",
+      "why": "Its own costs are fixed to 2028, so a long price lock costs it nothing; 310060 sits 9 % above a no-margin DE estimate.",
+      "ids": [
+        "quote:7300064",
+        "doc:20260623-70190-M1",
+        "news:20260426-10",
+        "cost:310060",
+        "ctr:4600070190#8.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: award 310020 (bearing bracket) or raise the 310060 quota above 40 %",
+      "get": "unit_price: 310060 cut toward 39.82 plus a further step down on the 310020 quote",
+      "why": "It is actively pursuing new parts and has already moved 6.7 % on 310020 unprompted.",
+      "ids": [
+        "quote:7200011",
+        "quote:7100008",
+        "cost:310060"
+      ]
+    },
+    {
+      "give": "payment_days: commit to paying on the 30-day due date (end our late payments)",
+      "get": "ppm_commitment ≤500 and an OTD improvement plan toward the 95 % target, with the overdue 8D closed",
+      "why": "Paying on time is a fairness gesture a family firm values; it costs us only the 3-day average delay.",
+      "ids": [
+        "ctr:4600070190#4.1",
+        "ctr:4600070190#6.1",
+        "sc:70190@2026Q3"
+      ]
+    },
+    {
+      "give": "volume_per_year: award new parts conditional on quality",
+      "get": "chargeback_eur_per_complaint raised from EUR 150 flat, or a ppm-linked bonus/malus",
+      "why": "Tying new volume to quality uses its share ambitions without open threats.",
+      "ids": [
+        "ctr:4600070190#6.1",
+        "sc:70190@2026Q3",
+        "quote:7200011"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Your energy and material are secured to 2028, so a fixed price to 2028 carries no risk for you. Let's match the contract to it.",
+      "ids": [
+        "news:20260426-10",
+        "doc:20260623-70190-M1",
+        "quote:7300064"
+      ]
+    },
+    {
+      "point": "310060 is about 9 % above a no-margin German cost estimate. There is room to share a fair margin, especially with more quota.",
+      "ids": [
+        "cost:310060"
+      ]
+    },
+    {
+      "point": "Delivery and quality decide new awards: OTD 85.1 % against 95 % agreed, ppm back up to 715, one 8D overdue.",
+      "ids": [
+        "sc:70190@2026Q3",
+        "ctr:4600070190#6.1"
+      ]
+    },
+    {
+      "point": "Partnership since 2022, with steady spend of about EUR 1.05–1.11 M a year.",
+      "ids": [
+        "ctr:4600070190"
+      ]
+    }
+  ],
+  "avoid": [
+    "Pushing a cut on 310040: its price is already equal to no-margin should-cost",
+    "Arguing with falling energy or market prices: it has rejected this explicitly",
+    "Ultimatums or resourcing threats: family firm, and 310040 is single-sourced",
+    "Demanding concessions while we still pay late"
+  ],
+  "tone": "Respectful and personal, framing it as a long-term partnership; firm but factual on OTD/ppm; address it in German style, formal 'Sie'.",
+  "red_flags": [
+    "Notice deadline: price changes need written notice 90 days before year-end, i.e. by about 2026-10-02. Send our 2027 price request in writing now.",
+    "310040 is 100 % single source with no other qualified source (tooling is ours, so resourcing is possible but slow)",
+    "OTD far below the 95 % target; scorecard slipped back to amber; 2 open 8Ds, 1 overdue",
+    "Our late payment (81 % of invoices) weakens our position"
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned, founded 1949, 95 staff, EUR 14.8 M turnover, stable credit index 227, equity 33.9 %",
+      "ids": [
+        "sup:70190"
+      ]
+    },
+    {
+      "claim": "Electricity hedged 2026–2028; market price 'not our reality'",
+      "ids": [
+        "news:20260426-10",
+        "doc:20260623-70190-M1"
+      ]
+    },
+    {
+      "claim": "Price hold on 310040 at 33.94 with material covered until Dec 2028",
+      "ids": [
+        "quote:7300064"
+      ]
+    },
+    {
+      "claim": "310040 at no-margin should-cost (+0.0 %); 310060 is 9 % above the DE estimate",
+      "ids": [
+        "cost:310040",
+        "cost:310060"
+      ]
+    },
+    {
+      "claim": "310040 is 100 % quota with no other source; 310060 has 40 % quota",
+      "ids": [
+        "part:310040",
+        "part:310060"
+      ]
+    },
+    {
+      "claim": "Scorecard 2026Q3 amber: OTD 85.1 %, ppm 715, 1 overdue 8D; contract target is 95 % OTD with EUR 150 per complaint",
+      "ids": [
+        "sc:70190@2026Q3",
+        "ctr:4600070190#6.1"
+      ]
+    },
+    {
+      "claim": "History: asks small, settles about 2.4 pts below its ask; last round -2.5 % on 310040 and 0.0 % on 310060",
+      "ids": []
+    },
+    {
+      "claim": "Price change needs 90-day written notice before year-end; framework runs to 2027-06-30 and auto-extends",
+      "ids": [
+        "ctr:4600070190#3.1",
+        "ctr:4600070190#8.1"
+      ]
+    },
+    {
+      "claim": "Re-quoted 310020 at 53.56, down from 57.40",
+      "ids": [
+        "quote:7200011",
+        "quote:7100008"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 7.1,
+    "our_spend_eur": {
+      "FY2024": 1060689,
+      "FY2025": 1111179,
+      "FY2026": 1048066
+    },
+    "credit_index": "227 (12 months ago 227; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.5,
+    "history_mean_settled_pct": -1.87,
+    "history_settled_minus_asked_pct": -2.37,
+    "we_pay_days_after_due_mean": 3.0,
+    "we_pay_late_share_pct": 81,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310040: price 33.94 vs cost:310040 33.93 (its own plant): +0.0 %",
+      "part:310060: price 43.39 vs cost:310060 39.82 (plant of DE): +9.0 %"
+    ],
+    "scorecard_trend": "2025Q4 amber (otd 82.0, ppm 937) → 2026Q1 green (otd 82.4, ppm 745) → 2026Q2 green (otd 84.3, ppm 630) → 2026Q3 amber (otd 85.1, ppm 715)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "5cf90c250d1b4ab9",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:52",
+    "seconds": 39.8,
+    "release": false,
+    "dropped_ids": [
+      "EV-2023-70190-310040",
+      "EV-2026-70190-310040",
+      "EV-2026-70190-310060"
+    ]
+  }
+}

@@ -1,0 +1,213 @@
+{
+  "supplier_id": "sup:70620",
+  "name": "Wälzlager-Zentrum Süd GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": "near_monopolist",
+  "confidence": 0.45,
+  "summary": "Wälzlager-Zentrum Süd is a family-owned bearing distributor founded in 1975, with 120 staff and EUR 46.8 M turnover. It is financially stable (credit index 181, unchanged; equity 34 %) and is narrowing its focus to large key accounts. It now calls our 0.5 % share 'not strategic' and wants standard items supplied from stock at list conditions, with individual agreements not extended. Our framework expires 2026-12-31. The supplier has opened the renewal by asking for our volumes, but its RFQ quote for 6306 is 5.5 % above its own list quote.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.08,
+    "our_dependency": 0.45,
+    "relationship": "strained",
+    "decision_maker": "Owner decides on prices and has offered to open the calculation. The new sales director is the gatekeeper and treats us as a small account."
+  },
+  "negotiation_pattern": "Annual renewal asks ranged from 1.6 % to 7.1 % (mean asked 4.13 %). Settlements averaged 1.78 %, and four of nine renewals settled at 0 %. It used to give back about 2.35 pts per round. Since mid-2026 it has hardened to a list-price policy: no discounts on standard items, and only multi-year volume agreements change prices. For the 6306 renewal it quoted 4.63 vs its own list quote of 4.39 (+5.5 %).",
+  "wants": [
+    "multi-year volume agreement (contract_months up, committed volume_per_year)",
+    "volume concentration / higher share (we hold 70 % / 40 % / 100 % quotas)",
+    "reliable volume forecasts (asked for expected volumes)",
+    "punctual payment on the agreed 30 days (we pay late 85 % of the time)",
+    "low-effort standard business: list/stock items, few individual deals"
+  ],
+  "protects": [
+    "unit_price on standard items (list conditions policy)",
+    "individual/special agreements (will not extend for small accounts)",
+    "stock-only supply model (no dedicated stock or special lead-time commitments)"
+  ],
+  "trades": [
+    {
+      "give": "contract_months up to 24-36 with an annual volume_per_year commitment and forecasts across all three bearings",
+      "get": "unit_price on 360020 held at 4.39 (no +5.5 %) and 360021/360022 at current prices, fixed per year",
+      "why": "They said only multi-year volume agreements change prices. This turns their own rule into our lever.",
+      "ids": [
+        "doc:20260627-70620-M2",
+        "doc:20260920-70620-P04",
+        "quote:7200019",
+        "quote:7300004"
+      ]
+    },
+    {
+      "give": "volume_per_year up: raise quota on 360021 from 40 % and 360020 from 70 %",
+      "get": "continuation of an individual framework agreement (not plain list terms) and a price freeze",
+      "why": "It wants customers with volume, so bundling makes us look bigger. Our spend has grown from 180k to 217k.",
+      "ids": [
+        "doc:20260427-70620-M5",
+        "doc:20260706-70620-M1",
+        "ctr:4600070620"
+      ]
+    },
+    {
+      "give": "payment_days: commit to strict on-time payment at 30 days net",
+      "get": "lead_time_days 7 confirmed contractually plus stock availability commitment on 360022",
+      "why": "This is a cheap goodwill fix: we currently pay 3.1 days late on average. Skonto has little value to them because they are not cash-short.",
+      "ids": [
+        "ctr:4600070620#4.1",
+        "ctr:4600070620#5.1",
+        "quote:7300087"
+      ]
+    },
+    {
+      "give": "accept an open-book review of the calculation offered by the owner",
+      "get": "any increase capped at a justified cost delta (well below 5.5 %)",
+      "why": "The owner volunteered transparency, and that is the route to fact-based, smaller settlements.",
+      "ids": [
+        "doc:20260616-70620-M6"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Your RFQ quote of 4.63 for 6306 is above your own list-condition quote of 4.39 from two weeks earlier. We expect at least list.",
+      "ids": [
+        "quote:7200019",
+        "quote:7300004"
+      ]
+    },
+    {
+      "point": "Our spend with you has grown every year (180,530 → 192,796 → 216,969 EUR). We can offer a multi-year, bundled volume agreement, which is exactly what you said moves prices.",
+      "ids": [
+        "doc:20260627-70620-M2"
+      ]
+    },
+    {
+      "point": "Under clause 3.1, price changes need written notice at least 60 days before year end (by 1 Nov 2026). Prices remain fixed otherwise.",
+      "ids": [
+        "ctr:4600070620#3.1"
+      ]
+    },
+    {
+      "point": "We would take up the owner's offer to walk through hourly rates and material, so any change is cost-based.",
+      "ids": [
+        "doc:20260616-70620-M6"
+      ]
+    },
+    {
+      "point": "OTD has stayed at 83-87 % against the 95 % target in the quality agreement. A price increase without a delivery improvement is hard to justify internally.",
+      "ids": [
+        "ctr:4600070620#6.1",
+        "sc:70620@2026Q3",
+        "sc:70620@2025Q4"
+      ]
+    }
+  ],
+  "avoid": [
+    "Threatening to move volume or terminate. At 0.5 % of their turnover they may simply let us go, and 360022 has no second source.",
+    "Demanding a cut below list on standard items. This directly hits their stated policy.",
+    "Offering skonto or early payment as the main currency. They are not cash-short.",
+    "Hard pressure tactics with the new sales director. Address the owner respectfully instead.",
+    "Continuing late payments during the negotiation."
+  ],
+  "tone": "Write in a respectful, factual, partnership tone addressed to the owner. Lead with volume growth and a multi-year offer, then raise the list-price inconsistency calmly.",
+  "red_flags": [
+    "They may not renew: they said individual agreements will not be extended. The framework can be terminated with 60 days' notice, i.e. by 1 Nov 2026.",
+    "Single source on 360022 (7309 BEP, 100 % quota, no other source), now offered 'from stock only'. Qualify a second source.",
+    "We are deprioritised: called 'not strategic' and replies are slower. This means allocation risk in a shortage.",
+    "OTD is persistently 83-87 % against the 95 % target; ppm is about 300 with 9 complaints recharged at EUR 150 each."
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned, financially stable: credit index 181, unchanged over 12 months; equity ratio 34 %.",
+      "ids": [
+        "sup:70620"
+      ]
+    },
+    {
+      "claim": "Refocusing on key accounts; smaller customers served from standard ranges at list conditions; individual agreements not extended.",
+      "ids": [
+        "news:20260619-15",
+        "doc:20260706-70620-M1",
+        "doc:20260427-70620-M5",
+        "doc:20260501-70620-M3"
+      ]
+    },
+    {
+      "claim": "Our volumes called 'not strategic'; replies slower since summer.",
+      "ids": [
+        "doc:20260917-70620-M4"
+      ]
+    },
+    {
+      "claim": "Only multi-year volume agreements change prices on standard items.",
+      "ids": [
+        "doc:20260627-70620-M2"
+      ]
+    },
+    {
+      "claim": "Renewal quote for 360020 is 4.63 vs current and list price of 4.39 (+5.5 %).",
+      "ids": [
+        "quote:7200019",
+        "quote:7300004"
+      ]
+    },
+    {
+      "claim": "History: mean asked 4.13 %, settled 1.78 %; several renewals settled at 0 %.",
+      "ids": []
+    },
+    {
+      "claim": "Framework expires 2026-12-31 and auto-extends 12 months unless terminated with 60 days' notice; prices are fixed per calendar year with a 60-day change notice.",
+      "ids": [
+        "ctr:4600070620#8.1",
+        "ctr:4600070620#3.1"
+      ]
+    },
+    {
+      "claim": "360022 is single-sourced and offered at list from stock only.",
+      "ids": [
+        "quote:7300087"
+      ]
+    },
+    {
+      "claim": "OTD of 85.0 % and ppm of 302 fall short of the 95 % OTD target.",
+      "ids": [
+        "sc:70620@2026Q3",
+        "ctr:4600070620#6.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.5,
+    "our_spend_eur": {
+      "FY2024": 180530,
+      "FY2025": 192796,
+      "FY2026": 216969
+    },
+    "credit_index": "181 (12 months ago 181; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 4.13,
+    "history_mean_settled_pct": 1.78,
+    "history_settled_minus_asked_pct": -2.35,
+    "we_pay_days_after_due_mean": 3.1,
+    "we_pay_late_share_pct": 85,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 86.7, ppm 387) → 2026Q1 green (otd 83.1, ppm 345) → 2026Q2 green (otd 86.8, ppm 283) → 2026Q3 green (otd 85.0, ppm 302)"
+  },
+  "practice_cases": [
+    "P04"
+  ],
+  "meta": {
+    "key": "9834996b0548474d",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:05",
+    "seconds": 51.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70620-360020",
+      "EV-2026-70620-360022",
+      "EV-2026-70620-360021",
+      "EV-2025-70620-360020",
+      "EV-2024-70620-360022"
+    ]
+  }
+}

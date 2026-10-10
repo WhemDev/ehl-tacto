@@ -1,0 +1,200 @@
+{
+  "supplier_id": "sup:70250",
+  "name": "Drehteile Fuchsreiter GmbH",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "cash_short",
+  "confidence": 0.72,
+  "summary": "Drehteile Fuchsreiter is a small founder-owned turned-parts shop (18 staff, turnover 0-2 M EUR, equity 19.6 %). It is advertising free machine capacity, has its second shift on hold and has paused hiring. It calls Hollerau an important reference customer and now asks for faster payment against a cash discount, because we pay late 90 % of the time.",
+  "situation": {
+    "cash_pressure": 0.55,
+    "capacity": "under_used",
+    "dependency_on_us": 0.55,
+    "our_dependency": 0.25,
+    "relationship": "strained",
+    "decision_maker": "Founder-owner (managing director) decides price. The sales contact runs the talks and passes bigger moves to the owner."
+  },
+  "negotiation_pattern": "It opens with modest asks, often already a price decrease (-0.8 %, -3.9 %). On renewals it settles about 1.3 points below its ask: -2.1 %, 0.0 % and -5.2 %, a mean of -2.43 %. It has never forced an increase through. Under pressure it concedes on price. Its one sign of pushback is about payment: on our overdue invoices it threatened to 'review our conditions'. Its quote for the coupling hub rose from 17.30 to 17.87 EUR, never awarded.",
+  "wants": [
+    "additional volume / new parts to fill idle capacity (second shift on hold)",
+    "punctual payment, ideally within 10 days (willing to pay a cash discount)",
+    "keeping Hollerau as a reference customer and a longer, secure framework",
+    "forecast security to plan a restart of the second shift"
+  ],
+  "protects": [
+    "payment terms: will not accept longer than 30 days, and resents our late payment",
+    "price on unawarded parts without a volume award in return (coupling hub quote went up, not down)"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: award part:320060 (coupling hub, qualified, quota 0 %) and/or raise the part:320090 quota above 50 %",
+      "get": "unit_price on part:320060 at or below the 2025 quote of 17.30 EUR instead of 17.87, plus a further cut on part:320090 from 4.64",
+      "why": "Idle machines and a paused shift make volume worth more to them than margin.",
+      "ids": [
+        "news:20260309-03",
+        "doc:20260620-70250-M3",
+        "doc:20260723-70250-M1",
+        "quote:7200013",
+        "quote:7100029",
+        "part:320060",
+        "part:320090"
+      ]
+    },
+    {
+      "give": "payment_days 30 → 10, paid punctually",
+      "get": "skonto at a rate well above our cost of money, plus a price hold for 2027",
+      "why": "They proposed this themselves. Fast cash matters to a low-equity shop that we currently pay about 10 days late.",
+      "ids": [
+        "doc:20260904-70250-M4",
+        "doc:20260818-70250-P",
+        "ctr:4600070250#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30 and share a rolling forecast",
+      "get": "2027 prices fixed at a reduction, with no index clause",
+      "why": "Contract length and forecast security let them plan staffing. History shows they give price for it.",
+      "ids": [
+        "ctr:4600070250#8.1",
+        "ctr:4600070250#3.1"
+      ]
+    },
+    {
+      "give": "volume_per_year up (extra parts at short notice)",
+      "get": "lead_time_days below 28 and a written OTD commitment back to ≥95 %",
+      "why": "Spare capacity should make shorter lead times cheap for them. OTD has slipped below the contract target.",
+      "ids": [
+        "doc:20260620-70250-M3",
+        "ctr:4600070250#5.1",
+        "ctr:4600070250#6.1",
+        "sc:70250@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can fill part of your free capacity right away: the coupling hub is already qualified with you and the tooling is ours.",
+      "ids": [
+        "part:320060",
+        "news:20260309-03",
+        "doc:20260723-70250-M1"
+      ]
+    },
+    {
+      "point": "We will fix our payment discipline and pay within 10 days, if the skonto and the 2027 price reflect it.",
+      "ids": [
+        "doc:20260904-70250-M4",
+        "doc:20260818-70250-P"
+      ]
+    },
+    {
+      "point": "You value us as a reference customer. A longer framework with more parts strengthens that.",
+      "ids": [
+        "doc:20260811-70250-M2",
+        "ctr:4600070250#8.1"
+      ]
+    },
+    {
+      "point": "OTD fell to 88 % against the 95 % target. More volume requires a delivery commitment.",
+      "ids": [
+        "sc:70250@2026Q3",
+        "ctr:4600070250#6.1"
+      ]
+    },
+    {
+      "point": "Past renewals settled at -2.1 % and -5.2 %. A further reduction is consistent with our history together.",
+      "ids": []
+    }
+  ],
+  "avoid": [
+    "Pushing price hard while ignoring the overdue invoices. That validates their 'review our conditions' threat.",
+    "Asking for longer payment terms or any delay in payment.",
+    "Threatening to move part:320090 to the other source without offering volume. The founder will feel disrespected.",
+    "Promising volume that we do not then order."
+  ],
+  "tone": "Personal and respectful, owner to partner. Acknowledge our late payments first, then offer concrete volume and fast payment in exchange for price.",
+  "red_flags": [
+    "OTD is deteriorating: 95.8 → 92.3 → 88.0 %, now below the 95 % contract target.",
+    "Thin equity (19.6 %), payment chasing and the skonto request signal liquidity strain. The credit index is stable at 228, so this is not yet weak.",
+    "They threatened to review conditions over our late payments, which carries a walk-away or price-increase risk.",
+    "Restarting the paused second shift for extra volume may cause a ramp-up delay.",
+    "Under clause 3.1 the supplier's notice deadline for 2027 price changes falls around 2026-10-02. Watch for a late increase notice."
+  ],
+  "evidence": [
+    {
+      "claim": "Free machine capacity is advertised, hiring is paused and the second shift is on hold since spring.",
+      "ids": [
+        "news:20260309-03",
+        "doc:20260620-70250-M3",
+        "doc:20260723-70250-M1"
+      ]
+    },
+    {
+      "claim": "Hollerau is an important reference customer for them.",
+      "ids": [
+        "doc:20260811-70250-M2"
+      ]
+    },
+    {
+      "claim": "They complained about overdue invoices and then asked for 10-day payment against a cash discount. We pay late 90 % of the time, about 10 days on average, and take no skonto.",
+      "ids": [
+        "doc:20260818-70250-P",
+        "doc:20260904-70250-M4"
+      ]
+    },
+    {
+      "claim": "Current price for the spacer sleeve is 4.64 EUR (renewal settled -2.1 %). The coupling hub quote rose from 17.30 to 17.87 EUR and was not awarded.",
+      "ids": [
+        "quote:7200013",
+        "quote:7100029"
+      ]
+    },
+    {
+      "claim": "Hollerau owns the tooling and has one other source for each part, so our dependency is low.",
+      "ids": [
+        "part:320060",
+        "part:320090"
+      ]
+    },
+    {
+      "claim": "Quality is fine: ppm is 318 and improving, with no overdue 8D. OTD is slipping.",
+      "ids": [
+        "sc:70250@2026Q3",
+        "sc:70250@2025Q4"
+      ]
+    },
+    {
+      "claim": "The framework runs to 2027-06-30 with auto-extension, prices fixed per calendar year, and a 90-day notice for price changes.",
+      "ids": [
+        "ctr:4600070250#8.1",
+        "ctr:4600070250#3.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "228 (12 months ago 228; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -1.13,
+    "history_mean_settled_pct": -2.43,
+    "history_settled_minus_asked_pct": -1.3,
+    "we_pay_days_after_due_mean": 10.0,
+    "we_pay_late_share_pct": 90,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 95.8, ppm 409) → 2026Q1 green (otd 95.8, ppm 496) → 2026Q2 green (otd 92.3, ppm 374) → 2026Q3 green (otd 88.0, ppm 318)"
+  },
+  "practice_cases": [
+    "P05"
+  ],
+  "meta": {
+    "key": "5fbf96fcd1dd9ef4",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:32",
+    "seconds": 40.2,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70250-320090",
+      "EV-2026-70250-320090",
+      "EV-2024-70250-320090",
+      "EV-2026-70250-320090"
+    ]
+  }
+}

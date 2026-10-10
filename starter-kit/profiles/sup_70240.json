@@ -1,0 +1,197 @@
+{
+  "supplier_id": "sup:70240",
+  "name": "Strojírna Hrvelec s.r.o.",
+  "archetype": "capacity_constrained",
+  "secondary_archetype": "family_relationship",
+  "confidence": 0.75,
+  "summary": "Strojírna Hrvelec is a founder-owned Czech machining shop (60 staff, about 2.8 M EUR turnover) that supplies our DN 100 flange at a 70% quota, with the DN 65 flange qualified but not awarded. It is fully booked more than six months out, has stopped taking new projects and will confirm extra volume only against a binding 12-month commitment. The overload shows in delivery: OTD fell from 83.3% to 62.5% over three quarters while ppm improved. We are a small customer to it (2.2% of its turnover), and its 2026-09-10 quote for the DN 65 flange is 17% above its 2025 quote.",
+  "situation": {
+    "cash_pressure": 0.2,
+    "capacity": "full",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.35,
+    "relationship": "neutral",
+    "decision_maker": "Founder-owner (owner_type founder, 60 staff) most likely decides price and capacity; no named contact in the dossier"
+  },
+  "negotiation_pattern": "At past renewals of part:320031 it asked modest increases and settled lower each time: asked +2.4%, settled 0%; asked +3.3%, settled 0%; asked -1.0%, settled -3.1%. On average it settled 2.6 pts below its ask, so it conceded readily when it had spare capacity. That was before the full order book. Its current behaviour is to price up new work (quote:7200009 at 16.33 vs 13.9 in quote:7100025, lead time 39→42 days) and to tie extra volume to binding commitments.",
+  "wants": [
+    "binding 12-month volume commitment / forecast security for capacity planning",
+    "price recovery on new work (part:320030 quote raised to 16.33)",
+    "reliable on-time payment (we pay late 88% of the time, avg 5.6 days)",
+    "realistic lead times instead of rush orders"
+  ],
+  "protects": [
+    "unit_price on new volume (part:320030), because a full order book means it does not need the work",
+    "lead_time_days (42 days; it will not shorten while booked out)",
+    "uncommitted capacity: no extra volume without a binding 12-month commitment"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year / contract_months: binding 12-month forecast commitment for part:320031 (and part:320030 if awarded)",
+      "get": "price hold on part:320031 at 19.90 for 2027 plus a capacity reservation with OTD recovery toward the 95% target",
+      "why": "It explicitly offers volume only against a binding 12-month commitment, so commitment is its currency.",
+      "ids": [
+        "doc:20260924-70240-M1",
+        "news:20260710-18",
+        "ctr:4600070240#6.1",
+        "sc:70240@2026Q3"
+      ]
+    },
+    {
+      "give": "payment_days: commit to strict on-time payment at 45 days net (no actual change of term)",
+      "get": "part:320030 price back toward 2025 level (13.9–15.0) or a confirmed delivery slot",
+      "why": "We are late on 88% of invoices; fixing that costs us little and removes a grievance with an owner-led firm.",
+      "ids": [
+        "ctr:4600070240#4.1",
+        "quote:7100025",
+        "quote:7200009"
+      ]
+    },
+    {
+      "give": "effective_date / lead_time_days: accept 42-day lead time and order-call-offs on a rolling forecast",
+      "get": "lead_time_days firm commitment with confirmed dates kept (otd_confirmed currently 75%)",
+      "why": "It values planning stability; we need dates that are actually met.",
+      "ids": [
+        "ctr:4600070240#5.1",
+        "sc:70240@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "OTD has fallen to 62.5% against a contractual 95% target, and even confirmed-date OTD is only 75%. We need a credible recovery plan before committing more volume.",
+      "ids": [
+        "sc:70240@2026Q3",
+        "sc:70240@2026Q2",
+        "sc:70240@2026Q1",
+        "ctr:4600070240#6.1"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year. Any 2027 change needs written notice at least 90 days before year end, i.e. by about 2026-10-02; without timely notice the 19.90 holds for 2027.",
+      "ids": [
+        "ctr:4600070240#3.1",
+        "ctr:4600070240"
+      ]
+    },
+    {
+      "point": "We own the tooling for both flanges and have one other source per part, so volume can move if delivery does not recover.",
+      "ids": [
+        "sc:70240@2026Q3"
+      ]
+    },
+    {
+      "point": "Its own DN 65 quote was 13.9 eighteen months ago. A 17% jump with no change in tooling or spec needs justification.",
+      "ids": [
+        "quote:7100025",
+        "quote:7200009"
+      ]
+    },
+    {
+      "point": "Credit for real quality progress: ppm fell from 2260 to 980 and there are no open 8Ds. Acknowledging this shows respect to an owner-led firm.",
+      "ids": [
+        "sc:70240@2025Q4",
+        "sc:70240@2026Q3"
+      ]
+    }
+  ],
+  "avoid": [
+    "Hard price-down demands or threats as the opener. At 2.2% of its turnover and fully booked, it can walk away or deprioritise us.",
+    "Citing cost:320030 as hard evidence. It is a 5%-confidence estimate made for another supplier (sup:70220) on a DE cost base.",
+    "Rush or expedite requests without commitment. These will be priced up or refused.",
+    "Ignoring our own late-payment record, which it will raise if we push on OTD."
+  ],
+  "tone": "Respectful, partner-like and planning-focused: acknowledge the quality progress, be firm on delivery reliability, and offer commitment rather than pressure.",
+  "red_flags": [
+    "OTD deteriorating each quarter (83.3 → 73.9 → 62.5) means supply risk for part:320031 at a 70% quota.",
+    "Backlog of more than six months and new projects stopped, so we may be deprioritised as a small customer.",
+    "2027 price-increase notice is likely before the ~2026-10-02 contract deadline.",
+    "The framework auto-extends 12 months unless terminated with 90 days' notice. Use this as leverage, but note the supplier can also terminate."
+  ],
+  "evidence": [
+    {
+      "claim": "Fully booked, backlog of more than six months, no new projects",
+      "ids": [
+        "news:20260710-18"
+      ]
+    },
+    {
+      "claim": "Additional volumes only against a binding 12-month commitment",
+      "ids": [
+        "doc:20260924-70240-M1"
+      ]
+    },
+    {
+      "claim": "OTD 62.5% (confirmed 75%) vs 95% target; ppm improved to 980",
+      "ids": [
+        "sc:70240@2026Q3",
+        "ctr:4600070240#6.1"
+      ]
+    },
+    {
+      "claim": "Part:320030 quote rose from 13.9 to 16.33; lead time 39 → 42 days",
+      "ids": [
+        "quote:7100025",
+        "quote:7200009"
+      ]
+    },
+    {
+      "claim": "Current price part:320031 19.90 since 2026-01-01 after settling -3.1% vs -1.0% asked",
+      "ids": []
+    },
+    {
+      "claim": "Past renewals settled at 0% against asks of +2.4% and +3.3%",
+      "ids": []
+    },
+    {
+      "claim": "Prices fixed per calendar year; changes need 90 days' written notice before year end",
+      "ids": [
+        "ctr:4600070240#3.1"
+      ]
+    },
+    {
+      "claim": "Framework valid to 2027-06-30, auto-extends 12 months, 90 days' notice",
+      "ids": [
+        "ctr:4600070240#8.1"
+      ]
+    },
+    {
+      "claim": "Stable credit index 246 and equity ratio 30.2%, so no acute cash stress",
+      "ids": [
+        "sup:70240"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 2.2,
+    "our_spend_eur": {
+      "FY2024": 55226,
+      "FY2025": 62473,
+      "FY2026": 61647
+    },
+    "credit_index": "246 (12 months ago 246; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.57,
+    "history_mean_settled_pct": -1.03,
+    "history_settled_minus_asked_pct": -2.6,
+    "we_pay_days_after_due_mean": 5.6,
+    "we_pay_late_share_pct": 88,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 amber (otd 80.0, ppm 2260) → 2026Q1 amber (otd 83.3, ppm 1930) → 2026Q2 amber (otd 73.9, ppm 1343) → 2026Q3 amber (otd 62.5, ppm 980)"
+  },
+  "practice_cases": [
+    "P05"
+  ],
+  "meta": {
+    "key": "03b3e15155a7361b",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:31",
+    "seconds": 39.3,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70240-320031",
+      "EV-2024-70240-320031",
+      "EV-2025-70240-320031"
+    ]
+  }
+}

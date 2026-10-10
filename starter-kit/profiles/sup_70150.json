@@ -1,0 +1,199 @@
+{
+  "supplier_id": "sup:70150",
+  "name": "Tarsevi Döküm Sanayi A.Ş.",
+  "archetype": "cash_short",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.8,
+  "summary": "Tarsevi is a family-owned Turkish foundry (380 staff, about EUR 15.8 M turnover) and supplies 60 % of our HB 40 pump housing with its own tooling. After two loss-making years it is restructuring with its banks. The MD keeps asking for faster payment and says he cannot sign anything that lowers margin. At the same time its delivery and quality are red and getting worse: OTD has fallen to 52 % and ppm is 2652.",
+  "situation": {
+    "cash_pressure": 0.8,
+    "capacity": "under_used",
+    "dependency_on_us": 0.35,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "Owner/managing director decides on price and terms, with the restructuring banks watching every month. Sales handles capacity and volume talk."
+  },
+  "negotiation_pattern": "Asks small increases or holds and settles below its ask. On average it asked +1.0 % and settled at -2.13 %. In the last renewal it asked +0.7 % and settled at -1.9 %. It gave in to pressure on price in every renewal. That has now changed: the MD said he will sign nothing that lowers margin. The 2026-09-20 quote holds the price at 32.24 and asks for payment within 10 days instead of a price move. The owner offered an open-book walk-through of hourly rates and material.",
+  "wants": [
+    "Faster payment (10 days). It will grant a cash discount in return.",
+    "Punctual payment. We currently pay 89 % of invoices late, on average 4.9 days.",
+    "More volume to fill idle capacity (second shift on hold, short hours).",
+    "Stable margin and a predictable relationship it can show its banks."
+  ],
+  "protects": [
+    "unit_price downward. The MD will not sign margin cuts during the restructuring.",
+    "tooling (supplier-owned, gives it leverage over us)."
+  ],
+  "trades": [
+    {
+      "give": "payment_days 60 -> 10",
+      "get": "Cash discount (skonto) as a price-equivalent, plus a written OTD and ppm recovery plan",
+      "why": "Cash is its top need. Skonto saves its face on list price and gives us a de facto reduction.",
+      "ids": [
+        "doc:20260905-70150-M6",
+        "quote:7300068",
+        "doc:20260804-70150-M4"
+      ]
+    },
+    {
+      "give": "volume_per_year up (quota above 60 %), released in steps only after OTD and ppm hit targets",
+      "get": "ppm_commitment well below the current 2652, OTD toward the 95 % contract target, and a higher chargeback_eur_per_complaint than EUR 150",
+      "why": "It has idle capacity and wants work. We need its quality fixed before giving more share.",
+      "ids": [
+        "doc:20260414-70150-M5",
+        "doc:20260610-70150-M1",
+        "sc:70150@2026Q3",
+        "ctr:4600070150#6.1"
+      ]
+    },
+    {
+      "give": "contract_months extension beyond 2027-06-30",
+      "get": "Tooling access/step-in rights or a tooling transfer (tooling_eur), and a unit_price hold at 32.24 for 2027",
+      "why": "A longer contract helps it with its banks. Tooling rights protect us if the restructuring fails.",
+      "ids": [
+        "ctr:4600070150#8.1",
+        "news:20260809-22"
+      ]
+    },
+    {
+      "give": "Accept the owner's open-book calculation offer",
+      "get": "A transparent cost base for agreeing a price hold or future index logic instead of a cut",
+      "why": "It shows respect to the family owner and gives us data. Our should-cost has only 12 % confidence.",
+      "ids": [
+        "doc:20260418-70150-M2",
+        "cost:310060"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can help your cash flow right away by paying in 10 days, in exchange for the cash discount you offered.",
+      "ids": [
+        "doc:20260905-70150-M6",
+        "quote:7300068"
+      ]
+    },
+    {
+      "point": "Your OTD fell from 68 % to 52 % and ppm stays around 2400-2800. More volume depends on a recovery plan.",
+      "ids": [
+        "sc:70150@2025Q4",
+        "sc:70150@2026Q3"
+      ]
+    },
+    {
+      "point": "We hold 60 % of HB 40 with you and have a second source. Share moves with performance.",
+      "ids": [
+        "sc:70150@2026Q2",
+        "sc:70150@2026Q3"
+      ]
+    },
+    {
+      "point": "A longer, reliable framework is something you can show your banks.",
+      "ids": [
+        "news:20260809-22",
+        "doc:20260804-70150-M4",
+        "ctr:4600070150#8.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a straight unit_price cut. The MD has said he cannot sign margin reductions, so it will stall.",
+    "Using the -19 % gap to should-cost as a price weapon. It uses a German cost base and has only 12 % confidence.",
+    "Promising early payment and then paying late again. That breaks trust with a cash-short partner.",
+    "Threatening to drop it outright. That could push it toward insolvency while it holds the tooling."
+  ],
+  "tone": "Respectful and constructive toward the owner/MD, solution-oriented on cash, firm and factual on OTD and ppm.",
+  "red_flags": [
+    "Insolvency risk: bank-led restructuring after two loss years, MD focused on cash.",
+    "Supplier-owned tooling for 60 % of HB 40. Supply is at risk if it fails, so secure tooling rights and check that the second source can cover.",
+    "OTD down to 52 % and still falling, ppm 2652. This could be material shortages driven by liquidity.",
+    "The EUR 150 chargeback is weak. Only EUR 600 was recharged across 5 complaints in 12 months."
+  ],
+  "evidence": [
+    {
+      "claim": "Restructuring with its banks after two loss-making years.",
+      "ids": [
+        "news:20260809-22"
+      ]
+    },
+    {
+      "claim": "MD asked twice for earlier payment, said the bank watches monthly, and will not sign margin cuts.",
+      "ids": [
+        "doc:20260804-70150-M4"
+      ]
+    },
+    {
+      "claim": "Requests payment in 10 days and offers a cash discount. Latest quote holds the price at 32.24.",
+      "ids": [
+        "doc:20260905-70150-M6",
+        "quote:7300068"
+      ]
+    },
+    {
+      "claim": "Idle capacity: half the shop floor idle, short hours, second shift on hold.",
+      "ids": [
+        "doc:20260610-70150-M1",
+        "doc:20260414-70150-M5",
+        "doc:20260419-70150-M3"
+      ]
+    },
+    {
+      "claim": "Scorecard red four quarters in a row. OTD went 68 -> 52 %, ppm 2652 in the latest quarter.",
+      "ids": [
+        "sc:70150@2025Q4",
+        "sc:70150@2026Q3"
+      ]
+    },
+    {
+      "claim": "Contract runs to 2027-06-30 with prices fixed per year. Quality agreement sets a 95 % OTD target and EUR 150 per complaint.",
+      "ids": [
+        "ctr:4600070150#3.1",
+        "ctr:4600070150#6.1",
+        "ctr:4600070150#8.1"
+      ]
+    },
+    {
+      "claim": "Owner offered an open-book calculation walk-through.",
+      "ids": [
+        "doc:20260418-70150-M2"
+      ]
+    },
+    {
+      "claim": "Price of 32.24 is far below the German should-cost of 39.82, but that estimate has low confidence.",
+      "ids": [
+        "cost:310060"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 3.2,
+    "our_spend_eur": {
+      "FY2024": 455143,
+      "FY2025": 503568,
+      "FY2026": 503212
+    },
+    "credit_index": "228 (12 months ago 228; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.0,
+    "history_mean_settled_pct": -2.13,
+    "history_settled_minus_asked_pct": -3.13,
+    "we_pay_days_after_due_mean": 4.9,
+    "we_pay_late_share_pct": 89,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310060: price 32.24 vs cost:310060 39.82 (plant of DE): -19.0 %"
+    ],
+    "scorecard_trend": "2025Q4 red (otd 68.0, ppm 2390) → 2026Q1 red (otd 64.0, ppm 2471) → 2026Q2 red (otd 60.0, ppm 2842) → 2026Q3 red (otd 52.0, ppm 2652)"
+  },
+  "practice_cases": [
+    "P06"
+  ],
+  "meta": {
+    "key": "f4a1471f40892f84",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:52",
+    "seconds": 39.7,
+    "release": false,
+    "dropped_ids": []
+  }
+}

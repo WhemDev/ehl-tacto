@@ -1,0 +1,192 @@
+{
+  "supplier_id": "sup:70290",
+  "name": "Feinmechanik Rottaler GmbH",
+  "archetype": "capacity_constrained",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.7,
+  "summary": "Feinmechanik Rottaler is a founder-owned turning shop founded in 1993, with 25 staff and 2-5 M EUR turnover. It supplies 70 % of our pump shaft HN 24 mm (part:320010) on Hollerau-owned tooling. Since summer 2026 a multi-year hydraulics contract fills most of its turning capacity, and it now confirms extra volume only against binding 12-month commitments. At the same time its delivery and quality are slipping: OTD is 75.9 % against a 95 % target and ppm has risen from 592 to 921.",
+  "situation": {
+    "cash_pressure": 0.4,
+    "capacity": "full",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.4,
+    "relationship": "neutral",
+    "decision_maker": "founder / managing director (25-person firm, no group parent)"
+  },
+  "negotiation_pattern": "Until 2025 it opened soft and gave ground. It asked +3.7 % and settled 0.0 %. It even offered cuts of -0.1 % and -1.2 % and then settled at -2.7 % and -2.9 %. On average it asked +0.8 % and settled -1.87 %. Its 2025 RFQ quote was 27.00 with a 41-day lead time; it was awarded and is now at 24.92. All of this happened before capacity filled up. Since March 2026 it has been setting conditions itself: extra volume only against a binding 12-month commitment (sent twice), and a request for 10-day payment in exchange for a cash discount.",
+  "wants": [
+    "binding 12-month volume commitment / forecast security",
+    "faster payment (10 days against a cash discount); we currently pay late in 94 % of cases",
+    "price stability with no further cuts (current price is below the no-margin should-cost)"
+  ],
+  "protects": [
+    "unit_price: already 1.2 % below the no-margin should-cost, so a further cut is unrealistic under full capacity",
+    "lead_time_days: capacity is booked by the hydraulics contract; it quoted 41 days against the contractual 35",
+    "uncommitted extra volume: it will not confirm without a binding 12 months"
+  ],
+  "trades": [
+    {
+      "give": "payment_days down to 10 with skonto (it proposed this), plus stopping our late payments",
+      "get": "unit_price held flat for 2027 (skonto as net saving), confirmed 35-day lead time",
+      "why": "It asked for this itself; skonto is our real saving since a list cut is unrealistic",
+      "ids": [
+        "doc:20260501-70290-M2",
+        "ctr:4600070290#4.1"
+      ]
+    },
+    {
+      "give": "volume_per_year as a binding 12-month commitment at the 70 % quota level",
+      "get": "lead_time_days fixed at 35, OTD plan toward the 95 % target, reserved capacity",
+      "why": "Commitment is its stated condition and secures our slot against the hydraulics customer",
+      "ids": [
+        "doc:20260315-70290-M1",
+        "doc:20260619-70290-M3",
+        "news:20260323-06",
+        "ctr:4600070290#5.1"
+      ]
+    },
+    {
+      "give": "contract_months: early extension of the framework beyond 2027-06-30",
+      "get": "ppm_commitment (e.g. back below 600) with chargeback_eur_per_complaint kept or raised above 150",
+      "why": "Security for it, a quality fix for us as ppm rises",
+      "ids": [
+        "ctr:4600070290#8.1",
+        "ctr:4600070290#6.1",
+        "sc:70290@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Price is fixed per calendar year. Any change needed written notice at least 90 days before year end, so by about 2026-10-02, and none is on file. Treat 2027 prices as fixed unless it gives notice in the next days.",
+      "ids": [
+        "ctr:4600070290#3.1"
+      ]
+    },
+    {
+      "point": "OTD of 75.9 % and ppm of 921 are far from the 95 % OTD target in the quality agreement. Its share is at stake: we have a second source and own the tooling.",
+      "ids": [
+        "sc:70290@2026Q3",
+        "ctr:4600070290#6.1"
+      ]
+    },
+    {
+      "point": "Quality and delivery worsened as the hydraulics contract started (Q2 green to Q3 amber). We need proof our parts are not deprioritized.",
+      "ids": [
+        "sc:70290@2026Q2",
+        "sc:70290@2026Q3",
+        "news:20260323-06"
+      ]
+    },
+    {
+      "point": "We can meet both of its stated wishes, a binding commitment and fast payment, in exchange for price stability and performance.",
+      "ids": [
+        "doc:20260619-70290-M3",
+        "doc:20260501-70290-M2"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding another price cut: the price is already below the no-margin should-cost, and a full shop can walk to the hydraulics work",
+    "Threatening volume loss without a credible plan: it is not hungry for our work",
+    "Leaning hard on the should-cost: its confidence is only 5 %",
+    "Ignoring our late payments: we pay 9.8 days late on average, which weakens our quality and fairness arguments"
+  ],
+  "tone": "Respectful, direct and partnership-oriented toward the founder. Offer commitment and prompt payment, and be firm and factual on OTD and ppm.",
+  "red_flags": [
+    "Capacity squeezed by the large hydraulics contract: risk of allocation, longer lead times or deprioritizing our shaft",
+    "Quality worsening: ppm 592 to 679 to 739 to 921, 8 complaints in 12 months, 1 open 8D, last complaint 2026-09-07",
+    "Price below the no-margin should-cost: pressure to raise price or exit at renewal (90-day notice, term to 2027-06-30)",
+    "Moderate financial thinness: equity 21.7 %, plus a request for faster cash; credit index is stable at 231 and not weak"
+  ],
+  "evidence": [
+    {
+      "claim": "Multi-year hydraulics contract occupies most turning capacity from summer 2026",
+      "ids": [
+        "news:20260323-06"
+      ]
+    },
+    {
+      "claim": "Extra volume only against a binding 12-month commitment (stated twice)",
+      "ids": [
+        "doc:20260315-70290-M1",
+        "doc:20260619-70290-M3"
+      ]
+    },
+    {
+      "claim": "Asked for 10-day payment in exchange for a cash discount; no skonto currently agreed or taken",
+      "ids": [
+        "doc:20260501-70290-M2",
+        "ctr:4600070290#4.1"
+      ]
+    },
+    {
+      "claim": "Current price 24.92 is 1.2 % below the no-margin should-cost of 25.22 (5 % confidence)",
+      "ids": [
+        "cost:320010"
+      ]
+    },
+    {
+      "claim": "Scorecard Q3: OTD 75.9 %, ppm 921, amber, down from green in Q2",
+      "ids": [
+        "sc:70290@2026Q3",
+        "sc:70290@2026Q2"
+      ]
+    },
+    {
+      "claim": "Quality agreement: 95 % OTD target, EUR 150 per complaint",
+      "ids": [
+        "ctr:4600070290#6.1"
+      ]
+    },
+    {
+      "claim": "Price fixed per calendar year; changes need 90 days' written notice before year end",
+      "ids": [
+        "ctr:4600070290#3.1"
+      ]
+    },
+    {
+      "claim": "Past renewals settled at or below its ask: 0.0 % vs +3.7 %, -2.7 %, -2.9 %",
+      "ids": []
+    },
+    {
+      "claim": "RFQ quote 27.00 with 41-day lead time, awarded",
+      "ids": [
+        "quote:7100018"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30, auto-extends 12 months, 90-day notice",
+      "ids": [
+        "ctr:4600070290#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "231 (12 months ago 231; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.8,
+    "history_mean_settled_pct": -1.87,
+    "history_settled_minus_asked_pct": -2.67,
+    "we_pay_days_after_due_mean": 9.8,
+    "we_pay_late_share_pct": 94,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:320010: price 24.92 vs cost:320010 25.22 (its own plant): -1.2 %"
+    ],
+    "scorecard_trend": "2025Q4 amber (otd 69.2, ppm 592) → 2026Q1 amber (otd 75.0, ppm 679) → 2026Q2 green (otd 80.8, ppm 739) → 2026Q3 amber (otd 75.9, ppm 921)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "3bae8c22c4d5e775",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:07",
+    "seconds": 38.6,
+    "release": false,
+    "dropped_ids": [
+      "EV-2025-70290-320010",
+      "EV-2024-70290-320010",
+      "EV-2026-70290-320010"
+    ]
+  }
+}

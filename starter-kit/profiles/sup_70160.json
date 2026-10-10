@@ -1,0 +1,176 @@
+{
+  "supplier_id": "sup:70160",
+  "name": "Meridune Precision Castings Co., Ltd.",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "cash_short",
+  "confidence": 0.55,
+  "summary": "Meridune is a private Chinese casting house (900 staff, about EUR 39.3 M turnover) that supplies 40 % of our Impeller HI 250. At every renewal since 2022 it has accepted prices below full cost to keep the volume, and it now sits about 6.5 % under our should-cost, although that estimate has only 5 % confidence. In July 2026 it asked us to pay within 10 days in return for a cash discount, so liquidity matters to it, even though its credit index is moderate and stable at 254. Quality has recovered to green with 0 ppm, but OTD of 84 % is still well below the 95 % contract target, and a new sales managing director has just been appointed.",
+  "situation": {
+    "cash_pressure": 0.45,
+    "capacity": "unknown",
+    "dependency_on_us": 0.2,
+    "our_dependency": 0.5,
+    "relationship": "neutral",
+    "decision_maker": "Sales side. A new managing director for sales was appointed 2026-09-25 and likely signs off price and payment terms. The approval ladder is unknown."
+  },
+  "negotiation_pattern": "Opens with a small move: -2.6 %, +1.0 % and -1.1 % in the last three renewals. It then settles about 1.7 points lower: -5.1 %, -0.3 % and -2.3 %. Each time it is recorded as accepting below full cost to keep the volume. It gives way under renewal pressure rather than walking away, and its 2024 RFQ quote of 91.4 was not awarded. Unprompted, it proposed a cash discount in exchange for 10-day payment, which shows it will trade price for cash.",
+  "wants": [
+    "volume security: keep or grow its 40 % quota on part:310051",
+    "faster payment: 10 days in exchange for a cash discount",
+    "contract continuity: framework renewal beyond 2027-06",
+    "punctual payment from us (we pay late on 74 % of invoices)"
+  ],
+  "protects": [
+    "unit_price below the current level: already about 6.5 % under should-cost after three consecutive cuts, so the room is thin and sustainability is at risk",
+    "lead_time_days: 105 standard, quoted 112 in 2024",
+    "tooling ownership (supplier-owned tooling)"
+  ],
+  "trades": [
+    {
+      "give": "payment_days down from 90 to 10, with a cash discount",
+      "get": "a skonto of at least 2 % (must clearly exceed our cost of capital), or an equivalent unit_price reduction for 2027",
+      "why": "It asked for exactly this itself. It is cheap for us and keeps us from squeezing the base price further below cost.",
+      "ids": [
+        "doc:20260701-70160-M1",
+        "ctr:4600070160#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30, e.g. +24 months",
+      "get": "unit_price held flat for 2027, plus a binding OTD improvement plan toward 95 %",
+      "why": "It values keeping the volume over price, as every renewal note shows.",
+      "ids": [
+        "ctr:4600070160#8.1",
+        "ctr:4600070160#6.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: a higher quota share on part:310051, conditional on OTD of 90 % or more",
+      "get": "lead_time_days cut from 105 toward 90, plus a firm price for 2027",
+      "why": "Volume is its main lever. Tying it to delivery fixes our real pain point, which is OTD.",
+      "ids": [
+        "sc:70160@2026Q3",
+        "ctr:4600070160#5.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We are open to your 10-day payment proposal if the discount is meaningful.",
+      "ids": [
+        "doc:20260701-70160-M1"
+      ]
+    },
+    {
+      "point": "Quality has turned green with 0 ppm in 2026Q2 and Q3, and we recognise this. To earn more share, delivery must now reach the 95 % target; 84 % OTD is not enough.",
+      "ids": [
+        "sc:70160@2026Q3",
+        "sc:70160@2026Q2",
+        "ctr:4600070160#6.1"
+      ]
+    },
+    {
+      "point": "A longer, stable framework gives you planning security on this part.",
+      "ids": [
+        "ctr:4600070160#8.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Pushing another hard unit_price cut. It already sits below estimated full cost (low-confidence estimate), and a further squeeze risks supply or quality relapse.",
+    "Quoting the should-cost figure as hard fact; its confidence is only 5 %.",
+    "Threatening to pull share on quality grounds; quality is now green.",
+    "Arguing payment terms while we keep paying late."
+  ],
+  "tone": "Businesslike and constructive with the new sales managing director. Acknowledge the quality turnaround and frame the deal as volume and continuity in exchange for cash-fast payment and better delivery.",
+  "red_flags": [
+    "Contract clause 3.1 requires written notice of price changes 90 days before year-end, i.e. by about 2026-10-02. Check immediately whether either side wants to give notice for 2027.",
+    "Pricing below full cost in every round is unsustainable and could end in a sudden price hike or exit, especially under a new sales managing director.",
+    "OTD of 72-84 % against a 95 % target, with a 105-day lead time, is a supply risk.",
+    "Supplier-owned tooling and only one other source make switching slow.",
+    "Liquidity signal: the request for 10-day payment comes with equity of 25.3 % and a credit index of 254. Monitor it."
+  ],
+  "evidence": [
+    {
+      "claim": "Accepted below full cost to keep the volume at every renewal; settled lower than asked (-2.3 % vs -1.1 % in Dec 2025)",
+      "ids": []
+    },
+    {
+      "claim": "Price 79.44 vs should-cost 84.97 without margin (confidence 5 %)",
+      "ids": [
+        "cost:310051"
+      ]
+    },
+    {
+      "claim": "Asked for payment within 10 days in return for a cash discount",
+      "ids": [
+        "doc:20260701-70160-M1"
+      ]
+    },
+    {
+      "claim": "Quality recovered from red (5,396 ppm) to green (0 ppm), but OTD of 84 % is still below the 95 % target",
+      "ids": [
+        "sc:70160@2025Q4",
+        "sc:70160@2026Q3",
+        "ctr:4600070160#6.1"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 at 90 days net, FCA; prices fixed per calendar year with 90-day change notice",
+      "ids": [
+        "ctr:4600070160",
+        "ctr:4600070160#3.1",
+        "ctr:4600070160#4.1",
+        "ctr:4600070160#8.1"
+      ]
+    },
+    {
+      "claim": "2024 RFQ quote of 91.4 with 112-day lead time was not awarded",
+      "ids": [
+        "quote:7100015"
+      ]
+    },
+    {
+      "claim": "New managing director for sales appointed",
+      "ids": [
+        "news:20260925-37"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.1,
+    "our_spend_eur": {
+      "FY2024": 27096,
+      "FY2025": 46642,
+      "FY2026": 45236
+    },
+    "credit_index": "254 (12 months ago 254; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.9,
+    "history_mean_settled_pct": -2.57,
+    "history_settled_minus_asked_pct": -1.67,
+    "we_pay_days_after_due_mean": 1.9,
+    "we_pay_late_share_pct": 74,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310051: price 79.44 vs cost:310051 84.97 (its own plant): -6.5 %"
+    ],
+    "scorecard_trend": "2025Q4 red (otd 76.0, ppm 5396) → 2026Q1 red (otd 72.0, ppm 3623) → 2026Q2 green (otd 74.1, ppm 0) → 2026Q3 green (otd 84.0, ppm 0)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "40f42b53a1c04364",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:47",
+    "seconds": 35.0,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70160-310051",
+      "EV-2026-70160-310051",
+      "EV-2025-70160-310051",
+      "EV-2024-70160-310051",
+      "EV-2023-70160-310051",
+      "EV-2026-70160-310051"
+    ]
+  }
+}

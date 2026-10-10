@@ -1,0 +1,182 @@
+{
+  "supplier_id": "sup:70260",
+  "name": "Mechanik Tauvelt GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": "cash_short",
+  "confidence": 0.7,
+  "summary": "Mechanik Tauvelt is an owner-led Austrian family machining shop (founded 1979, 45 staff, 5-10 M EUR turnover). It is our single source for the duplex pump shaft part:320012, and it has a stable credit profile, quality at 0 ppm and OTD just below target. The owner is pressing for 'partnership' in return for past favours, the company is pruning small accounts, and it has just asked to be paid within 10 days in exchange for a cash discount, while we pay late most of the time.",
+  "situation": {
+    "cash_pressure": 0.35,
+    "capacity": "normal",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.65,
+    "relationship": "neutral",
+    "decision_maker": "owner (personally leads price talks and visits); sales director shapes account strategy"
+  },
+  "negotiation_pattern": "Moderate annual renewal asks (-0.1 %, +1.8 %, +2.6 %). Each time it settled clearly below its ask and below zero (-4.0 %, -0.3 %, -1.0 %), so on average it settled 3.2 pts under its ask. It has conceded to our pressure every year. Now the owner is reminding us of the 2022 favour, when it held the old price for a quarter, and expects reciprocity. He has offered open-book calculation (hourly rates, material) to settle prices fact-based. Further one-sided squeezing is likely to meet resistance or account pruning.",
+  "wants": [
+    "partnership and respect for past loyalty (2022 price hold)",
+    "faster payment: 10 days against a cash discount, and an end to our late payments",
+    "volume and account significance (it is focusing on customers with volume)",
+    "fair, transparent pricing based on its own calculation",
+    "long-term continuity of the business"
+  ],
+  "protects": [
+    "unit_price: after three consecutive reductions it will resist another cut without something in return",
+    "relationship fairness: it will dig in against pure pressure tactics",
+    "annual price-fixing mechanism (ctr:4600070260#3.1)"
+  ],
+  "trades": [
+    {
+      "give": "payment_days down from 30 to 10, paid reliably on time",
+      "get": "a cash discount (skonto) plus a price hold or small decrease on unit_price for 2027",
+      "why": "It explicitly asked for 10-day payment against skonto; we currently take no skonto and pay late 87 % of the time.",
+      "ids": [
+        "doc:20260913-70260-M2",
+        "sup:70260"
+      ]
+    },
+    {
+      "give": "contract_months: early extension beyond 2027-06-30, plus a binding volume_per_year forecast",
+      "get": "unit_price held for 2027 and a commitment to the 95 % OTD target",
+      "why": "It is focusing on volume customers, and security keeps us out of its 'small accounts' review.",
+      "ids": [
+        "doc:20260522-70260-M3",
+        "ctr:4600070260#8.1",
+        "ctr:4600070260#6.1"
+      ]
+    },
+    {
+      "give": "accept the owner's offer of an open-book calculation review",
+      "get": "price settled on agreed hourly rates and material, with any increase limited to documented cost drivers",
+      "why": "The owner proposed it himself; it shows respect and gives us a factual basis.",
+      "ids": [
+        "doc:20260212-70260-M1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We value the 2022 gesture and want to reciprocate with security and fast payment rather than squeezing price.",
+      "ids": [
+        "doc:20260322-70260-M4"
+      ]
+    },
+    {
+      "point": "We will take up the 10-day payment offer and fix our payment discipline, provided the price picture reflects the cash advantage.",
+      "ids": [
+        "doc:20260913-70260-M2"
+      ]
+    },
+    {
+      "point": "An extension and forecast make us a stable volume account on a strategic part (100 % quota).",
+      "ids": [
+        "doc:20260522-70260-M3",
+        "ctr:4600070260#8.1"
+      ]
+    },
+    {
+      "point": "Quality is excellent (0 ppm, class A), but OTD of 92.3 % is below the contractual 95 %, so we ask for a joint improvement step.",
+      "ids": [
+        "sc:70260@2026Q3",
+        "ctr:4600070260#6.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Hard pressure or threats to re-source: the owner reacts to fairness, and it is pruning small accounts, so it might let us go.",
+    "Demanding a fourth consecutive price cut without anything in return.",
+    "Ignoring its payment request or continuing to pay late.",
+    "Overplaying the OTD gap: it is mild, and quality is flawless."
+  ],
+  "tone": "Personal, respectful, addressed to the owner. Acknowledge past loyalty, propose a partnership package, and keep it factual and fair.",
+  "red_flags": [
+    "Single source (other_sources 0, quota 100 %) for a duplex pump shaft, although Hollerau owns the tooling, which eases a transfer if needed.",
+    "Account-pruning statement: we may be a small account, so there is walk-away risk if the relationship sours.",
+    "Price-change notice deadline is 90 days before year end (about 2 Oct 2026), so a price-increase notice may arrive imminently.",
+    "Contract auto-extends 12 months unless terminated with 90 days' notice, which the supplier could also use to exit.",
+    "Early-payment request despite a stable credit index (240) and 38.8 % equity: monitor for emerging liquidity strain.",
+    "OTD persistently below the 95 % target (92.0-92.3 %)."
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned GmbH, founded 1979, 45 staff, credit index 240 unchanged, equity ratio 38.8 %.",
+      "ids": [
+        "sup:70260"
+      ]
+    },
+    {
+      "claim": "Owner expects partnership in return for supplying at the old price for a quarter in 2022.",
+      "ids": [
+        "doc:20260322-70260-M4"
+      ]
+    },
+    {
+      "claim": "Owner offered to open the calculation (hourly rates, material).",
+      "ids": [
+        "doc:20260212-70260-M1"
+      ]
+    },
+    {
+      "claim": "Sales director: reviewing small accounts, focusing on customers with volume.",
+      "ids": [
+        "doc:20260522-70260-M3"
+      ]
+    },
+    {
+      "claim": "Asked for payment within 10 days against a cash discount.",
+      "ids": [
+        "doc:20260913-70260-M2"
+      ]
+    },
+    {
+      "claim": "Settled below its ask every year: +2.6→-1.0, +1.8→-0.3, -0.1→-4.0; current price 105.87.",
+      "ids": []
+    },
+    {
+      "claim": "Scorecard green, class A, 0 ppm, OTD 92.3 % against a 95 % target.",
+      "ids": [
+        "sc:70260@2026Q3",
+        "ctr:4600070260#6.1"
+      ]
+    },
+    {
+      "claim": "Single source at 100 % quota, tooling owned by Hollerau.",
+      "ids": [
+        "part:320012"
+      ]
+    },
+    {
+      "claim": "Framework agreement to 2027-06-30, annual fixed prices, 90-day notice for price changes before year end.",
+      "ids": [
+        "ctr:4600070260",
+        "ctr:4600070260#3.1",
+        "ctr:4600070260#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "240 (12 months ago 240; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.43,
+    "history_mean_settled_pct": -1.77,
+    "history_settled_minus_asked_pct": -3.2,
+    "we_pay_days_after_due_mean": 4.4,
+    "we_pay_late_share_pct": 87,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 92.0, ppm 0) → 2026Q1 green (otd 92.0, ppm 0) → 2026Q2 green (otd 92.0, ppm 0) → 2026Q3 green (otd 92.3, ppm 0)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "511dcef8c817832d",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:31",
+    "seconds": 34.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70260-320012",
+      "EV-2025-70260-320012",
+      "EV-2024-70260-320012"
+    ]
+  }
+}

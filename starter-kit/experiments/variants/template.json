@@ -1,0 +1,5 @@
+{
+  "note": "orchestra with no LLM: the template writes every e-mail. Isolates the numbers from the wording",
+  "agent": "orchestra",
+  "env": {"ARENA_NARRATOR": "template"}
+}

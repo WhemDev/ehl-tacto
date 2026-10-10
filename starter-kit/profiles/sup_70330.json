@@ -1,0 +1,180 @@
+{
+  "supplier_id": "sup:70330",
+  "name": "Lasertechnik Varnoszeg Kft.",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.6,
+  "summary": "Lasertechnik Varnoszeg is a privately owned Hungarian laser and sheet-metal shop: 90 staff, about EUR 3.9 M turnover, stable credit index 248, equity 35%. It is our 100% single source for the control cabinet housing, using tooling we own. It has spare capacity (second shift on hold, can take more parts at short notice) and has asked for 10-day payment against skonto. At the same time its delivery and quality performance have slid for four quarters in a row.",
+  "situation": {
+    "cash_pressure": 0.4,
+    "capacity": "under_used",
+    "dependency_on_us": 0.45,
+    "our_dependency": 0.45,
+    "relationship": "neutral",
+    "decision_maker": "Private Kft. with no group parent. Price moves most likely sit with the owner or managing director; the day-to-day contact is sales (not stated in the dossier)."
+  },
+  "negotiation_pattern": "It opens with small or moderate asks and concedes well below them. The average ask is +0.3% and the average settlement -3.33%, so settlements land 3.6 pts under the ask. In 2025-11 it asked +1.5% and settled -2.5%. In 2024-12 it asked +3.2% and settled 0%. In 2023-11 it asked -3.8% and settled -7.5%. It gives price rather than risk the business. No hard walk-away behaviour is on record.",
+  "wants": [
+    "More volume or additional parts to refill idle capacity (second shift on hold)",
+    "Faster payment: it proposed 10-day payment with a cash discount; we currently pay late 93% of the time",
+    "Contract and forecast security beyond 2027-06",
+    "Keeping the 100% quota despite the quality slide"
+  ],
+  "protects": [
+    "No hard red line is visible, so unit_price has moved downward every year",
+    "Annual fixed-price structure (ctr:4600070330#3.1); it is likely to resist an index clause or mid-year price changes"
+  ],
+  "trades": [
+    {
+      "give": "payment_days down from 60 to 10, and a commitment to pay on time",
+      "get": "Skonto of about 2-3% or an equivalent unit_price cut",
+      "why": "It explicitly asked for 10-day payment in exchange for a discount, and our late payment (93% late, +4.1 days) is a sore point we can fix cheaply.",
+      "ids": [
+        "doc:20260316-70330-M2",
+        "ctr:4600070330#4.1"
+      ]
+    },
+    {
+      "give": "volume_per_year up, or additional sheet-metal parts moved to it",
+      "get": "unit_price reduction of 3-5% for 2027",
+      "why": "Its second shift is idle and it said it can take extra parts at short notice; our spend is already growing.",
+      "ids": [
+        "doc:20260206-70330-M1",
+        "ctr:4600070330#3.1"
+      ]
+    },
+    {
+      "give": "contract_months extension beyond 2027-06-30",
+      "get": "ppm_commitment of 1000 or lower, OTD 95% recovery plan, and a higher chargeback_eur_per_complaint (above EUR 150)",
+      "why": "It needs security while its performance is slipping; tie the extension to measurable fixes.",
+      "ids": [
+        "ctr:4600070330#8.1",
+        "ctr:4600070330#6.1",
+        "sc:70330@2026Q3"
+      ]
+    },
+    {
+      "give": "Firm rolling forecast",
+      "get": "lead_time_days commitment met against the requested date, not the confirmed one",
+      "why": "OTD is 70.8% against requested dates but 91.7% against confirmed dates, so it re-dates our orders.",
+      "ids": [
+        "sc:70330@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "OTD has fallen from 83.3% to 70.8% over four quarters, against the contractual target of 95%. A recovery plan is needed to keep the 100% quota.",
+      "ids": [
+        "sc:70330@2025Q4",
+        "sc:70330@2026Q3",
+        "ctr:4600070330#6.1"
+      ]
+    },
+    {
+      "point": "PPM has more than doubled, from 828 to 1879, and the scorecard moved from green to amber. The current EUR 150 per complaint (EUR 750 recharged) is too low to drive improvement.",
+      "ids": [
+        "sc:70330@2025Q4",
+        "sc:70330@2026Q3",
+        "ctr:4600070330#6.1"
+      ]
+    },
+    {
+      "point": "Hollerau owns the tooling for part:330040, so relocating the part is practical if performance and price do not improve.",
+      "ids": [
+        "ctr:4600070330"
+      ]
+    },
+    {
+      "point": "We are a growing customer (spend EUR 265k → 308k → 320k, 8.2% of its turnover). We can fill its spare capacity if the price reflects the volume.",
+      "ids": [
+        "doc:20260206-70330-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Lecturing on discipline while we pay late on 93% of invoices. Acknowledge this and offer to fix it as part of the deal.",
+    "Ignoring its 10-day payment and skonto proposal, which is the cheapest lever we have.",
+    "Overplaying the resourcing threat. No alternative source is qualified yet, so frame it as a quota risk, not an immediate exit.",
+    "Pushing an index clause on top of a price cut, which conflicts with the fixed-annual structure."
+  ],
+  "tone": "Factual and firm on performance, constructive on growth. Write as a customer who wants to give it more work if delivery and quality recover.",
+  "red_flags": [
+    "Single source (100% quota, no other sources) with OTD at 70.8% and falling: supply risk for the control cabinet housing.",
+    "PPM has been rising for three quarters (828 → 1160 → 1987 → 1879).",
+    "Suspended second shift plus a request for faster payment may indicate weakening demand or liquidity, although the credit index is stable at 248 and equity is 35%.",
+    "Notice window: price changes need written notice 90 days before year-end, i.e. by about 2026-10-02. Watch for a last-minute increase request, and send our own 2027 price position promptly."
+  ],
+  "evidence": [
+    {
+      "claim": "Spare capacity: it can take additional parts at short notice; the second shift has been on hold since spring.",
+      "ids": [
+        "doc:20260206-70330-M1"
+      ]
+    },
+    {
+      "claim": "It requested payment within 10 days in exchange for a cash discount.",
+      "ids": [
+        "doc:20260316-70330-M2"
+      ]
+    },
+    {
+      "claim": "OTD is 70.8% (91.7% against confirmed dates), ppm 1879, score 76.0, amber.",
+      "ids": [
+        "sc:70330@2026Q3"
+      ]
+    },
+    {
+      "claim": "Contract terms: OTD target 95%, EUR 150 per complaint, 60 days net, prices fixed per calendar year with 90 days' notice.",
+      "ids": [
+        "ctr:4600070330#6.1",
+        "ctr:4600070330#4.1",
+        "ctr:4600070330#3.1"
+      ]
+    },
+    {
+      "claim": "The last renewal asked +1.5% and settled -2.5%; the current price is EUR 119.11.",
+      "ids": []
+    },
+    {
+      "claim": "Earlier renewals: asked +3.2%, settled 0%; asked -3.8%, settled -7.5%.",
+      "ids": []
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 and auto-extends 12 months unless terminated with 90 days' notice.",
+      "ids": [
+        "ctr:4600070330#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 8.2,
+    "our_spend_eur": {
+      "FY2024": 264652,
+      "FY2025": 308281,
+      "FY2026": 320260
+    },
+    "credit_index": "248 (12 months ago 248; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.3,
+    "history_mean_settled_pct": -3.33,
+    "history_settled_minus_asked_pct": -3.63,
+    "we_pay_days_after_due_mean": 4.1,
+    "we_pay_late_share_pct": 93,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 83.3, ppm 828) → 2026Q1 amber (otd 80.0, ppm 1160) → 2026Q2 amber (otd 75.0, ppm 1987) → 2026Q3 amber (otd 70.8, ppm 1879)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "8129a3bd7d89be9c",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:45:49",
+    "seconds": 38.5,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70330-330040",
+      "EV-2025-70330-330040",
+      "EV-2024-70330-330040"
+    ]
+  }
+}

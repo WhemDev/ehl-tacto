@@ -1,0 +1,214 @@
+{
+  "supplier_id": "sup:70610",
+  "name": "Schraubenhandel Leitner & Sohn GmbH",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "group_approval_ladder",
+  "confidence": 0.65,
+  "summary": "Leitner & Sohn is a financially sound family-owned C-parts (fastener) house founded in 1929, with 280 staff and EUR 139 M turnover. Our ~EUR 40 k/yr is negligible to it. It has idle capacity: the second shift has been on hold since spring and sales offered to take additional parts at short notice. Our planned single-supplier kit (P07, ~30,000 kits/yr) is exactly the volume it is fishing for, but any price move above 2 % must pass its pricing committee, which meets every two weeks.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "under_used",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.15,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 % price change; above 2 % the internal pricing committee (meets every two weeks)"
+  },
+  "negotiation_pattern": "Every year in Nov/Dec it opens with a ritual 1.2–3.6 % increase request (mean 2.47 %). It settled at 0 % in 8 of 9 renewals; the only exception was +1.5 % on washers for 2024. It folds without escalation and never pushed back hard. Current prices (valid 2026-01-01) are below its own 2025 RFQ quotes for all three parts, so it accepted lower prices than it quoted.",
+  "wants": [
+    "additional volume to refill the idle second shift (kit consolidation incl. part:360011)",
+    "volume and forecast security over a longer contract term",
+    "reliable on-time payment at 30 days net (we pay late on 75 % of invoices, mean 2 days)",
+    "a modest increase or at least price stability for 2027"
+  ],
+  "protects": [
+    "unit_price cuts above 2 % in one step (pricing committee approval needed, 2-week cycle)",
+    "payment_days (already 30 net, no skonto offered; little reason to extend while we pay late)",
+    "incoterm DAP / 5-day lead time are already standard; little to gain there"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: 100 % kit share of part:360010, part:360012, part:360030 plus award of part:360011 (M16x60)",
+      "get": "unit_price down on all kit parts from 2027-01-01 (aim beyond 2 %, accept staged: ≤2 % at KAM level now, the rest via committee)",
+      "why": "At ~30,000 kits/yr, our volume on the three current parts rises roughly 2.5x vs today's 30–50 % quotas, which fills idle shift capacity.",
+      "ids": [
+        "doc:20260909-70610-P07",
+        "doc:20260401-70610-M2",
+        "doc:20260514-70610-M3",
+        "doc:20260513-70610-M1"
+      ]
+    },
+    {
+      "give": "contract_months longer: extend ctr:4600070610 beyond 2027-06-30 (e.g. 24–36 months for the kit)",
+      "get": "unit_price fixed for 2027 and 2028, no index_clause, no 2027 increase",
+      "why": "A family firm with idle capacity values long, steady volume more than a 1–2 % uplift it historically never gets anyway.",
+      "ids": [
+        "ctr:4600070610#8.1",
+        "ctr:4600070610#3.1"
+      ]
+    },
+    {
+      "give": "payment discipline: commit to strict 30 days net (end our late payments)",
+      "get": "waiver of any 2027 increase request / 0 % renewal",
+      "why": "This costs us nothing in contract terms, removes its only real grievance, and buys goodwill with an owner-led firm.",
+      "ids": [
+        "ctr:4600070610#4.1"
+      ]
+    },
+    {
+      "give": "rolling 12-month kit forecast and call-off schedule",
+      "get": "OTD commitment to the contractual 95 % (currently 88.6 %) and ppm_commitment ≤ 50 with chargeback EUR 150 per complaint retained",
+      "why": "Single-sourcing the kit only works if delivery improves, and a forecast lets it plan the restarted shift.",
+      "ids": [
+        "ctr:4600070610#6.1",
+        "sc:70610@2026Q3",
+        "sc:70610@2026Q2"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can fill your idle second shift: one supplier for the whole kit, about 30,000 kits a year, roughly 2.5x today's volume on your three parts plus the M16 bolt.",
+      "ids": [
+        "doc:20260909-70610-P07",
+        "doc:20260401-70610-M2",
+        "doc:20260514-70610-M3"
+      ]
+    },
+    {
+      "point": "The bundle price must reflect the scale effect. Your current prices already sit below your 2025 quotes, which shows there is room.",
+      "ids": [
+        "quote:7100054",
+        "quote:7100057",
+        "quote:7100062"
+      ]
+    },
+    {
+      "point": "Price changes for 2027 need written notice 90 days before year end (≈2 Oct 2026). Absent notice, 2027 prices stay as they are, so the starting point is 0 % plus a bundle discount.",
+      "ids": [
+        "ctr:4600070610#3.1"
+      ]
+    },
+    {
+      "point": "OTD of 88.6 % is below the contractual 95 % target. Winning the full kit requires closing that gap.",
+      "ids": [
+        "ctr:4600070610#6.1",
+        "sc:70610@2026Q3"
+      ]
+    },
+    {
+      "point": "Each part already has an alternative source, so the kit award is contestable.",
+      "ids": [
+        "doc:20260909-70610-P07"
+      ]
+    }
+  ],
+  "avoid": [
+    "Posing as a key customer or threatening volume loss as leverage: we are ~0 % of its turnover.",
+    "Demanding a large price cut for an immediate yes. Anything above 2 % needs the pricing committee, so leave a 2-week window or split the ask.",
+    "Asking for longer payment_days or skonto while we pay 75 % of invoices late.",
+    "Framing quality as a crisis: it is class A / green. Use the OTD gap as a condition, not an accusation.",
+    "Hard-pressure tactics: it is an owner-led family firm that has always settled quietly; respect works better."
+  ],
+  "tone": "Friendly, respectful and partnership-oriented. Lead with the growth opportunity (kit), be concrete on volumes and dates, and keep each price ask structured so the KAM can sign ≤2 % or table it with the committee.",
+  "red_flags": [
+    "OTD stuck at 87.5–88.6 % vs 95 % target. Single-sourcing the kit concentrates line-stop risk unless a delivery commitment is secured.",
+    "ppm rose to 85 in 2026Q2 (now 68); 19 complaints in the last 12 months.",
+    "part:360011 (M16x60) is not in our current scope with this supplier: no price or quote on file, so an RFQ is needed.",
+    "The 2027 price-change notice deadline (~2 Oct 2026) is imminent; expect its routine increase letter now.",
+    "Our late payments weaken our position if it raises them."
+  ],
+  "evidence": [
+    {
+      "claim": "Second shift on hold since spring; can take additional parts at short notice",
+      "ids": [
+        "doc:20260401-70610-M2",
+        "doc:20260514-70610-M3"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval, which meets every two weeks",
+      "ids": [
+        "doc:20260513-70610-M1"
+      ]
+    },
+    {
+      "claim": "Kit plan: about 30,000 kits/yr with 19x M12 bolt, 6x M16 bolt, 21x M12 nut and 23x washer per kit, from one supplier",
+      "ids": [
+        "doc:20260909-70610-P07"
+      ]
+    },
+    {
+      "claim": "Asked 1.2–3.6 % in each renewal, settled 0 % in 8 of 9; only +1.5 % on washers for 2024",
+      "ids": []
+    },
+    {
+      "claim": "Prices are fixed per calendar year; changes need 90 days' notice before year end",
+      "ids": [
+        "ctr:4600070610#3.1"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 with 12-month auto-extension and 90 days' notice",
+      "ids": [
+        "ctr:4600070610#8.1"
+      ]
+    },
+    {
+      "claim": "OTD 88.6 % vs 95 % target; ppm 68; class A green",
+      "ids": [
+        "sc:70610@2026Q3",
+        "ctr:4600070610#6.1"
+      ]
+    },
+    {
+      "claim": "Current prices sit below its 2025 RFQ quotes (12.46 vs 12.68; 4.91 vs 4.96; 12.78 vs 13.06)",
+      "ids": [
+        "quote:7100054",
+        "quote:7100057",
+        "quote:7100062"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.0,
+    "our_spend_eur": {
+      "FY2024": 39551,
+      "FY2025": 40087,
+      "FY2026": 39959
+    },
+    "credit_index": "179 (12 months ago 179; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.47,
+    "history_mean_settled_pct": 0.17,
+    "history_settled_minus_asked_pct": -2.3,
+    "we_pay_days_after_due_mean": 2.0,
+    "we_pay_late_share_pct": 75,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 87.5, ppm 54) → 2026Q1 green (otd 88.6, ppm 58) → 2026Q2 green (otd 88.6, ppm 85) → 2026Q3 green (otd 88.6, ppm 68)"
+  },
+  "practice_cases": [
+    "P07"
+  ],
+  "meta": {
+    "key": "753920be58263504",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:04",
+    "seconds": 53.6,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70610-360010",
+      "EV-2026-70610-360010",
+      "EV-2026-70610-360012",
+      "EV-2026-70610-360030",
+      "EV-2025-70610-360010",
+      "EV-2025-70610-360012",
+      "EV-2025-70610-360030",
+      "EV-2024-70610-360030",
+      "EV-2024-70610-360010",
+      "EV-2024-70610-360012",
+      "EV-2026-70610-360010",
+      "EV-2026-70610-360012",
+      "EV-2026-70610-360030"
+    ]
+  }
+}

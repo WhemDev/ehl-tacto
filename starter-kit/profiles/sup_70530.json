@@ -1,0 +1,209 @@
+{
+  "supplier_id": "sup:70530",
+  "name": "Selvbrunn Drive Systems GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": null,
+  "confidence": 0.85,
+  "summary": "Selvbrunn is a large, financially stable group drive maker (602 M EUR turnover, 2,200 staff, credit index 157 and unchanged) for which we are a tiny account at 0.3 % of its turnover. Its head office has frozen all price reductions until December 2027, and price moves above 2 % need a pricing committee that meets every two weeks. The framework agreement for the single-sourced 7.5 kW converter expires on 2026-12-31, and Selvbrunn has asked for our volumes before sending its offer. Its on-time delivery has slid from 91.7 % to 84.6 %, against a 95 % target.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "unknown",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 %. Above 2 %, the pricing committee (meets every two weeks). Price reductions are blocked by a head-office freeze until Dec 2027. The sales director can move on payment terms and call-off flexibility."
+  },
+  "negotiation_pattern": "Opens with an ask and then concedes about 2.2 points on average (mean asked +2.1 %, mean settled -0.13 %). Past renewals: +5.5 % asked, +3.1 % settled (EV-2026); -0.6 % asked, -3.5 % settled (EV-2025); +1.4 % asked, 0.0 % settled (EV-2024). The roughly 2-point concession matches the KAM's 2 % authority. This year it already quoted flat at list (412.74) and cited the head-office directive against discounts. It defends price by pointing to policy, not by arguing, and signals flexibility on terms instead.",
+  "wants": [
+    "Keep list price intact (comply with the head-office directive)",
+    "A volume forecast and renewal of the framework agreement",
+    "Payment on time (we pay late on 74 % of invoices, by 2 days on average)",
+    "Deals the KAM can close within 2 % without going to committee"
+  ],
+  "protects": [
+    "unit_price downward (head-office freeze on reductions until Dec 2027)",
+    "Any price move above 2 % without pricing-committee approval (biweekly cycle)",
+    "The list-price logic itself; it will trade terms rather than margin (price only about 2.4 % above a no-margin should-cost)"
+  ],
+  "trades": [
+    {
+      "give": "contract_months up (renew for 24–36 months) plus a binding annual volume_per_year forecast for part:350020",
+      "get": "payment_days 30 → 60, unit_price held flat at 412.74 for the full term",
+      "why": "The sales director is open on payment terms but not price. A held price is not a 'reduction', so the freeze does not block it.",
+      "ids": [
+        "doc:20260826-70530-M1",
+        "quote:7300003",
+        "doc:20260917-70530-P03"
+      ]
+    },
+    {
+      "give": "Commitment to pay strictly on due date",
+      "get": "Call-off flexibility and a lead_time_days reduction from 49 days, or a skonto (e.g. 2 % for 10 days)",
+      "why": "Our late payment is their only irritant. Fixing it costs us little and is worth something to them.",
+      "ids": [
+        "doc:20260826-70530-M1",
+        "ctr:4600070530#4.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: award a share of part:350021 (15 kW, already qualified, quota 0 %)",
+      "get": "Price on 350021 at or below its 2024 quote of 672.00, plus longer payment_days on both parts",
+      "why": "New volume lets the KAM show growth without breaching the price freeze. Its 2024 quote is below the no-margin cost estimate for the alternative supplier's plant (692.92).",
+      "ids": [
+        "quote:7100053",
+        "cost:350021"
+      ]
+    },
+    {
+      "give": "contract_months extension",
+      "get": "A written OTD recovery to 95 % plus a delivery-based lead_time_days commitment",
+      "why": "OTD fell to 84.6 % against the contractual 95 % target, which gives us a legitimate ask that touches no price.",
+      "ids": [
+        "sc:70530@2026Q3",
+        "ctr:4600070530#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Clause 3.1 requires written notice of price changes at least 90 days before year-end, i.e. by about 2 Oct 2026. Selvbrunn has so far quoted unchanged at 412.74, so the 2027 price should stay flat.",
+      "ids": [
+        "ctr:4600070530#3.1",
+        "quote:7300003"
+      ]
+    },
+    {
+      "point": "OTD has declined every quarter (91.7 → 88.0 → 88.9 → 84.6 %) and is well below the contractual 95 % target. We expect a delivery commitment and better call-off service in return for renewal.",
+      "ids": [
+        "sc:70530@2025Q4",
+        "sc:70530@2026Q1",
+        "sc:70530@2026Q2",
+        "sc:70530@2026Q3",
+        "ctr:4600070530#6.1"
+      ]
+    },
+    {
+      "point": "We are not asking for a price reduction, so no head-office exception is needed. We want payment terms and flexibility, which your sales director said are open.",
+      "ids": [
+        "doc:20260826-70530-M1"
+      ]
+    },
+    {
+      "point": "We have a qualified alternative path on both parts (one other source each), and part:350021 volume is still unawarded. Renewal and extra volume depend on terms and delivery.",
+      "ids": [
+        "quote:7100053"
+      ]
+    },
+    {
+      "point": "Keep any package within the KAM's 2 % authority so it can be closed without waiting for the pricing committee.",
+      "ids": [
+        "doc:20260909-70530-M2"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a unit-price cut; the head-office freeze makes it impossible and wastes rounds.",
+    "Leaning on the should-cost gap; the margin is only about 2.4 % and the estimate's confidence is only 5 %.",
+    "Threatening to walk; we are 0.3 % of its turnover and the threat carries no weight.",
+    "Raising payment terms without addressing our own late payments (74 % late); they can throw it back at us.",
+    "Asks that push the KAM above 2 %; they trigger committee delay and harden the position."
+  ],
+  "tone": "Businesslike and structured. Frame each request as a term or volume package the KAM can approve within policy, not as a price fight.",
+  "red_flags": [
+    "Steady OTD decline to 84.6 % on a single-sourced (100 % quota) A-part; this is a supply risk.",
+    "The contract auto-extends 12 months unless terminated with 90 days' notice (deadline about 2 Oct 2026), so it rolls over on current terms if we do nothing.",
+    "If Selvbrunn sends a price-increase notice before the clause 3.1 deadline, expect an opening ask of about 2–5 %.",
+    "Approval latency: any move above 2 % waits for the biweekly pricing committee."
+  ],
+  "evidence": [
+    {
+      "claim": "The head office froze all price reductions until Dec 2027; the sales director is open on payment terms and call-off flexibility.",
+      "ids": [
+        "doc:20260826-70530-M1"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing-committee approval; the committee meets every two weeks.",
+      "ids": [
+        "doc:20260909-70530-M2"
+      ]
+    },
+    {
+      "claim": "The latest quote is unchanged at 412.74, 49-day lead time, 30 days payment; no discounts per head-office directive.",
+      "ids": [
+        "quote:7300003"
+      ]
+    },
+    {
+      "claim": "The framework agreement expires 2026-12-31 and auto-extends unless terminated with 90 days' notice; price changes need 90 days' notice before year-end.",
+      "ids": [
+        "ctr:4600070530#8.1",
+        "ctr:4600070530#3.1"
+      ]
+    },
+    {
+      "claim": "OTD is 84.6 % against a 95 % contractual target; ppm is 0 and there are no complaints.",
+      "ids": [
+        "sc:70530@2026Q3",
+        "ctr:4600070530#6.1"
+      ]
+    },
+    {
+      "claim": "Past renewals settled about 2.2 points below the ask (+5.5→+3.1, -0.6→-3.5, +1.4→0.0).",
+      "ids": []
+    },
+    {
+      "claim": "The current price is 2.4 % above the no-margin should-cost of 403.21 (low-confidence estimate).",
+      "ids": [
+        "cost:350020"
+      ]
+    },
+    {
+      "claim": "Selvbrunn asked for our expected volumes ahead of the renewal offer.",
+      "ids": [
+        "doc:20260917-70530-P03"
+      ]
+    },
+    {
+      "claim": "The 15 kW converter is qualified at Selvbrunn but unawarded; its 2024 quote was 672.00.",
+      "ids": [
+        "quote:7100053"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.3,
+    "our_spend_eur": {
+      "FY2024": 1417966,
+      "FY2025": 1694081,
+      "FY2026": 1693940
+    },
+    "credit_index": "157 (12 months ago 157; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.1,
+    "history_mean_settled_pct": -0.13,
+    "history_settled_minus_asked_pct": -2.23,
+    "we_pay_days_after_due_mean": 2.0,
+    "we_pay_late_share_pct": 74,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350020: price 412.74 vs cost:350020 403.21 (its own plant): +2.4 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 91.7, ppm 0) → 2026Q1 green (otd 88.0, ppm 0) → 2026Q2 green (otd 88.9, ppm 0) → 2026Q3 green (otd 84.6, ppm 0)"
+  },
+  "practice_cases": [
+    "P03"
+  ],
+  "meta": {
+    "key": "cca3cee977e1f0d4",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:11",
+    "seconds": 44.2,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70530-350020",
+      "EV-2025-70530-350020",
+      "EV-2024-70530-350020"
+    ]
+  }
+}

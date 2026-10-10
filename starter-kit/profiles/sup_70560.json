@@ -1,0 +1,210 @@
+{
+  "supplier_id": "sup:70560",
+  "name": "Kabelwerk Rhönsberg GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": null,
+  "confidence": 0.7,
+  "summary": "Kabelwerk Rhönsberg is a group-owned cable maker founded in 1957, with about 400 staff and EUR 98.1 M turnover. Its finances are stable: equity ratio 32.3 % and credit index 149, unchanged from 12 months ago. It is our single source for motor cable part:350040, but we are only 0.8 % of its turnover. Our framework agreement expires on 2026-12-31. The supplier has asked for our volumes and quoted an unchanged price of 316.35/100, saying its copper is bought forward until March 2027.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "unknown",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.55,
+    "relationship": "good",
+    "decision_maker": "Key account manager can agree price changes up to 2 %. Anything above 2 % needs the group pricing committee, which meets every two weeks (doc:20260415-70560-M2)."
+  },
+  "negotiation_pattern": "It opens with an annual increase and gives back about 2.3 points: mean asked 4.47 %, mean settled 2.2 %. Past renewals: 2023 asked 2.1 %, settled -1.0 %. 2024 asked 2.7 %, settled 1.6 %. 2025 asked 8.6 %, settled 6.0 % (EV-2026-70560-350040), which went through the pricing committee. Between renewals the price moves quarterly via the copper index clause (EV-2026-70560-350040-Q3). The supplier is process-driven: moves above 2 % are slow and need committee approval. It defends its hedged copper position ('market price is not our reality').",
+  "wants": [
+    "volume forecast and visibility for 2027 (it explicitly asked for expected volumes)",
+    "renewal of the framework, ideally longer term, to secure an A-category customer",
+    "price stability matching its copper hedge until March 2027",
+    "on-time payment (we pay late in 73 % of cases)",
+    "keeping deals within the key account manager's 2 % authority, to avoid the committee cycle"
+  ],
+  "protects": [
+    "unit_price: list/committee policy; already only about 3.9 % above the no-margin should-cost",
+    "index_clause logic: it will resist index-driven decreases while its copper is hedged until March 2027",
+    "payment_days: no reason to go beyond 30 net, given our late-payment record"
+  ],
+  "trades": [
+    {
+      "give": "contract_months up to 24 plus binding 2027 volume forecast (about 290k units/yr)",
+      "get": "unit_price fixed at or below 316.35 through at least 2027-03-31 (end of its copper cover), within the 2 % band",
+      "why": "Its material cost is locked until March 2027, so a firm price costs it nothing. A longer term secures our business.",
+      "ids": [
+        "doc:20260910-70560-P14",
+        "doc:20260617-70560-M1",
+        "quote:7300014",
+        "sc:70560@2026Q3"
+      ]
+    },
+    {
+      "give": "commitment to pay strictly on due date (fix our 73 % late share)",
+      "get": "payment_days 45, as a term concession rather than a price concession",
+      "why": "A group moves on terms more easily than on list price. Our late payment is a sore point we can turn into currency.",
+      "ids": [
+        "ctr:4600070560#4.1",
+        "doc:20260415-70560-M2"
+      ]
+    },
+    {
+      "give": "keep the CU-NOTATION index clause after March 2027",
+      "get": "no index increases before April 2027, and a new index base set at contract start",
+      "why": "It says market copper is not its reality until March 2027. It cannot ask for index upside on hedged material.",
+      "ids": [
+        "ctr:4600070560#3.2",
+        "doc:20260617-70560-M1",
+        "quote:7300014"
+      ]
+    },
+    {
+      "give": "volume_per_year commitment / extension",
+      "get": "OTD improvement plan towards the contractual 95 %, plus ppm_commitment ≤100",
+      "why": "OTD has been 81.5–88.9 %, well below the 95 % target.",
+      "ids": [
+        "ctr:4600070560#6.1",
+        "sc:70560@2026Q3",
+        "sc:70560@2026Q1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Your own quote says material is covered until March 2027. A firm price through that date carries no risk for you.",
+      "ids": [
+        "quote:7300014",
+        "doc:20260617-70560-M1"
+      ]
+    },
+    {
+      "point": "Our spend has grown every year (EUR 740k → 813k → 834k). We can give you a 2027 forecast in exchange for price stability.",
+      "ids": [
+        "doc:20260910-70560-P14"
+      ]
+    },
+    {
+      "point": "Last renewal we accepted +6.0 %. This year we expect stability.",
+      "ids": []
+    },
+    {
+      "point": "Delivery performance of 88.5 % OTD is below the contractual 95 % target. A longer agreement must come with a delivery improvement.",
+      "ids": [
+        "sc:70560@2026Q3",
+        "ctr:4600070560#6.1"
+      ]
+    },
+    {
+      "point": "Keep the proposal within 2 % so your key account manager can sign without waiting for the pricing committee.",
+      "ids": [
+        "doc:20260415-70560-M2"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding cuts above 2 % up front: this triggers the pricing committee, delays the deal and hardens positions.",
+    "Presenting the should-cost (+3.9 %) as hard fact: estimate confidence is only 5 %, and the margin is already thin.",
+    "Arguing with current copper market prices before March 2027: it has declared its hedge 'not our reality'.",
+    "Threatening to switch supplier without a qualified alternative: there are zero other sources, and we are only 0.8 % of its turnover.",
+    "Pushing longer payment terms without addressing our own late payments."
+  ],
+  "tone": "Professional, structured and data-based. Give clear, approvable proposals within the key account manager's 2 % authority, framed as a long-term partnership with forecast security.",
+  "red_flags": [
+    "Deadline: price-change notice and termination notice both fall 60 days before 2026-12-31, i.e. by about 2026-11-01. Otherwise the contract auto-extends 12 months.",
+    "Single source with 100 % quota and no other sources for an A-part. Our dependency is real, theirs on us is minimal (0.8 %).",
+    "OTD persistently below the 95 % target (81.5–88.9 %). Supply risk if volume grows.",
+    "Risk of an index increase in 2027 after the copper hedge expires.",
+    "Our late-payment record (73 % late) weakens our leverage on terms."
+  ],
+  "evidence": [
+    {
+      "claim": "Price changes above 2 % need approval of the pricing committee, which meets every two weeks.",
+      "ids": [
+        "doc:20260415-70560-M2"
+      ]
+    },
+    {
+      "claim": "Copper is bought forward until March 2027. The supplier calls market price 'not our reality'.",
+      "ids": [
+        "doc:20260617-70560-M1",
+        "quote:7300014"
+      ]
+    },
+    {
+      "claim": "New quote holds the price flat at 316.35/100, 14 days lead time, 30 days payment.",
+      "ids": [
+        "quote:7300014"
+      ]
+    },
+    {
+      "claim": "Framework expires 2026-12-31, auto-extends 12 months, 60 days' notice. Price changes need 60 days' notice before year end.",
+      "ids": [
+        "ctr:4600070560#8.1",
+        "ctr:4600070560#3.1"
+      ]
+    },
+    {
+      "claim": "Price follows CU-NOTATION quarterly with 55 % material share and no deadband.",
+      "ids": [
+        "ctr:4600070560#3.2"
+      ]
+    },
+    {
+      "claim": "Last renewal: asked 8.6 %, settled 6.0 %.",
+      "ids": []
+    },
+    {
+      "claim": "Price is only 3.9 % above the no-margin should-cost (estimate confidence 5 %).",
+      "ids": [
+        "cost:350040"
+      ]
+    },
+    {
+      "claim": "OTD 88.5 % vs 95 % target. ppm 111. Scorecard green, class A. No open 8D.",
+      "ids": [
+        "sc:70560@2026Q3",
+        "ctr:4600070560#6.1"
+      ]
+    },
+    {
+      "claim": "Supplier asked for our expected volumes for the renewal.",
+      "ids": [
+        "doc:20260910-70560-P14"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.8,
+    "our_spend_eur": {
+      "FY2024": 740130,
+      "FY2025": 812884,
+      "FY2026": 833607
+    },
+    "credit_index": "149 (12 months ago 149; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 4.47,
+    "history_mean_settled_pct": 2.2,
+    "history_settled_minus_asked_pct": -2.27,
+    "we_pay_days_after_due_mean": 2.2,
+    "we_pay_late_share_pct": 73,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350040: price 316.35 vs cost:350040 304.49 (its own plant): +3.9 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 88.9, ppm 124) → 2026Q1 green (otd 81.5, ppm 89) → 2026Q2 green (otd 84.6, ppm 110) → 2026Q3 green (otd 88.5, ppm 111)"
+  },
+  "practice_cases": [
+    "P14"
+  ],
+  "meta": {
+    "key": "cc0dc780206b7a76",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:42",
+    "seconds": 47.7,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70560-350040",
+      "EV-2026-70560-350040-Q3",
+      "EV-2026-70560-350040"
+    ]
+  }
+}

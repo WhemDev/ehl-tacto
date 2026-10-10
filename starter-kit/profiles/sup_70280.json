@@ -1,0 +1,201 @@
+{
+  "supplier_id": "sup:70280",
+  "name": "Wälzhammer Präzision GmbH",
+  "archetype": "cash_short",
+  "secondary_archetype": "hungry_for_work",
+  "confidence": 0.85,
+  "summary": "Wälzhammer is a family-owned machining shop (55 staff, 6.4 M EUR turnover, founded 1973). It is the 100 % source for our pump shaft HN 32 mm (part:320011). It is in a liquidity squeeze: credit index 302, up from 230, equity ratio 20.3 %, talks with its banks, and an MD who says the bank checks him every month. It is also short of work: the second shift has been on hold since spring and part of machining went on short-time work on 2026-09-26.",
+  "situation": {
+    "cash_pressure": 0.85,
+    "capacity": "under_used",
+    "dependency_on_us": 0.45,
+    "our_dependency": 0.4,
+    "relationship": "strained",
+    "decision_maker": "Owner / managing director decides prices and terms personally. Inside sales handles routine quotes."
+  },
+  "negotiation_pattern": "It opens with modest asks and gives way. Mean asked +1.43 %, mean settled -1.63 %. 2025-11: asked +3.5 %, settled 0.0 %. 2024-11: offered -0.7 %, settled -3.0 %. 2023-12: asked +1.5 %, settled -1.9 %. This year it did not use the price-change notice; its 2026-09-08 quote holds 33.06 EUR and asks only for payment within 10 days. The owner offered an open-book walk-through of hourly rates and material. The MD said he cannot sign anything that lowers margin now. Under pressure on payment it pushes back: overdue-invoice letter threatening to review conditions.",
+  "wants": [
+    "Fast, reliable payment: within 10 days, no late invoices",
+    "Additional volume or new parts to refill idle capacity and end short-time work",
+    "Contract continuity it can show its bank (renewal beyond 2026-12-31, longer term)",
+    "No margin erosion: price held flat"
+  ],
+  "protects": [
+    "unit_price: no price cut that lowers margin while the bank is watching",
+    "payment_days: will resist anything longer than today's 30 net / 10 days 3 % skonto"
+  ],
+  "trades": [
+    {
+      "give": "payment_days: commit to guaranteed payment within 10 days on every invoice (we keep the 3 % skonto)",
+      "get": "unit_price held at 33.06 EUR for 2027 and fixed for 24 months, plus an OTD commitment to the 95 % target",
+      "why": "Cash certainty is worth far more to it than to us. We already earn 3 % skonto, about 55 % p.a. on 20 days, so reliability costs us nothing.",
+      "ids": [
+        "quote:7300056",
+        "ctr:4600070280#4.1",
+        "doc:20260707-70280-M1",
+        "doc:20260720-70280-P"
+      ]
+    },
+    {
+      "give": "contract_months: renew the framework for 24 months instead of the silent 12-month extension; volume_per_year: firm ~7,000 pcs forecast",
+      "get": "Small unit_price reduction (target -1 % to -2 %) backed by its own open-book calculation, or price fixed for 24 months",
+      "why": "Its machines are idle and the bank wants committed order intake. Volume security fills shifts without a margin cut per hour.",
+      "ids": [
+        "doc:20260619-70280-M2",
+        "news:20260926-38",
+        "ctr:4600070280#8.1",
+        "doc:20260617-70280-M3"
+      ]
+    },
+    {
+      "give": "volume_per_year: offer additional machined parts / RFQs to fill its free capacity",
+      "get": "Price reduction on part:320011 or price hold, plus lead_time_days below 28",
+      "why": "It said it can take extra parts at short notice. New work is the strongest lever for a hungry shop.",
+      "ids": [
+        "doc:20260619-70280-M2",
+        "ctr:4600070280#5.1"
+      ]
+    },
+    {
+      "give": "Accept the price-hold quote quickly, without a long haggle",
+      "get": "ppm_commitment below 500 and keep chargeback at 150 EUR per complaint; tooling return clause confirmed",
+      "why": "Securing quality and our tooling matters more than a few cents while its solvency is uncertain.",
+      "ids": [
+        "quote:7300056",
+        "ctr:4600070280#6.1",
+        "sc:70280@2026Q3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can be the customer that pays reliably within 10 days, which is predictable liquidity you can show your bank every month.",
+      "ids": [
+        "doc:20260707-70280-M1",
+        "news:20260725-20"
+      ]
+    },
+    {
+      "point": "A renewed multi-year framework with a firm forecast secures order intake while machinery-sector demand is weak.",
+      "ids": [
+        "news:20260926-38",
+        "ctr:4600070280#8.1"
+      ]
+    },
+    {
+      "point": "Let us take up the owner's offer to go through hourly rates and material together, so we find a price that keeps margin intact on fuller machines.",
+      "ids": [
+        "doc:20260617-70280-M3"
+      ]
+    },
+    {
+      "point": "OTD of 88.9 % is still below the 95 % contract target. With the second shift idle, on-time delivery should be achievable, and we expect it in return for faster payment.",
+      "ids": [
+        "sc:70280@2026Q3",
+        "ctr:4600070280#6.1",
+        "doc:20260619-70280-M2"
+      ]
+    }
+  ],
+  "avoid": [
+    "Paying late or proposing longer payment terms. It already complained about overdue invoices and threatened to review conditions.",
+    "Framing asks as a straight margin cut. The MD explicitly cannot sign that now.",
+    "Aggressive resourcing threats. They could push a fragile firm over the edge while we single-source from it.",
+    "Mentioning its bank troubles or short-time work in a condescending way. It is a family firm and will dig in if it feels disrespected."
+  ],
+  "tone": "Respectful and partnership-minded, addressed to the owner/MD. Be concrete about payment reliability and volume, and stay calm and factual on OTD.",
+  "red_flags": [
+    "Insolvency risk: credit index 302 (weak, up from 230), equity 20.3 %, bank negotiations, short-time work.",
+    "Single active source (100 % quota) for part:320011. Qualify the one other source and secure safety stock. We own the tooling, so confirm it can be retrieved at short notice.",
+    "OTD stuck at 85.7–88.9 % versus the 95 % target over the last three quarters.",
+    "Our late payments (47 % of invoices late) are straining the relationship and could prompt it to tighten terms.",
+    "Contract auto-extends 12 months unless notice is given 90 days before 2026-12-31, i.e. around 2026-10-02. Decide now whether to renegotiate the term."
+  ],
+  "evidence": [
+    {
+      "claim": "MD asked twice for earlier payment, said the bank is watching monthly, and cannot sign anything that lowers margin.",
+      "ids": [
+        "doc:20260707-70280-M1"
+      ]
+    },
+    {
+      "claim": "Negotiating with banks after two weak years.",
+      "ids": [
+        "news:20260725-20"
+      ]
+    },
+    {
+      "claim": "Short-time work in machining due to weak order intake; second shift on hold since spring; can take extra parts at short notice.",
+      "ids": [
+        "news:20260926-38",
+        "doc:20260619-70280-M2"
+      ]
+    },
+    {
+      "claim": "Latest quote holds 33.06 EUR, 28 days lead time, and requests payment within 10 days.",
+      "ids": [
+        "quote:7300056"
+      ]
+    },
+    {
+      "claim": "Complained about overdue invoices and threatened to review conditions.",
+      "ids": [
+        "doc:20260720-70280-P"
+      ]
+    },
+    {
+      "claim": "Owner offered an open-book review of hourly rates and material.",
+      "ids": [
+        "doc:20260617-70280-M3"
+      ]
+    },
+    {
+      "claim": "Past renewals settled at or below zero despite price-increase asks.",
+      "ids": []
+    },
+    {
+      "claim": "OTD 88.9 % vs 95 % target; ppm improved to 425; no overdue 8D.",
+      "ids": [
+        "sc:70280@2026Q3",
+        "ctr:4600070280#6.1"
+      ]
+    },
+    {
+      "claim": "Framework ends 2026-12-31, auto-extends 12 months, 90 days' notice; prices fixed per calendar year with 90 days' notice for changes.",
+      "ids": [
+        "ctr:4600070280#8.1",
+        "ctr:4600070280#3.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 3.6,
+    "our_spend_eur": {
+      "FY2024": 213715,
+      "FY2025": 229541,
+      "FY2026": 233337
+    },
+    "credit_index": "302 (12 months ago 230; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 1.43,
+    "history_mean_settled_pct": -1.63,
+    "history_settled_minus_asked_pct": -3.06,
+    "we_pay_days_after_due_mean": -3.5,
+    "we_pay_late_share_pct": 47,
+    "skonto_taken_share_pct": 51,
+    "scorecard_trend": "2025Q4 green (otd 96.0, ppm 1040) → 2026Q1 green (otd 88.5, ppm 623) → 2026Q2 amber (otd 85.7, ppm 720) → 2026Q3 green (otd 88.9, ppm 425)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "1d2b6b6fdbba78f9",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:44",
+    "seconds": 44.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70280-320011",
+      "EV-2025-70280-320011",
+      "EV-2024-70280-320011"
+    ]
+  }
+}

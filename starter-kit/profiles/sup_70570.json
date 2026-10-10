@@ -1,0 +1,197 @@
+{
+  "supplier_id": "sup:70570",
+  "name": "Sensorik Ammertal GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": "near_monopolist",
+  "confidence": 0.8,
+  "summary": "Sensorik Ammertal is a privately held German sensor maker (150 staff, about 35 M EUR turnover) and our single source for pressure sensor part:350050. A financial investor bought it in June 2026, and price policy now comes from head office: reductions are frozen until December 2027, and moves above 2 % go to a pricing committee. It is financially sound and not dependent on us (we are 1.2 % of its turnover), but it is open on payment terms and call-off flexibility.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.15,
+    "our_dependency": 0.8,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager or sales director up to 2 %. Above 2 %, the pricing committee (meets every two weeks). Head office under the new investor sets policy and has frozen price reductions until Dec 2027."
+  },
+  "negotiation_pattern": "At renewals it asks moderately and settles well below its ask: on average it asked +2.87 % and settled +0.43 %. Last round it asked +4.9 % and settled +3.1 %. The year before it asked +1.6 % and ended at -1.8 %. Before that it asked +2.1 % and ended at 0.0 %. So it gives ground in negotiation, but now hides behind head-office policy on price. Its 2026-09-02 quote held the price flat at 23.13 with the remark that no discounts are possible. In the latest meeting it refused price movement but offered flexibility on payment and call-offs.",
+  "wants": [
+    "Keep list price intact (no visible reduction, per head-office directive)",
+    "Reliable and punctual payment, possibly faster payment",
+    "Contract continuity and volume security under the new owner's terms review",
+    "Room to fit its own schedule via call-off rules (its OTD has slipped)"
+  ],
+  "protects": [
+    "unit_price (head-office freeze on reductions until Dec 2027; quote remark says no discounts)",
+    "Any move above 2 % without pricing-committee approval",
+    "Possibly new terms that the investor wants to tighten (its planned review of prices and terms)"
+  ],
+  "trades": [
+    {
+      "give": "payment_days: commit to punctual payment at 30 days, or shorter terms with a skonto",
+      "get": "A skonto of about 2 % for early payment, giving an effective reduction without touching list price",
+      "why": "It is open on payment terms but blocked on list price. We currently pay late 83 % of the time and never take skonto.",
+      "ids": [
+        "doc:20260927-70570-M1",
+        "quote:7300075",
+        "ctr:4600070570#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework 24 months",
+      "get": "unit_price fixed at 23.13 through 2028, with no index clause",
+      "why": "This protects us against the investor's price review. Holding the price is not a reduction, so it fits their policy.",
+      "ids": [
+        "news:20260622-16",
+        "ctr:4600070570#8.1",
+        "ctr:4600070570#3.1"
+      ]
+    },
+    {
+      "give": "Call-off flexibility: rolling forecast and agreed call-off windows",
+      "get": "lead_time_days cut from 28 to about 21, plus a firm 95 % OTD commitment",
+      "why": "It offered call-off flexibility, and its OTD of 80-88 % is below the 95 % contract target.",
+      "ids": [
+        "doc:20260927-70570-M1",
+        "sc:70570@2026Q3",
+        "ctr:4600070570#6.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: firm forecast of about 18,000 pcs per year",
+      "get": "ppm_commitment ≤250 and chargeback_eur_per_complaint raised above 150",
+      "why": "Its ppm has improved from 400 to 271. Locking this in is cheap for it.",
+      "ids": [
+        "sc:70570@2026Q3",
+        "sc:70570@2026Q1",
+        "ctr:4600070570#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "OTD has been below the 95 % contract target for four quarters (92, 80, 84, 88 %). We expect a delivery-performance commitment if price cannot move.",
+      "ids": [
+        "sc:70570@2026Q3",
+        "sc:70570@2026Q2",
+        "sc:70570@2026Q1",
+        "sc:70570@2025Q4",
+        "ctr:4600070570#6.1"
+      ]
+    },
+    {
+      "point": "A skonto or payment-term structure is not a price reduction, so it stays within the head-office directive and the 2 % authority of the sales side.",
+      "ids": [
+        "doc:20260927-70570-M1",
+        "doc:20260314-70570-M2"
+      ]
+    },
+    {
+      "point": "Our spend is steady at about 423-434k EUR per year. We offer continuity and a longer contract in return for price stability during the ownership change.",
+      "ids": [
+        "news:20260622-16",
+        "ctr:4600070570#8.1"
+      ]
+    },
+    {
+      "point": "Our should-cost estimate suggests the price is only about 2.9 % above its cost without margin. Use this softly as a reason to hold the price, not to cut it, because the estimate's confidence is only 5 %.",
+      "ids": [
+        "cost:350050"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a list-price cut: it is frozen by head office and will just escalate or stall",
+    "Threatening to resource: there are no other sources and we are only 1.2 % of its turnover",
+    "Asking for moves above 2 % at short notice: the pricing committee meets only every two weeks",
+    "Raising payment terms without first fixing our own late payments (83 % late)"
+  ],
+  "tone": "Businesslike and structured. Frame offers as terms packages its contact can approve within policy, and acknowledge the ownership change.",
+  "red_flags": [
+    "The new financial investor plans to review prices and terms with all customers. Expect pressure toward increases or tighter terms.",
+    "Deadline: price-change notice and contract termination both require 90 days before 2026-12-31, i.e. about 2026-10-02. Confirm that no increase notice has been received and secure the 23.13 hold in writing.",
+    "Single source (100 % quota, no other sources) for an A-class part. Supply risk if relations sour.",
+    "Delivery reliability is below target (OTD 80-88 % against 95 %).",
+    "Our payment behaviour is poor (83 % late), which weakens our position on terms."
+  ],
+  "evidence": [
+    {
+      "claim": "Acquired by a financial investor that plans to review prices and terms with all customers",
+      "ids": [
+        "news:20260622-16"
+      ]
+    },
+    {
+      "claim": "Head office froze price reductions until Dec 2027; it is open on payment terms and call-off flexibility",
+      "ids": [
+        "doc:20260927-70570-M1",
+        "quote:7300075"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing-committee approval (meets every two weeks)",
+      "ids": [
+        "doc:20260314-70570-M2"
+      ]
+    },
+    {
+      "claim": "Single source for part:350050 at 23.13, valid since 2026-01-01",
+      "ids": []
+    },
+    {
+      "claim": "History shows it settles far below its ask (last round asked 4.9 %, settled 3.1 %)",
+      "ids": []
+    },
+    {
+      "claim": "Contract ends 2026-12-31, auto-extends 12 months unless terminated with 90 days' notice; price changes need 90 days' notice",
+      "ids": [
+        "ctr:4600070570#8.1",
+        "ctr:4600070570#3.1"
+      ]
+    },
+    {
+      "claim": "OTD below the 95 % target; ppm improved from 400 to 271; EUR 150 chargeback per complaint",
+      "ids": [
+        "sc:70570@2026Q3",
+        "sc:70570@2026Q1",
+        "ctr:4600070570#6.1"
+      ]
+    },
+    {
+      "claim": "Financially stable: credit index unchanged at 176 and equity ratio 43.5 %, so it is not cash-short"
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 1.2,
+    "our_spend_eur": {
+      "FY2024": 434249,
+      "FY2025": 425973,
+      "FY2026": 422828
+    },
+    "credit_index": "176 (12 months ago 176; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.87,
+    "history_mean_settled_pct": 0.43,
+    "history_settled_minus_asked_pct": -2.44,
+    "we_pay_days_after_due_mean": 2.9,
+    "we_pay_late_share_pct": 83,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350050: price 23.13 vs cost:350050 22.47 (its own plant): +2.9 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 92.0, ppm 374) → 2026Q1 green (otd 80.0, ppm 400) → 2026Q2 green (otd 84.0, ppm 272) → 2026Q3 green (otd 88.0, ppm 271)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "ac78938022ff83e1",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:37",
+    "seconds": 37.6,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70570-350050",
+      "EV-2026-70570-350050",
+      "EV-2025-70570-350050",
+      "EV-2024-70570-350050"
+    ]
+  }
+}

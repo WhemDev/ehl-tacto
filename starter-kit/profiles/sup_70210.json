@@ -1,0 +1,212 @@
+{
+  "supplier_id": "sup:70210",
+  "name": "Zerspanung Dralveck GmbH",
+  "archetype": "hungry_for_work",
+  "secondary_archetype": "family_relationship",
+  "confidence": 0.6,
+  "summary": "Zerspanung Dralveck is a founder-owned machining shop with 22 staff and 2-5 M EUR turnover. It was a sole trader until 2024. Its second shift has been on hold since spring, it says it could take extra parts at short notice, and it calls Hollerau an important reference customer. Its weak spots are a persistently amber scorecard (ppm rising, OTD about 81 % against a 95 % target), an owner who admits he has not tracked his material and energy costs since 2022, and irritation that we pay invoices late.",
+  "situation": {
+    "cash_pressure": 0.3,
+    "capacity": "under_used",
+    "dependency_on_us": 0.6,
+    "our_dependency": 0.5,
+    "relationship": "neutral",
+    "decision_maker": "owner decides; office manager prepares the costing"
+  },
+  "negotiation_pattern": "Opens with small asks (-3.2 % to +4.6 %) and settles about 2.1 pts below its ask on average (mean asked +0.52 %, settled -1.58 %). On part:320010 it has even offered cuts itself (-3.2 → -6.6 settled; -0.9 → -3.0). On part:320080 it asks +1.2 % every year, then accepts 0 %. It gives way on price easily and does not dig in. Its one sharp reaction was over our late payments: 'otherwise we will have to review our conditions'.",
+  "wants": [
+    "additional volume to refill capacity (second shift on hold), e.g. the HX shaft or 320011",
+    "reliable, on-time payment as agreed",
+    "respect and recognition as a long-term partner (owner-led, values the reference status)",
+    "planning security (contract continuity, forecasts)"
+  ],
+  "protects": [
+    "payment terms being respected (30 net / 2 % 10 days); will not accept us stretching further",
+    "unit_price on part:320080 (holds at 0 % rather than cut, single source)",
+    "its dignity as an owner-run firm; reacts to being pushed or treated as a commodity"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: award part:320011 (qualified, 0 % quota) and/or raise the part:320010 quota from 30 %, and fair consideration in the HX shaft RFQ",
+      "get": "unit_price held flat for 2027 plus a binding ppm_commitment and an OTD recovery plan toward 95 %",
+      "why": "Idle capacity makes volume its most valuable currency, and quality is our condition for giving more share.",
+      "ids": [
+        "doc:20260722-70210-M2",
+        "doc:20260923-70210-P05",
+        "sc:70210@2026Q3",
+        "ctr:4600070210#6.1"
+      ]
+    },
+    {
+      "give": "payment discipline: pay strictly on due date, keep taking skonto on time",
+      "get": "price stability for 2027 (no increase) and goodwill on quality corrective actions",
+      "why": "Late payment is its open grievance; fixing it costs us nothing.",
+      "ids": [
+        "doc:20260504-70210-P",
+        "ctr:4600070210#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: confirm the framework beyond 2027-06-30 or extend it 12-24 months",
+      "get": "price fixed per year without an index clause, plus a higher chargeback_eur_per_complaint (above EUR 150)",
+      "why": "Continuity gives the small owner-run firm security, and the flat EUR 150 fee barely bites at ppm 1863.",
+      "ids": [
+        "ctr:4600070210#8.1",
+        "ctr:4600070210#3.1",
+        "ctr:4600070210#6.1"
+      ]
+    },
+    {
+      "give": "volume_per_year and forecast visibility on the new HX shaft",
+      "get": "shorter lead_time_days than 28 and DAP incoterm as requested in the RFQ",
+      "why": "Spare capacity means a faster response costs it little.",
+      "ids": [
+        "doc:20260722-70210-M2",
+        "doc:20260923-70210-P05",
+        "ctr:4600070210#5.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We have new work (HX shaft, SOP March 2027, 4,200 pc/yr) and a qualified 0 %-quota part. More share depends on fixing ppm and OTD.",
+      "ids": [
+        "doc:20260923-70210-P05",
+        "sc:70210@2026Q3"
+      ]
+    },
+    {
+      "point": "Quality has worsened for a year: ppm 1214 → 1863, OTD 85.7 → 80.8 against a 95 % target, 19 complaints and 3 open 8D. That puts its share at risk.",
+      "ids": [
+        "sc:70210@2025Q4",
+        "sc:70210@2026Q3",
+        "ctr:4600070210#6.1"
+      ]
+    },
+    {
+      "point": "We value it as a long-term, owner-led partner; it calls us its reference customer, so we should build the relationship together.",
+      "ids": [
+        "doc:20260910-70210-M3",
+        "doc:20260908-70210-M1"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year. A 2027 change needed written notice by about 2 October (90 days before year end), and none is on file.",
+      "ids": [
+        "ctr:4600070210#3.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "hard price-cut demands: part:320010 already sits about 3.4 % below a no-margin should-cost (low-confidence estimate), and the owner may be underpricing unknowingly",
+    "raising the cost topic so that the owner reworks his calculation and comes back with a catch-up increase",
+    "paying late again or proposing longer payment_days",
+    "an impersonal, purely contractual tone toward an owner who visited in person"
+  ],
+  "tone": "Personal, respectful, partner-like toward the owner. Be clear and firm on quality, and generous with volume prospects.",
+  "red_flags": [
+    "Possible hidden underpricing: the owner has not tracked material and energy costs since 2022, so a sudden catch-up demand or margin erosion is a risk.",
+    "Single source on part:320080 (100 % quota, no other source). Our tooling eases a move, but a failure would hurt.",
+    "Quality and delivery are deteriorating: ppm 1863, OTD 80.8 %, 3 open 8D, last complaint 2026-09-23. Adding volume could worsen this.",
+    "Payment friction: 36 % of our payments are late, and it threatened to review conditions.",
+    "The HX quote may come in unsustainably low; check it against should-cost before awarding."
+  ],
+  "evidence": [
+    {
+      "claim": "Second shift on hold since spring; can take additional parts at short notice",
+      "ids": [
+        "doc:20260722-70210-M2"
+      ]
+    },
+    {
+      "claim": "Hollerau is an important reference customer for it",
+      "ids": [
+        "doc:20260910-70210-M3"
+      ]
+    },
+    {
+      "claim": "Owner has not tracked material and energy prices since 2022; office manager does the costing",
+      "ids": [
+        "doc:20260908-70210-M1"
+      ]
+    },
+    {
+      "claim": "Complained about overdue invoices and threatened to review conditions",
+      "ids": [
+        "doc:20260504-70210-P"
+      ]
+    },
+    {
+      "claim": "Scorecard amber for four quarters; ppm 1214 → 1863, OTD 85.7 → 80.8 %",
+      "ids": [
+        "sc:70210@2025Q4",
+        "sc:70210@2026Q3"
+      ]
+    },
+    {
+      "claim": "OTD target 95 %, flat EUR 150 per supplier-caused complaint",
+      "ids": [
+        "ctr:4600070210#6.1"
+      ]
+    },
+    {
+      "claim": "part:320010 at 24.37 vs no-margin should-cost 25.22 (-3.4 %, confidence 5 %, based on another supplier's plant)",
+      "ids": [
+        "cost:320010"
+      ]
+    },
+    {
+      "claim": "Settles below its own ask; 320080 asks +1.2 % and settles at 0 %",
+      "ids": []
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 and auto-extends 12 months; prices fixed per calendar year with 90 days' notice",
+      "ids": [
+        "ctr:4600070210#8.1",
+        "ctr:4600070210#3.1"
+      ]
+    },
+    {
+      "claim": "Stable financials: credit index 249 unchanged over 12 months, equity ratio 43.6 %",
+      "ids": [
+        "sup:70210"
+      ]
+    },
+    {
+      "claim": "Invited to the HX shaft RFQ, 4,200 pc/yr, SOP March 2027, DAP",
+      "ids": [
+        "doc:20260923-70210-P05"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "249 (12 months ago 249; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.52,
+    "history_mean_settled_pct": -1.58,
+    "history_settled_minus_asked_pct": -2.1,
+    "we_pay_days_after_due_mean": -8.4,
+    "we_pay_late_share_pct": 36,
+    "skonto_taken_share_pct": 61,
+    "price_vs_should_cost_no_margin": [
+      "part:320010: price 24.37 vs cost:320010 25.22 (plant of sup:70290): -3.4 %"
+    ],
+    "scorecard_trend": "2025Q4 amber (otd 85.7, ppm 1214) → 2026Q1 amber (otd 82.7, ppm 1313) → 2026Q2 amber (otd 82.7, ppm 1997) → 2026Q3 amber (otd 80.8, ppm 1863)"
+  },
+  "practice_cases": [
+    "P05"
+  ],
+  "meta": {
+    "key": "98332b69d9adfd6a",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:36",
+    "seconds": 51.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70210-320080",
+      "EV-2025-70210-320080",
+      "EV-2026-70210-320010",
+      "EV-2024-70210-320010"
+    ]
+  }
+}

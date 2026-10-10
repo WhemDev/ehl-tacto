@@ -1,0 +1,208 @@
+{
+  "supplier_id": "sup:70710",
+  "name": "Edelstahl-Service Donautal GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": null,
+  "confidence": 0.5,
+  "summary": "Edelstahl-Service Donautal is a financially solid stainless steel service centre: EUR 165 M turnover, 350 staff, equity 33.9 %, stable credit index 177. Our business is only 0.3 % of its turnover. The framework contract ends 2026-12-31 and renews automatically unless notice is given 60 days before. The supplier now wants to reset the price basis and its AS-14404 surcharge clause, and its 2026-09-19 RFQ quote of 6.31 is +15.8 % on the current 5.45. Yet it states its nickel and alloy costs are hedged at fixed prices until March 2027, and on 2026-09-10 it quoted 5.45 valid accordingly.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "normal",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.4,
+    "relationship": "good",
+    "decision_maker": "Owner/managing level (the 'owner' personally offered an open calculation in doc:20260421-70710-M2) within a group structure; expect sales to escalate anything beyond index mechanics."
+  },
+  "negotiation_pattern": "Opens with modest asks (mean +0.7 %) and settles well below them (mean -2.4 %, settled minus asked -3.1 pts). It has accepted price cuts twice: -7.1 % against an asked -3.1 % in EV-2024, and -1.5 % against an asked +2.0 % in EV-2025. Last renewal it asked +3.2 % and settled +1.4 % (EV-2026). It prefers mechanical, index-based pricing and offers transparency (open calculation) rather than confrontation. The current 6.31 quote looks like an opening anchor rather than a cost-based price.",
+  "wants": [
+    "an agreed price basis and surcharge clause on AS-14404 for the coming period",
+    "continuity and renewal of the framework (auto-extension)",
+    "payment on time (we pay late in 79 % of cases)",
+    "more volume, e.g. the qualified but unused sheet part:370021"
+  ],
+  "protects": [
+    "index linkage to AS-14404 (it will not accept a pure fixed price beyond its hedge horizon)",
+    "material share in the formula (0.45)",
+    "list/quote price for new periods (group policy), less so terms"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year: award a share of part:370021 (sheet, qualified, quota 0 %) to them",
+      "get": "unit_price for part:370010 held at 5.45 until 2027-03-31, as in its own quote",
+      "why": "Its material is hedged until March 2027, so holding 5.45 costs it nothing, while the extra volume is real value to it.",
+      "ids": [
+        "quote:7300008",
+        "doc:20260706-70710-M1",
+        "quote:7100069"
+      ]
+    },
+    {
+      "give": "index_clause: accept their AS-14404 surcharge clause from 2027-04 onwards",
+      "get": "index base reset only from Q2 2027, no index surcharge before hedge expiry, and a symmetric deadband",
+      "why": "Index rises before April 2027 do not reach its costs, by its own statement; this gives them the clause they asked for.",
+      "ids": [
+        "doc:20260912-70710-P08",
+        "doc:20260706-70710-M1",
+        "ctr:4600070710#3.2"
+      ]
+    },
+    {
+      "give": "payment_days: commit to strict on-time payment at 30 days",
+      "get": "unit_price movement toward 5.45 and an OTD commitment toward the 95 % target",
+      "why": "Paying on time is cheap for us, and our late payment is an irritant it can cite.",
+      "ids": [
+        "ctr:4600070710#4.1",
+        "ctr:4600070710#6.1",
+        "sc:70710@2026Q3"
+      ]
+    },
+    {
+      "give": "contract_months: renew framework for 24 months",
+      "get": "price annex at 5.45 through 2027-03, the index formula unchanged (0.45 share), and an OTD commitment",
+      "why": "Gives it planning security at no real cost to us.",
+      "ids": [
+        "ctr:4600070710#8.1",
+        "ctr:4600070710#3.2"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "You confirmed in writing that nickel and alloys are covered at fixed prices until March 2027 and quoted 5.45 'valid accordingly'. A 6.31 quote nine days later has no cost basis before April 2027.",
+      "ids": [
+        "doc:20260706-70710-M1",
+        "quote:7300008",
+        "quote:7200018"
+      ]
+    },
+    {
+      "point": "The existing clause already passes only 45 % material share through AS-14404. A +15.8 % jump would need an implausible index move, so please show the I(m-2)/I(base) calculation.",
+      "ids": [
+        "ctr:4600070710#3.2",
+        "quote:7200018"
+      ]
+    },
+    {
+      "point": "Take up the owner's offer to walk through the calculation of hourly rates and material.",
+      "ids": [
+        "doc:20260421-70710-M2"
+      ]
+    },
+    {
+      "point": "OTD has been 88-92 % for four quarters against a contractual 95 % target, and one 8D is still open. Delivery performance must improve before any price uplift.",
+      "ids": [
+        "sc:70710@2026Q3",
+        "sc:70710@2026Q2",
+        "sc:70710@2026Q1",
+        "sc:70710@2025Q4",
+        "ctr:4600070710#6.1"
+      ]
+    },
+    {
+      "point": "There is a qualified second source for both parts, so the volume is contestable.",
+      "ids": [
+        "sc:70710@2026Q3"
+      ]
+    }
+  ],
+  "avoid": [
+    "Rejecting any index clause outright. It asked for one, and the existing contract already has one.",
+    "Threatening loss of a big customer: we are only 0.3 % of its turnover, so the threat carries little weight.",
+    "Raising payment terms as a demand while we pay late 79 % of the time.",
+    "Letting the 2026-11-01 notice date pass without an agreed price annex."
+  ],
+  "tone": "Factual and cooperative, numbers-driven. Quote its own letter and quote back to it, and accept its transparency offer.",
+  "red_flags": [
+    "Contract auto-extends after 2026-12-31. Termination or price-change notice must be given 60 days before year end, i.e. by about 2026-11-01.",
+    "The 6.31 quote (+15.8 %) is an anchor that contradicts its stated hedge to March 2027.",
+    "OTD consistently below the 95 % target, with one open 8D (last complaint 2026-09-06).",
+    "After March 2027 its hedge expires and real alloy cost pass-through will start.",
+    "The quote for alternative part:370021 is from 2024 and stale, so it must be re-quoted before using it as a lever."
+  ],
+  "evidence": [
+    {
+      "claim": "Material (nickel, alloys) is hedged at fixed prices until March 2027.",
+      "ids": [
+        "doc:20260706-70710-M1",
+        "quote:7300008"
+      ]
+    },
+    {
+      "claim": "RFQ quote on 2026-09-19 at 6.31 versus a current price of 5.45 (valid from 2026-07-01 via index adjustment).",
+      "ids": [
+        "quote:7200018"
+      ]
+    },
+    {
+      "claim": "The supplier proposes a new price basis and AS-14404 surcharge clause for the coming period.",
+      "ids": [
+        "doc:20260912-70710-P08"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2026-12-31 with 12-month auto-extension and 60 days' notice. Index formula has 0.45 material share, 0 % deadband and quarterly adjustment.",
+      "ids": [
+        "ctr:4600070710#8.1",
+        "ctr:4600070710#3.1",
+        "ctr:4600070710#3.2"
+      ]
+    },
+    {
+      "claim": "Historically settles about 3.1 pts below its ask and has accepted price decreases.",
+      "ids": []
+    },
+    {
+      "claim": "Financially solid (equity 33.9 %, credit index 177, unchanged); our share of its turnover is only 0.3 %.",
+      "ids": [
+        "sup:70710"
+      ]
+    },
+    {
+      "claim": "Owner offered to open the calculation (hourly rates and material).",
+      "ids": [
+        "doc:20260421-70710-M2"
+      ]
+    },
+    {
+      "claim": "OTD of 88.0 % against a 95 % target; ppm 75; EUR 150 flat chargeback per complaint.",
+      "ids": [
+        "sc:70710@2026Q3",
+        "ctr:4600070710#6.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.3,
+    "our_spend_eur": {
+      "FY2024": 507987,
+      "FY2025": 493091,
+      "FY2026": 493832
+    },
+    "credit_index": "177 (12 months ago 177; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.7,
+    "history_mean_settled_pct": -2.4,
+    "history_settled_minus_asked_pct": -3.1,
+    "we_pay_days_after_due_mean": 2.1,
+    "we_pay_late_share_pct": 79,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 88.5, ppm 76) → 2026Q1 green (otd 92.0, ppm 43) → 2026Q2 green (otd 88.5, ppm 92) → 2026Q3 green (otd 88.0, ppm 75)"
+  },
+  "practice_cases": [
+    "P08"
+  ],
+  "meta": {
+    "key": "a060d49765e208cd",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:27",
+    "seconds": 44.9,
+    "release": false,
+    "dropped_ids": [
+      "current_prices",
+      "EV-2026-70710-370010-Q3",
+      "EV-2026-70710-370010",
+      "EV-2025-70710-370010",
+      "EV-2024-70710-370010"
+    ]
+  }
+}

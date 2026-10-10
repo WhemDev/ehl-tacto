@@ -1,0 +1,203 @@
+{
+  "supplier_id": "sup:70120",
+  "name": "Eisengießerei Velkenreith GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.7,
+  "summary": "Velkenreith is a family-owned iron foundry founded in 1936, with 240 staff, 34.2 M EUR turnover and sound finances (equity 38.5 %, credit index steady at 239). It is our sole source for Impeller HN 250 and supplies 70 % of HN 200, yet we are only 1.4 % of its turnover. The owner recently reminded us of the favour he did us in 2022 and expects partnership in return, while its delivery performance has slid from green to amber.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "unknown",
+    "dependency_on_us": 0.2,
+    "our_dependency": 0.6,
+    "relationship": "neutral",
+    "decision_maker": "owner (visits personally and frames the relationship); day-to-day sales via new inside-sales contact since 2025-10-01"
+  },
+  "negotiation_pattern": "Asks for small moves (-4.1 % to +3.2 %) and always settles 1.4 to 4 points below its ask. On HN 250 it accepted 0.0 % twice despite asking +2.0 % and +3.2 %. On HN 200 it repeatedly 'accepted below full cost to keep the volume', most recently asking +2.6 % and settling at -1.4 %. It quoted HN 200 at 37.90 in the 2025 RFQ, and the current price is 34.26. It yields to pressure but keeps score: the owner now expects reciprocity for 2022.",
+  "wants": [
+    "recognition and partnership (reciprocity for holding prices in 2022)",
+    "long-term volume security and contract continuity",
+    "a fair shot at new business (HX volute casing, 4,200 pc/yr from 03/2027)",
+    "being paid on time (we pay late 90 % of the time, about 6 days)",
+    "relief on HN 200, priced below our estimated cost"
+  ],
+  "protects": [
+    "unit_price on HN 200: already at -4.8 % vs no-margin should-cost, little room left",
+    "unit_price on HN 250: held at 0.0 % for two years, it will resist cuts",
+    "dignity and goodwill: will dig in against threats or benchmark pressure"
+  ],
+  "trades": [
+    {
+      "give": "contract_months: extend the framework 24-36 months instead of the tacit 12-month rollover",
+      "get": "unit_price hold for 2027 on both impellers plus a written OTD recovery plan toward the 95 % target",
+      "why": "Long-term commitment is the currency a family firm values most; it buys price stability and delivery fixes.",
+      "ids": [
+        "ctr:4600070120#8.1",
+        "ctr:4600070120#6.1",
+        "doc:20260719-70120-M1"
+      ]
+    },
+    {
+      "give": "payment_days: commit to actually paying on the 45-day net term (or 30 days)",
+      "get": "unit_price hold on HN 250 and a lead_time_days commitment of 49 days or less",
+      "why": "Our chronic late payment undercuts any partnership claim; paying on time is a cheap respect signal.",
+      "ids": [
+        "ctr:4600070120#4.1",
+        "doc:20260719-70120-M1"
+      ]
+    },
+    {
+      "give": "volume_per_year: firm forecast and quota security on HN 200 (keep 70 %), plus serious consideration in the HX volute RFQ",
+      "get": "ppm_commitment below 700 and closure of the 2 open 8Ds, with the chargeback kept at EUR 150",
+      "why": "It has repeatedly traded price for volume; new series volume is the strongest carrot we have.",
+      "ids": [
+        "doc:20260926-70120-P06",
+        "sc:70120@2026Q3",
+        "ctr:4600070120#6.1"
+      ]
+    },
+    {
+      "give": "unit_price: no further reduction demand on HN 200",
+      "get": "a supply-security and capacity commitment on sole-source HN 250",
+      "why": "Squeezing a below-cost part risks walk-away; securing the sole-source part matters more.",
+      "ids": [
+        "cost:310030"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We remember that you held prices for a quarter in 2022. We want to return that with a longer agreement and a fair chance on HX, in exchange for stability on price and delivery.",
+      "ids": [
+        "doc:20260719-70120-M1",
+        "doc:20260926-70120-P06",
+        "ctr:4600070120#8.1"
+      ]
+    },
+    {
+      "point": "Our business with you grew every year (375k, then 433k, then 488k EUR); we want to keep growing it together.",
+      "ids": []
+    },
+    {
+      "point": "OTD fell from 89.6 % to 74.5 % against the 95 % contract target. Fixing this is the precondition for new series volume.",
+      "ids": [
+        "sc:70120@2025Q4",
+        "sc:70120@2026Q3",
+        "ctr:4600070120#6.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "threats or naming Tarsevi as a lever; the owner reacts to disrespect, not pressure",
+    "demanding another price cut on HN 200, which is already below our cost estimate",
+    "presenting the should-cost as hard fact (confidence only 5 %)",
+    "pushing chargebacks hard while we ourselves pay late",
+    "ignoring or downplaying the 2022 favour"
+  ],
+  "tone": "Personal, respectful and long-term. Address the owner's partnership expectation explicitly and be firm but factual on delivery performance.",
+  "red_flags": [
+    "Sole source on HN 250 (100 % quota, no other sources). The tooling is ours, but there is no qualified alternative.",
+    "OTD is deteriorating (89.6 → 74.5 %, amber, class B) while received volume rises. This may signal a capacity strain we cannot confirm.",
+    "2 open 8D reports. The last complaint was 2026-09-04, and only 750 EUR has been recharged.",
+    "Repeated below-cost pricing on HN 200 is unsustainable and risks a sudden increase demand, quality slippage or walk-away.",
+    "Contract notice and price-change deadline is 90 days before 2026-12-31, i.e. about 2026-10-02. This is imminent and must be checked.",
+    "Our 1.4 % share gives us little leverage; the firm could deprioritise us."
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned, founded 1936, equity 38.5 %, credit index 239 unchanged over 12 months",
+      "ids": [
+        "sup:70120"
+      ]
+    },
+    {
+      "claim": "Owner visited and invoked the 2022 price hold, expecting partnership",
+      "ids": [
+        "doc:20260719-70120-M1"
+      ]
+    },
+    {
+      "claim": "HN 200 price of 34.26 is 4.8 % below the no-margin should-cost of 35.98 (low confidence)",
+      "ids": [
+        "cost:310030"
+      ]
+    },
+    {
+      "claim": "Has repeatedly accepted below full cost on HN 200 to keep the volume",
+      "ids": []
+    },
+    {
+      "claim": "HN 250 settled at 0.0 % in both of the last two renewals",
+      "ids": []
+    },
+    {
+      "claim": "OTD dropped to 74.5 % vs the 95 % target; ppm 734; score 83.6 amber",
+      "ids": [
+        "sc:70120@2026Q3",
+        "ctr:4600070120#6.1"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2026-12-31 with 12-month auto-extension and 90-day notice; prices fixed per calendar year",
+      "ids": [
+        "ctr:4600070120",
+        "ctr:4600070120#8.1",
+        "ctr:4600070120#3.1"
+      ]
+    },
+    {
+      "claim": "Invited alongside Tarsevi to quote the new HX volute casing, 4,200 pc/yr, SOP March 2027",
+      "ids": [
+        "doc:20260926-70120-P06"
+      ]
+    },
+    {
+      "claim": "Quoted HN 200 at 37.90 with a 55-day lead time in the 2025 RFQ",
+      "ids": [
+        "quote:7100009"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 1.4,
+    "our_spend_eur": {
+      "FY2024": 375510,
+      "FY2025": 433062,
+      "FY2026": 488308
+    },
+    "credit_index": "239 (12 months ago 239; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.45,
+    "history_mean_settled_pct": -1.83,
+    "history_settled_minus_asked_pct": -2.28,
+    "we_pay_days_after_due_mean": 5.9,
+    "we_pay_late_share_pct": 90,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310030: price 34.26 vs cost:310030 35.98 (its own plant): -4.8 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 89.6, ppm 820) → 2026Q1 green (otd 83.7, ppm 785) → 2026Q2 amber (otd 76.5, ppm 797) → 2026Q3 amber (otd 74.5, ppm 734)"
+  },
+  "practice_cases": [
+    "P06"
+  ],
+  "meta": {
+    "key": "da6edabc50f59200",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:59",
+    "seconds": 47.5,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70120-310030",
+      "EV-2026-70120-310031",
+      "EV-2026-70120-310030",
+      "EV-2026-70120-310031",
+      "EV-2026-70120-310030",
+      "EV-2026-70120-310030",
+      "EV-2025-70120-310030",
+      "EV-2024-70120-310030",
+      "EV-2026-70120-310031",
+      "EV-2025-70120-310031"
+    ]
+  }
+}

@@ -73,12 +73,16 @@ def llm_from_env(timeout=45.0, max_retries=2):
 
         return complete
     base = os.environ.get("LLM_BASE_URL", "https://api.openai.com/v1").rstrip("/")
-    headers = {"Authorization": f"Bearer {os.environ.get('LLM_API_KEY', '')}"}
+    key = os.environ.get("LLM_API_KEY") or os.environ.get("OPENAI_API_KEY", "")
+    headers = {"Authorization": f"Bearer {key}"}
+    # LLM_REASONING_EFFORT (e.g. low) for OpenAI reasoning models; a model without reasoning rejects it
+    extra = {"reasoning_effort": e} if (e := os.environ.get("LLM_REASONING_EFFORT")) else {}
 
     def complete(system, user):
         body = {
             "model": model,
             "messages": [{"role": "system", "content": system}, {"role": "user", "content": user}],
+            **extra,
         }
         r = httpx.post(f"{base}/chat/completions", json=body, headers=headers, timeout=timeout)
         r.raise_for_status()

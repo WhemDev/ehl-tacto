@@ -1,0 +1,12 @@
+{
+  "note": "hypothesis: anchor harder and concede later (all goals: anchor +4 pts, Boulware e x0.6)",
+  "agent": "orchestra",
+  "env": {"LLM_PROVIDER": "anthropic", "LLM_MODEL": "claude-opus-5-5", "LLM_EFFORT": "low"},
+  "goals": {
+    "leverage": {"anchor": 0.16, "e": 0.15},
+    "routine": {"anchor": 0.11, "e": 0.36},
+    "stabilise": {"anchor": 0.10, "e": 0.24},
+    "secure_supply": {"anchor": 0.09, "e": 0.30},
+    "quality_first": {"anchor": 0.10, "e": 0.24}
+  }
+}

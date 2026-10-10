@@ -5,6 +5,7 @@ import csv
 import json
 import os
 import sqlite3
+import threading
 from functools import cached_property
 from pathlib import Path
 
@@ -30,6 +31,7 @@ class DataPackage:
         if not dbs and not facts:
             raise FileNotFoundError(f"no facts.json or .sqlite under {self.root}")
         self.db = None
+        self._lock = threading.Lock()  # one connection, shared by parallel agents: one query at a time
         if dbs:
             self.db = sqlite3.connect(f"file:{dbs[0]}?mode=ro", uri=True, check_same_thread=False)
             self.db.row_factory = sqlite3.Row
@@ -53,8 +55,9 @@ class DataPackage:
             raise ValueError("this package has no SQLite file")
         if sql.lstrip().split(None, 1)[0].lower() not in {"select", "with"}:
             raise ValueError("read-only: SELECT or WITH statements only")
-        cur = self.db.execute(sql, params)
-        return [dict(r) for r in cur.fetchmany(limit)]
+        with self._lock:
+            cur = self.db.execute(sql, params)
+            return [dict(r) for r in cur.fetchmany(limit)]
 
     @cached_property
     def _ids(self):

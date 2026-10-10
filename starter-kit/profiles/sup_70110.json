@@ -1,0 +1,229 @@
+{
+  "supplier_id": "sup:70110",
+  "name": "Gießerei Brandlhuber GmbH & Co. KG",
+  "archetype": "family_relationship",
+  "secondary_archetype": "cash_short",
+  "confidence": 0.75,
+  "summary": "Brandlhuber is a family-owned foundry founded in 1921, with 185 staff and about EUR 25.8 M turnover. The owner negotiates personally and keeps reminding us that in 2022 they held the old price for a quarter, and he now expects 'partnership' in return. After years of settling below cost on part:310010, he has asked for +9.5 % from 2026-11-01. He admits he has not tracked his material and energy costs since 2022 and uses a two-year-old spreadsheet. He also wants faster payment.",
+  "situation": {
+    "cash_pressure": 0.45,
+    "capacity": "unknown",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "owner decides personally; his office manager prepares the costing"
+  },
+  "negotiation_pattern": "Small asks of about +0.4 % on average, settled about 2.8 pts lower (average -2.4 %), every time below the ask. On part:310010 he repeatedly 'accepted below full cost to keep the volume'. He gives in for volume and relationship rather than fighting. The 9.5 % letter is a break from that pattern, after months of complaining that the partnership is not reciprocated. He reacts to fairness and to having his past loyalty recognised, not to hard pressure.",
+  "wants": [
+    "recognition and fair treatment (the 2022 favour returned)",
+    "a price on part:310010 that at least covers his cost",
+    "faster payment: 10 days with skonto, and an end to our late payment",
+    "volume security and continuation of the framework",
+    "clarity on cost and index figures (his own data is outdated)"
+  ],
+  "protects": [
+    "unit_price on part:310010 (he sells it below his own cost and will not go lower)",
+    "his sense of being treated as a partner (will dig in if pressured or lectured)"
+  ],
+  "trades": [
+    {
+      "give": "payment_days: pay within 10 days (and actually on time)",
+      "get": "skonto plus a clearly smaller increase on part:310010",
+      "why": "He asked for this himself; we pay late 84 % of the time and take no skonto, so this is a cheap give that he values highly.",
+      "ids": [
+        "doc:20260902-70110-M2",
+        "ctr:4600070110#4.1",
+        "sup:70110"
+      ]
+    },
+    {
+      "give": "unit_price on part:310010: a moderate increase toward his should-cost (EUR 132.64), not 9.5 % (EUR 138.55)",
+      "get": "effective_date 2027-01-01 instead of 2026-11-01, plus a price cut on part:310012 toward EUR 370.21 or below",
+      "why": "Part:310010 is 4.6 % below his cost, but part:310012 is 10.3 % above his own cost. Balancing across both parts is fair and keeps our total spend flat.",
+      "ids": [
+        "cost:310010",
+        "cost:310012",
+        "cost:310012-70110",
+        "doc:20260911-70110-P01",
+        "ctr:4600070110#3.1"
+      ]
+    },
+    {
+      "give": "contract_months: 24-month renewal, and a higher volume_per_year / quota on part:310012 (now 40 %)",
+      "get": "the price reduction on part:310012 and a price hold through 2027",
+      "why": "Long-term commitment and steady volume are what a loyal family supplier values most.",
+      "ids": [
+        "ctr:4600070110#8.1"
+      ]
+    },
+    {
+      "give": "index_clause based on transparent public energy and material indices (we share our sources)",
+      "get": "a lower base price now, instead of a lump-sum markup",
+      "why": "He asked where our index figures come from and admits his own are two years old. A shared index answers his fairness concern without overpaying.",
+      "ids": [
+        "doc:20260824-70110-M1",
+        "doc:20260909-70110-M4"
+      ]
+    },
+    {
+      "give": "volume continuity (no resourcing of part:310010)",
+      "get": "ppm_commitment below 500, a plan to reach the 95 % OTD target, and the overdue 8D closed",
+      "why": "The scorecard turned amber and ppm is rising; tying volume to a quality plan is a fair partnership deal.",
+      "ids": [
+        "sc:70110@2026Q3",
+        "ctr:4600070110#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Prices are fixed for calendar year 2026. A change on 2026-11-01 is not possible under the contract. His notice is on time only for 2027-01-01.",
+      "ids": [
+        "ctr:4600070110#3.1",
+        "doc:20260911-70110-P01"
+      ]
+    },
+    {
+      "point": "We acknowledge the 2022 gesture and that part:310010 is priced tight for him. We want to fix it fairly, across both parts.",
+      "ids": [
+        "doc:20260715-70110-M5",
+        "doc:20260917-70110-M3",
+        "cost:310010"
+      ]
+    },
+    {
+      "point": "Energy and material costs have moved since the 2022 peak. Offer to go through the cost build-up together with his office manager, using our index sources.",
+      "ids": [
+        "doc:20260909-70110-M4",
+        "doc:20260824-70110-M1"
+      ]
+    },
+    {
+      "point": "Part:310012 is priced well above cost: +10.3 % over his own plant's estimate and +3.5 % over the other source's plant.",
+      "ids": [
+        "cost:310012-70110",
+        "cost:310012"
+      ]
+    },
+    {
+      "point": "Partnership works both ways: OTD is 85.2 % against a 95 % target, ppm rose from 522 to 712, the scorecard is now amber, and one 8D is overdue.",
+      "ids": [
+        "sc:70110@2026Q3",
+        "sc:70110@2026Q1",
+        "ctr:4600070110#6.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Threatening to move part:310010 or the tooling to the other source. He will dig in or terminate.",
+    "Dismissing the 2022 favour or his repeated 'partnership' message.",
+    "Exploiting his outdated cost knowledge in a way he will later see as a trick (a fairness breach).",
+    "Demanding a price cut on part:310010, which is already below his cost.",
+    "Promising fast payment and then paying late again."
+  ],
+  "tone": "Personal, respectful and owner-to-partner: acknowledge 2022, be transparent with numbers, propose a fair package, never ultimatums.",
+  "red_flags": [
+    "Walk-away risk: the framework auto-extends unless terminated with 90 days' notice before 2026-12-31 (around 2026-10-02). He could still give notice, and part:310010 is 100 % with him.",
+    "Part:310010 sells below his own cost, so a persistent loss could make him drop or neglect the part.",
+    "Liquidity hint: the 10-day payment and skonto request. Credit index 222 is stable and equity is 24.7 %, so this is not acute but worth watching.",
+    "Quality is slipping: amber scorecard, ppm 712, 2 open 8D (1 overdue), OTD chronically about 85 %.",
+    "The recent quotes leave out validity and incoterm, so pin both down in writing."
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned since 1921; the owner visits personally and expects partnership for keeping old prices in 2022.",
+      "ids": [
+        "sup:70110",
+        "doc:20260715-70110-M5",
+        "doc:20260917-70110-M3"
+      ]
+    },
+    {
+      "claim": "Asks +9.5 % on part:310010 (EUR 126.53 to 138.55) from 2026-11-01.",
+      "ids": [
+        "doc:20260911-70110-P01"
+      ]
+    },
+    {
+      "claim": "Prices are fixed per calendar year; changes need 90 days' notice before year end.",
+      "ids": [
+        "ctr:4600070110#3.1"
+      ]
+    },
+    {
+      "claim": "Part:310010 price is 4.6 % below his own should-cost and was repeatedly accepted below cost to keep volume.",
+      "ids": [
+        "cost:310010"
+      ]
+    },
+    {
+      "claim": "Part:310012 price is 10.3 % above his own should-cost and 3.5 % above the other source's plant.",
+      "ids": [
+        "cost:310012-70110",
+        "cost:310012"
+      ]
+    },
+    {
+      "claim": "The owner works from a two-year-old spreadsheet and has not tracked costs since 2022; his office manager does the costing.",
+      "ids": [
+        "doc:20260824-70110-M1",
+        "doc:20260909-70110-M4"
+      ]
+    },
+    {
+      "claim": "He asked for payment within 10 days in exchange for skonto.",
+      "ids": [
+        "doc:20260902-70110-M2"
+      ]
+    },
+    {
+      "claim": "Scorecard moved to amber in 2026Q3: OTD 85.2 %, ppm 712, 1 overdue 8D.",
+      "ids": [
+        "sc:70110@2026Q3"
+      ]
+    },
+    {
+      "claim": "Framework expires 2026-12-31 and auto-extends 12 months unless terminated with 90 days' notice.",
+      "ids": [
+        "ctr:4600070110#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 4.9,
+    "our_spend_eur": {
+      "FY2024": 1014074,
+      "FY2025": 1212230,
+      "FY2026": 1256303
+    },
+    "credit_index": "222 (12 months ago 222; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.43,
+    "history_mean_settled_pct": -2.37,
+    "history_settled_minus_asked_pct": -2.8,
+    "we_pay_days_after_due_mean": 3.7,
+    "we_pay_late_share_pct": 84,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:310010: price 126.53 vs cost:310010 132.64 (its own plant): -4.6 %",
+      "part:310012: price 383.06 vs cost:310012 370.21 (plant of sup:70130): +3.5 %",
+      "part:310012: price 383.06 vs cost:310012-70110 347.27 (its own plant): +10.3 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 84.9, ppm 625) → 2026Q1 green (otd 81.5, ppm 522) → 2026Q2 green (otd 83.3, ppm 626) → 2026Q3 amber (otd 85.2, ppm 712)"
+  },
+  "practice_cases": [
+    "P01"
+  ],
+  "meta": {
+    "key": "156cf6a7e667e213",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:44:52",
+    "seconds": 57.1,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70110-310010",
+      "EV-2026-70110-310010",
+      "EV-2025-70110-310010"
+    ]
+  }
+}

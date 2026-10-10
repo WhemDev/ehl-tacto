@@ -1,0 +1,223 @@
+{
+  "supplier_id": "sup:70430",
+  "name": "Elasto-Dicht Hermannsdorfer GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": null,
+  "confidence": 0.65,
+  "summary": "Elasto-Dicht Hermannsdorfer is a family-owned seal maker founded in 1987, with 45 staff and about EUR 22.9 M turnover. It is financially solid (equity 38.9 %, credit index stable at 167), and the owner is personally involved, even offering an open-book calculation. We are a tiny account for them (0.2 % of their turnover), and they have said they are reviewing small accounts to focus on volume customers. Our kit-bundling plan (about 25,000 kits a year) is the lever that can turn us into a customer worth keeping.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.05,
+    "our_dependency": 0.6,
+    "relationship": "neutral",
+    "decision_maker": "Owner decides price; sales director shapes account strategy; new inside-sales colleague handles day-to-day contact only"
+  },
+  "negotiation_pattern": "Moderate annual renewal asks, settling well below them. Mean ask 2.8 %, mean settled 0.83 %. It accepted 0 % in the 2023 and 2024 rounds (asks 1.1-2.7 %). In Nov/Dec 2025 it asked 5.4 % and 4.0 % and got 2.4 % and 2.6 %. The 2025 requests were dated 24 Nov and 1 Dec, after the 90-day notice point in clause 3.1. It does not dig in on price. It responds to fact-based discussion and offered to show its hourly rates and material costs.",
+  "wants": [
+    "Volume and relevance as a customer (they are culling small accounts)",
+    "Fair, respectful treatment and payment on time (we pay late 84 % of the time)",
+    "Long-term, steady business with predictable call-offs",
+    "Price settled on its transparent cost basis rather than by pressure"
+  ],
+  "protects": [
+    "unit_price for small, scattered volumes (won't subsidise a minor account)",
+    "Its open-book calculation as the reference point: expect it to defend hourly rates and material once shown",
+    "lead_time_days already at 7 days; little room left"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: award the full kit (lip seal 50 % to 100 %, aramid gasket 0 % to 100 %, O-ring set stays 100 %)",
+      "get": "unit_price freeze for 2027 on 340020/340040 plus a kit price, with gasket at or below the 2025 quote of EUR 1.97",
+      "why": "Turns us from a small account under review into a volume customer, which is exactly what they said they focus on.",
+      "ids": [
+        "doc:20260913-70430-P15",
+        "doc:20260515-70430-M1",
+        "quote:7100039"
+      ]
+    },
+    {
+      "give": "contract_months up: extend the framework beyond 2027-06-30 (e.g. +24 months) with a kit forecast",
+      "get": "Prices fixed for the extended term, no index_clause",
+      "why": "Family firm values long-term commitment; the current contract only rolls by 12 months.",
+      "ids": [
+        "ctr:4600070430#8.1",
+        "ctr:4600070430#3.1"
+      ]
+    },
+    {
+      "give": "payment_days kept at 30 but a firm commitment to pay on time",
+      "get": "Waiver of any 2027 increase request",
+      "why": "Costs us nothing; it fixes a fairness irritant, since we pay late 84 % of the time (2.8 days on average).",
+      "ids": [
+        "ctr:4600070430#4.1"
+      ]
+    },
+    {
+      "give": "Accept the owner's offer of an open-book review of the calculation",
+      "get": "Kit pricing built bottom-up, sharing the efficiency of fewer, larger kit deliveries",
+      "why": "The owner offered this himself; accepting it shows respect and anchors price on facts.",
+      "ids": [
+        "doc:20260326-70430-M2"
+      ]
+    },
+    {
+      "give": "Kit award conditional on quality",
+      "get": "ppm_commitment ≤ 250 and OTD 95 % per the quality agreement; keep chargeback at EUR 150 per complaint",
+      "why": "The trend is improving (ppm 371 to 291, OTD 91.8 %) but OTD is still below the 95 % target.",
+      "ids": [
+        "sc:70430@2026Q3",
+        "sc:70430@2025Q4",
+        "ctr:4600070430#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "The kit project makes us a meaningfully larger customer: 25,000 kits a year means 50,000 O-ring sets, 25,000 gaskets and 50,000 lip seals from one source.",
+      "ids": [
+        "doc:20260913-70430-P15",
+        "doc:20260515-70430-M1"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year. Changes need written notice at least 90 days before year end, which is about 2 Oct 2026. A later increase request has no contractual basis for 2027.",
+      "ids": [
+        "ctr:4600070430#3.1"
+      ]
+    },
+    {
+      "point": "Recognise the improving scorecard (score 94.5, class A, ppm down to 291) and frame the kit award as a reward for that progress.",
+      "ids": [
+        "sc:70430@2026Q3"
+      ]
+    },
+    {
+      "point": "Take up the owner's open-book offer to settle the kit price fairly and transparently.",
+      "ids": [
+        "doc:20260326-70430-M2"
+      ]
+    },
+    {
+      "point": "The 2025 increases (2.4 % and 2.6 %) were already granted for 2026, so a further rise is hard to justify.",
+      "ids": []
+    }
+  ],
+  "avoid": [
+    "Hard pressure or ultimatums; an owner-led firm digs in, and with 0.2 % share they can simply drop us",
+    "Threatening to resource the O-ring set: there is no alternative source and drinking-water approval is required",
+    "Overstating our size; they know we are small",
+    "Ignoring our late-payment record or asking for longer payment terms",
+    "Negotiating only through the new inside-sales contact; involve the owner for price"
+  ],
+  "tone": "Respectful, personal and partnership-oriented. Address the owner, acknowledge progress, and present the kit as a long-term commitment, not a squeeze.",
+  "red_flags": [
+    "Small-account review: risk they deprioritise us or price us out if no volume comes",
+    "Single source for part:340020 (drinking-water EPDM O-ring set) with no alternative, so supply risk if they walk away",
+    "OTD 91.8 % is still below the 95 % target; 13 complaints in the last 12 months (EUR 1,500 recharged)",
+    "Our 84 % late-payment share erodes goodwill",
+    "Possible increase notice arriving right at the 90-day deadline (~2 Oct 2026)"
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned, 45 staff, EUR 22.9 M turnover, equity 38.9 %, credit index 167 unchanged over 12 months",
+      "ids": [
+        "sup:70430"
+      ]
+    },
+    {
+      "claim": "We are 0.2 % of its turnover (spend about EUR 46 k a year)",
+      "ids": [
+        "sup:70430"
+      ]
+    },
+    {
+      "claim": "Sales director said they are reviewing small accounts and focusing on volume customers",
+      "ids": [
+        "doc:20260515-70430-M1"
+      ]
+    },
+    {
+      "claim": "Owner offered to walk us through hourly rates and material calculation",
+      "ids": [
+        "doc:20260326-70430-M2"
+      ]
+    },
+    {
+      "claim": "Kit plan: about 25,000 kits a year (2× 340020, 1× 340030, 2× 340040), one supplier wanted",
+      "ids": [
+        "doc:20260913-70430-P15"
+      ]
+    },
+    {
+      "claim": "Renewal history: asks 1.1-5.4 %, settled 0 % twice, 2.4 %/2.6 % for 2026",
+      "ids": []
+    },
+    {
+      "claim": "Price changes need 90 days' written notice before calendar year end; contract to 2027-06-30 with 12-month auto-extension",
+      "ids": [
+        "ctr:4600070430#3.1",
+        "ctr:4600070430#8.1"
+      ]
+    },
+    {
+      "claim": "Scorecard improving: ppm 371 to 291, OTD 91.8 % vs 95 % target, EUR 150 chargeback per complaint",
+      "ids": [
+        "sc:70430@2025Q4",
+        "sc:70430@2026Q3",
+        "ctr:4600070430#6.1"
+      ]
+    },
+    {
+      "claim": "Gasket 340030 quoted at EUR 1.97/pc, 8 days lead time, not awarded; part qualified with 0 % quota",
+      "ids": [
+        "quote:7100039",
+        "part:340030"
+      ]
+    },
+    {
+      "claim": "O-ring set 340020 is 100 % single source; lip seal 340040 is split 50 % with one other source",
+      "ids": [
+        "part:340020",
+        "part:340040"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.2,
+    "our_spend_eur": {
+      "FY2024": 43900,
+      "FY2025": 45915,
+      "FY2026": 46359
+    },
+    "credit_index": "167 (12 months ago 167; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.8,
+    "history_mean_settled_pct": 0.83,
+    "history_settled_minus_asked_pct": -1.97,
+    "we_pay_days_after_due_mean": 2.8,
+    "we_pay_late_share_pct": 84,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 83.7, ppm 371) → 2026Q1 green (otd 86.3, ppm 325) → 2026Q2 green (otd 83.0, ppm 314) → 2026Q3 green (otd 91.8, ppm 291)"
+  },
+  "practice_cases": [
+    "P15"
+  ],
+  "meta": {
+    "key": "4aafd59c76a1bf03",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:59",
+    "seconds": 49.3,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70430-340020",
+      "EV-2026-70430-340040",
+      "EV-2026-70430-340020",
+      "EV-2026-70430-340040",
+      "EV-2025-70430-340020",
+      "EV-2025-70430-340040",
+      "EV-2024-70430-340020",
+      "EV-2024-70430-340040"
+    ]
+  }
+}

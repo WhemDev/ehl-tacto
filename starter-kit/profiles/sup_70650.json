@@ -1,0 +1,206 @@
+{
+  "supplier_id": "sup:70650",
+  "name": "Verbindungstechnik Mairhofer GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": "hungry_for_work",
+  "confidence": 0.45,
+  "summary": "Verbindungstechnik Mairhofer is a family-owned fastener maker (40 staff, ~19.5 M EUR turnover, financially sound) that supplies us three standard ISO bolts and nuts. It is reorganising around key accounts: it calls our ~140 k EUR/yr 'not strategic', will not extend individual agreements and now quotes list conditions from stock only. Our framework runs to 2026-12-31 and auto-extends unless either side gives notice 60 days before. The supplier may let it lapse, or end it, by about 1 Nov 2026.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "under_used",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.45,
+    "relationship": "strained",
+    "decision_maker": "Key account manager up to 2 % price change; above that, the pricing committee (meets every two weeks); the sales director sets account strategy and the new 'key account' policy"
+  },
+  "negotiation_pattern": "Opened annual renewals with moderate increase asks (mean +2.5 %) and settled flat or slightly down (mean -0.1 %). The 2025 round ended at 0 %, -2.0 % and -3.1 %, so it historically yielded under pressure. That pattern predates the refocus. Since mid-2026 it replies slowly, quotes rigid list conditions and has announced that individual agreements will not be extended. Pressure is now more likely to lead it to drop the account than to concede.",
+  "wants": [
+    "Larger, simpler accounts: more volume per customer, consolidated on standard range items",
+    "Standardised handling: stock supply at list conditions, no bespoke agreements",
+    "Fill for idle capacity (second shift on hold since spring)",
+    "Reliable payment on agreed terms (we pay late on 90 % of invoices)"
+  ],
+  "protects": [
+    "unit_price (list conditions are now policy; anything >2 % needs the pricing committee)",
+    "Individual framework terms: says they will not be extended",
+    "lead_time_days / service level: 'supply from stock only'",
+    "chargeback_eur_per_complaint and the quality agreement, which are likely to be resisted under the standard-range model"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: move part:360010 from 60 % to 100 % quota and part:360012 from 70 % to 100 %",
+      "get": "Framework extension through 2027 with 2026 prices held and the 7-day DAP lead time kept",
+      "why": "Volume is the only thing that makes us look like a 'customer with volume', and they have spare capacity.",
+      "ids": [
+        "part:360010",
+        "part:360012",
+        "doc:20260511-70650-M2",
+        "doc:20260411-70650-M5",
+        "doc:20260817-70650-M1"
+      ]
+    },
+    {
+      "give": "contract_months up (24 months) plus a rolling call-off forecast",
+      "get": "Price hold (index-free) for 2027 and continued supply of single-source part:360011 under agreement",
+      "why": "Forecast security fits their key-account logic and secures our one part without an alternative source.",
+      "ids": [
+        "ctr:4600070650#8.1",
+        "ctr:4600070650#3.1",
+        "part:360011"
+      ]
+    },
+    {
+      "give": "payment_days discipline: commit to strict on-time payment at 30 days net",
+      "get": "Keep the quality agreement (EUR 150/complaint) and the OTD target in any renewal",
+      "why": "Our late payment is a sore point that costs us nothing to fix and earns goodwill.",
+      "ids": [
+        "ctr:4600070650#4.1",
+        "ctr:4600070650#6.1"
+      ]
+    },
+    {
+      "give": "Accept list price as the basis on part:360010 and part:360012 (no reduction ask)",
+      "get": "No increase notice for 2027 and a firm stock commitment on part:360011",
+      "why": "Current quotes are already at the 2026 price level, so holding flat is a realistic win within the KAM's authority.",
+      "ids": [
+        "quote:7300085",
+        "quote:7300072",
+        "doc:20260327-70650-M3"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We are a stable, predictable account (~140 k EUR/yr for three years) and can consolidate volume to them on standard items, which fits their key-account focus.",
+      "ids": [
+        "news:20260803-21",
+        "doc:20260219-70650-M6",
+        "part:360010",
+        "part:360012"
+      ]
+    },
+    {
+      "point": "The extra volume uses idle capacity (second shift on hold), so it is margin for them, not cost.",
+      "ids": [
+        "doc:20260411-70650-M5"
+      ]
+    },
+    {
+      "point": "Keep any ask within 2 % or as a price hold so the KAM can agree without the biweekly pricing committee.",
+      "ids": [
+        "doc:20260327-70650-M3"
+      ]
+    },
+    {
+      "point": "Mention lightly that we have kept them green/A despite OTD of 84.1 % against a 95 % target and 30 complaints. Present this as partnership, not a threat.",
+      "ids": [
+        "sc:70650@2026Q3",
+        "ctr:4600070650#6.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding price cuts as in the 2025 round: with 0.7 % of their turnover, they can simply drop us",
+    "Threatening to move volume: they want to shed small accounts anyway",
+    "Leading with quality penalties or chargeback increases",
+    "Letting the 1 Nov 2026 notice date pass without engaging",
+    "Arguing about payment terms while we pay late"
+  ],
+  "tone": "Brief, businesslike and respectful. Position us as a consolidating, reliable-paying volume account. Make one clear offer and keep the price ask within the KAM's 2 % authority.",
+  "red_flags": [
+    "Supplier may let the framework lapse or give notice by about 2026-11-01. That would leave us on list prices and stock-only supply, without the quality agreement.",
+    "part:360011 is single source (100 %, no other source): start qualifying a second source now.",
+    "Possible list-price increase notice for 2027 (60-day clause), and slower responsiveness since summer.",
+    "OTD 84.1 % against a 95 % target; 2 open 8D reports; complaint ppm ~296.",
+    "Our own late payment (90 % of invoices, +6 days on average) weakens our standing."
+  ],
+  "evidence": [
+    {
+      "claim": "We are 'not strategic'; replies have been slower since summer",
+      "ids": [
+        "doc:20260602-70650-M4"
+      ]
+    },
+    {
+      "claim": "Individual agreements will not be extended; standard items from stock at list conditions",
+      "ids": [
+        "doc:20260817-70650-M1",
+        "quote:7300072",
+        "quote:7300085"
+      ]
+    },
+    {
+      "claim": "Refocus on key accounts and customers with volume",
+      "ids": [
+        "news:20260803-21",
+        "doc:20260219-70650-M6",
+        "doc:20260511-70650-M2"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval",
+      "ids": [
+        "doc:20260327-70650-M3"
+      ]
+    },
+    {
+      "claim": "Spare capacity: second shift on hold, can take parts at short notice",
+      "ids": [
+        "doc:20260411-70650-M5"
+      ]
+    },
+    {
+      "claim": "Framework ends 2026-12-31 and auto-extends 12 months unless terminated with 60 days' notice; price changes need 60 days' notice",
+      "ids": [
+        "ctr:4600070650#8.1",
+        "ctr:4600070650#3.1"
+      ]
+    },
+    {
+      "claim": "Last renewal settled at 0 %, -2.0 % and -3.1 %",
+      "ids": []
+    },
+    {
+      "claim": "OTD 84.1 %, ppm 296, still green/A",
+      "ids": [
+        "sc:70650@2026Q3"
+      ]
+    },
+    {
+      "claim": "part:360011 has no alternative source",
+      "ids": [
+        "part:360011"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.7,
+    "our_spend_eur": {
+      "FY2024": 139032,
+      "FY2025": 142353,
+      "FY2026": 140220
+    },
+    "credit_index": "156 (12 months ago 156; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.53,
+    "history_mean_settled_pct": -0.09,
+    "history_settled_minus_asked_pct": -2.62,
+    "we_pay_days_after_due_mean": 6.1,
+    "we_pay_late_share_pct": 90,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 75.3, ppm 264) → 2026Q1 green (otd 78.0, ppm 295) → 2026Q2 green (otd 78.6, ppm 235) → 2026Q3 green (otd 84.1, ppm 296)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "7e0205d9275cd284",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:26",
+    "seconds": 49.3,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70650-360010",
+      "EV-2026-70650-360011",
+      "EV-2026-70650-360012"
+    ]
+  }
+}

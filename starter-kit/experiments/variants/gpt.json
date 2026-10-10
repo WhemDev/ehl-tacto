@@ -1,0 +1,5 @@
+{
+  "note": "writer: OpenAI gpt-6.1-sol (newest GPT flagship on our key), reasoning effort low",
+  "agent": "orchestra",
+  "env": {"LLM_PROVIDER": "openai", "LLM_MODEL": "gpt-6.1-sol", "LLM_REASONING_EFFORT": "low"}
+}

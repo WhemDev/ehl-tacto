@@ -1,0 +1,213 @@
+{
+  "supplier_id": "sup:70740",
+  "name": "Blankstahl Werdenfels GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": "group_approval_ladder",
+  "confidence": 0.55,
+  "summary": "Blankstahl Werdenfels is a family-owned bright-steel bar maker founded in 1961, with 200 staff and 98.2 M EUR turnover. It is financially sound (equity 39.3 %, credit index 148, unchanged) and we are a small account to it (0.4 % of its turnover). It is reviewing small accounts and focusing on customers with volume, and it now proposes a new price basis with an AS-14404 surcharge clause for the 1.4404 bar, with a recent quote 3.8 % above the current price.",
+  "situation": {
+    "cash_pressure": 0.1,
+    "capacity": "unknown",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.6,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 % price change. Above 2 %, the internal pricing committee decides (meets every two weeks). The owner is personally involved and has offered an open-book walk-through."
+  },
+  "negotiation_pattern": "Opens modestly (mean ask -0.01 %) and has settled on average 2.86 pts below its ask, every time at or below the opening figure. In the last round it asked +2.5 % and settled +0.7 % on part:370011, asked +3.0 % and settled -0.3 % on part:370012, and asked -0.6 % and settled -4.2 % on part:370010. It does not fight on price but expects substance. The owner twice offered to explain hourly rates and material costs to settle prices, so a fact-based, open-book discussion works better than pressure. Its sales director has signalled three times that small accounts are under review.",
+  "wants": [
+    "volume and account relevance (more parts, higher quotas)",
+    "a fair, transparent price basis, ideally a material-specific surcharge clause (AS-14404) for 1.4404",
+    "respectful, fact-based treatment and recognition of its open-book offer",
+    "reliable on-time payment (we pay late 90 % of the time)",
+    "longer commitment and planning security"
+  ],
+  "protects": [
+    "unit_price on part:370010: wants the new AS-14404 basis and quoted 6.06 vs 5.84 current",
+    "anything above a 2 % price move without pricing committee approval",
+    "its focus on volume customers: unlikely to spend effort on a small, demanding account"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up: award new part:370020 (quote:7200016) and/or raise part:370010 quota above 20 %",
+      "get": "unit_price on part:370010 held at 5.84 or within the 2 % sales authority instead of 6.06",
+      "why": "It explicitly prioritises customers with volume, and we are only 0.4 % of its turnover.",
+      "ids": [
+        "doc:20260916-70740-M5",
+        "doc:20260601-70740-M4",
+        "quote:7200016",
+        "quote:7200008"
+      ]
+    },
+    {
+      "give": "accept the AS-14404 surcharge clause for part:370010 (index_clause)",
+      "get": "symmetric clause (decreases passed on), material share no higher than 0.8, deadband kept, base fixed at today's level, no extra premium in the base price",
+      "why": "This is its current request. Granting the structure lets us control the terms.",
+      "ids": [
+        "doc:20260922-70740-P18",
+        "ctr:4600070740#3.2"
+      ]
+    },
+    {
+      "give": "contract_months: 24–36 month extension of the framework agreement",
+      "get": "price within 2 % on all parts plus a binding OTD improvement plan towards the 95 % target",
+      "why": "A family firm values long-term commitment, and the contract runs out on 2026-12-31.",
+      "ids": [
+        "ctr:4600070740#8.1",
+        "ctr:4600070740#6.1",
+        "sc:70740@2026Q3"
+      ]
+    },
+    {
+      "give": "accept the owner's open-book walk-through (hourly rates, material)",
+      "get": "split of material vs conversion cost to justify the base price and the index material share",
+      "why": "The owner offered this twice. Taking it up shows respect and gives us facts.",
+      "ids": [
+        "doc:20260514-70740-M6",
+        "doc:20260904-70740-M1"
+      ]
+    },
+    {
+      "give": "commitment to pay on time at 30 days net (no change to payment_days)",
+      "get": "goodwill on price and on security of supply for single-source part:370011",
+      "why": "We pay late 90 % of the time. Fixing this costs us nothing and removes an irritant.",
+      "ids": [
+        "ctr:4600070740#4.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can bring additional volume (part:370020) if the overall price package is right. This makes us a volume customer rather than a small account.",
+      "ids": [
+        "quote:7200016",
+        "doc:20260813-70740-M2"
+      ]
+    },
+    {
+      "point": "The existing contract already has an index clause (PPI-C2431, 80 % material share, 3 % deadband). Prices have already moved with it (part:370012 is now 143.39 vs 131.74 quoted in 2025). A new clause must not double-count material increases in the base price.",
+      "ids": [
+        "ctr:4600070740#3.2",
+        "quote:7100066"
+      ]
+    },
+    {
+      "point": "OTD has been 81–84 % for four quarters against the 95 % target in the quality agreement. Any price increase should be linked to delivery improvement.",
+      "ids": [
+        "sc:70740@2026Q3",
+        "sc:70740@2025Q4",
+        "ctr:4600070740#6.1"
+      ]
+    },
+    {
+      "point": "Its history shows settlements well below the opening ask. A 3.8 % ask on part:370010 has room to come down.",
+      "ids": [
+        "quote:7200008"
+      ]
+    }
+  ],
+  "avoid": [
+    "hard pressure or threats to shift volume: we are a small account, and it may simply deprioritise us",
+    "pushing on part:370011, which is 100 % single source with no alternative",
+    "ignoring or brushing off the owner's open-book offer",
+    "demands that need more than a 2 % move without allowing for the two-week committee cycle",
+    "accepting an asymmetric AS-14404 clause or a base price that already includes surcharges"
+  ],
+  "tone": "Respectful, personal and fact-based. Acknowledge the long relationship and the owner's openness, frame it as a long-term partnership with more volume, and avoid ultimatums.",
+  "red_flags": [
+    "Small-account review: risk of deprioritisation, worse service or walk-away, mentioned three times",
+    "part:370011 is single source (100 %, 0 alternatives): high supply risk",
+    "OTD 81.0 % and drifting down vs the 95 % contractual target",
+    "Deadline about 2026-11-01: 60-day notice for price changes and to stop the automatic 12-month extension of the contract ending 2026-12-31",
+    "AS-14404 alloy surcharge could import nickel and molybdenum volatility on part:370010",
+    "We pay late 90 % of the time, which erodes goodwill"
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned since 1961, 200 staff, 98.2 M EUR turnover, equity 39.3 %, credit index 148 (stable)",
+      "ids": [
+        "sup:70740"
+      ]
+    },
+    {
+      "claim": "Reviewing small accounts and focusing on volume customers; we are 0.4 % of its turnover",
+      "ids": [
+        "doc:20260601-70740-M4",
+        "doc:20260813-70740-M2",
+        "doc:20260916-70740-M5"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval, which meets every two weeks",
+      "ids": [
+        "doc:20260812-70740-M3"
+      ]
+    },
+    {
+      "claim": "Owner offered an open-book walk-through of hourly rates and material, twice",
+      "ids": [
+        "doc:20260514-70740-M6",
+        "doc:20260904-70740-M1"
+      ]
+    },
+    {
+      "claim": "Proposes a new price basis with an AS-14404 adjustment clause for part:370010",
+      "ids": [
+        "doc:20260922-70740-P18"
+      ]
+    },
+    {
+      "claim": "New quote for part:370010 at 6.06 vs current 5.84 (+3.8 %); new part:370020 quoted at 96.37/100",
+      "ids": [
+        "quote:7200008",
+        "quote:7200016"
+      ]
+    },
+    {
+      "claim": "Framework agreement ends 2026-12-31 and auto-extends 12 months unless terminated with 60 days' notice; existing PPI-C2431 index clause with 0.8 material share and 3 % deadband",
+      "ids": [
+        "ctr:4600070740#8.1",
+        "ctr:4600070740#3.1",
+        "ctr:4600070740#3.2"
+      ]
+    },
+    {
+      "claim": "Scorecard green with low ppm (32), but OTD 81.0 % vs 95 % target; flat fee EUR 150 per complaint",
+      "ids": [
+        "sc:70740@2026Q3",
+        "ctr:4600070740#6.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.4,
+    "our_spend_eur": {
+      "FY2024": 453955,
+      "FY2025": 419915,
+      "FY2026": 428119
+    },
+    "credit_index": "148 (12 months ago 148; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.01,
+    "history_mean_settled_pct": -2.87,
+    "history_settled_minus_asked_pct": -2.86,
+    "we_pay_days_after_due_mean": 3.2,
+    "we_pay_late_share_pct": 90,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 82.7, ppm 58) → 2026Q1 green (otd 83.8, ppm 26) → 2026Q2 green (otd 82.5, ppm 38) → 2026Q3 green (otd 81.0, ppm 32)"
+  },
+  "practice_cases": [
+    "P18"
+  ],
+  "meta": {
+    "key": "49340eb41d2f10ac",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:53",
+    "seconds": 48.2,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70740-370010",
+      "EV-2026-70740-370011",
+      "EV-2026-70740-370010-Q3"
+    ]
+  }
+}

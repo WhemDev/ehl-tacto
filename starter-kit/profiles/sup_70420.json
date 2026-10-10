@@ -1,0 +1,202 @@
+{
+  "supplier_id": "sup:70420",
+  "name": "Gleitring-Systeme Kaltenbrunn AG",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": "near_monopolist",
+  "confidence": 0.8,
+  "summary": "Gleitring-Systeme Kaltenbrunn AG is a large, financially stable Swiss group company (900 staff, 247 M EUR turnover, credit index 162 unchanged). It is our sole source for an ATEX, drinking-water-approved cartridge seal, and we are only 0.2 % of its turnover. Head office has frozen all price reductions until December 2027, but the sales director is open on payment terms and call-off flexibility.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "normal",
+    "dependency_on_us": 0.05,
+    "our_dependency": 0.9,
+    "relationship": "good",
+    "decision_maker": "Key account manager or sales director within head-office policy. Price changes above 2 % need the pricing committee, which meets every two weeks. Price reductions are blocked by a head-office directive until Dec 2027."
+  },
+  "negotiation_pattern": "It asks for small annual increases (3.3 %, then 2.2 %, then 1.3 %) and has settled at 0.0 % every time, so it accepts a price hold without a fight. This year it quoted an unchanged 319.11 and refers to policy ('head-office directive') rather than haggling. It defends list price by pointing to the hierarchy and redirects to payment terms and call-off flexibility.",
+  "wants": [
+    "list price integrity (no visible reduction against head-office policy)",
+    "reliable, on-time payment (we pay late 66 % of the time)",
+    "planning security: forecasts and multi-year continuity",
+    "low-effort deals the sales director can close without the pricing committee"
+  ],
+  "protects": [
+    "unit_price (head-office freeze on reductions until Dec 2027; 'discounts not possible this year')",
+    "list price policy: any change above 2 % goes to the pricing committee"
+  ],
+  "trades": [
+    {
+      "give": "contract_months up (extend the framework to 24–36 months, through 2028)",
+      "get": "unit_price held flat at 319.11 for the whole term, no index_clause",
+      "why": "A price hold fits the freeze, and its asks have always settled at 0 %. This locks that in beyond 2027.",
+      "ids": [
+        "ctr:4600070420#8.1",
+        "ctr:4600070420#3.1",
+        "doc:20260823-70420-M1"
+      ]
+    },
+    {
+      "give": "binding rolling forecast plus volume_per_year commitment (~1,330 pcs/yr)",
+      "get": "lead_time_days below 56 and contractual call-off flexibility or a buffer stock",
+      "why": "The sales director is explicitly open on call-off flexibility, and OTD has slipped to 95.8 %.",
+      "ids": [
+        "doc:20260823-70420-M1",
+        "ctr:4600070420#5.1",
+        "sc:70420@2026Q3"
+      ]
+    },
+    {
+      "give": "a commitment to pay strictly on time (fixing our late payments)",
+      "get": "payment_days extended from 30 to 45–60",
+      "why": "It is open on payment terms, and the extension does not touch list price.",
+      "ids": [
+        "doc:20260823-70420-M1",
+        "ctr:4600070420#4.1"
+      ]
+    },
+    {
+      "give": "payment_days shortened (e.g. 10 days)",
+      "get": "skonto of about 2 % as a payment term",
+      "why": "This captures value as a payment condition instead of a price reduction, which the freeze forbids. It is only worth it if our cost of money allows.",
+      "ids": [
+        "doc:20260823-70420-M1",
+        "quote:7300055"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "The 180-day deadline for price-change notice and termination before year-end 2026 has passed. The contract therefore runs to 2027-12-31 at the fixed annual price of 319.11, and it has quoted that price itself.",
+      "ids": [
+        "ctr:4600070420#3.1",
+        "ctr:4600070420#8.1",
+        "quote:7300055"
+      ]
+    },
+    {
+      "point": "Our spend has grown from 317 k to 424 k and then 426 k EUR, so we are a growing, reliable A-class account worth securing long term.",
+      "ids": [
+        "sc:70420@2026Q3"
+      ]
+    },
+    {
+      "point": "OTD fell from 100 % to 95.8 %, just above the 95 % target. Ask for lead-time and call-off commitments to protect delivery.",
+      "ids": [
+        "sc:70420@2026Q1",
+        "sc:70420@2026Q3",
+        "ctr:4600070420#6.1"
+      ]
+    },
+    {
+      "point": "We are asking for nothing that breaks the price freeze, only terms the sales director said he can move.",
+      "ids": [
+        "doc:20260823-70420-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a unit_price reduction: it is blocked by head office until Dec 2027 and wastes goodwill.",
+    "Threatening to resource: there is no alternative source, the part needs ATEX and drinking-water approval, and we are only 0.2 % of its turnover.",
+    "Leaning on the should-cost gap (+16.6 %): the estimate has only 5 % confidence.",
+    "Pushing ppm or chargeback penalties: ppm is 0 and there have been no complaints in 12 months.",
+    "Asks that need the pricing committee unless necessary: keep requests within the sales director's authority to avoid delay."
+  ],
+  "tone": "Professional, concise and policy-aware. Acknowledge the freeze, frame requests as terms and planning security, and avoid confrontation.",
+  "red_flags": [
+    "Single source (100 % quota, 0 other sources) for a certified ATEX, drinking-water seal; requalification would be long.",
+    "OTD has slipped to 95.8 %, close to the 95 % contractual target.",
+    "We pay late 66 % of the time, which weakens our standing with a supplier that does not need us.",
+    "The next termination window is the 180-day notice before 2027-12-31; it could seek increases when the freeze ends in Dec 2027."
+  ],
+  "evidence": [
+    {
+      "claim": "Head office froze price reductions until Dec 2027; open on payment terms and call-off flexibility",
+      "ids": [
+        "doc:20260823-70420-M1"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval (meets every two weeks)",
+      "ids": [
+        "doc:20260302-70420-M2"
+      ]
+    },
+    {
+      "claim": "Current quote unchanged at 319.11; 'discounts not possible this year (head-office directive)'",
+      "ids": [
+        "quote:7300055"
+      ]
+    },
+    {
+      "claim": "Asked 3.3 %, 2.2 % and 1.3 % at the last three renewals; settled 0 % each time",
+      "ids": []
+    },
+    {
+      "claim": "Sole source, 100 % quota, ATEX and drinking-water approved part",
+      "ids": [
+        "sc:70420@2026Q3"
+      ]
+    },
+    {
+      "claim": "Contract auto-extends 12 months; price fixed per calendar year with 180-day notice",
+      "ids": [
+        "ctr:4600070420#8.1",
+        "ctr:4600070420#3.1"
+      ]
+    },
+    {
+      "claim": "Should-cost 273.72 vs price 319.11, but only 5 % confidence",
+      "ids": [
+        "cost:340012"
+      ]
+    },
+    {
+      "claim": "Perfect quality (ppm 0), OTD 95.8 % vs 95 % target",
+      "ids": [
+        "sc:70420@2026Q3",
+        "ctr:4600070420#6.1"
+      ]
+    },
+    {
+      "claim": "Extending drinking-water approvals to further markets, so the business is healthy",
+      "ids": [
+        "news:20260912-29"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.2,
+    "our_spend_eur": {
+      "FY2024": 317195,
+      "FY2025": 423778,
+      "FY2026": 425693
+    },
+    "credit_index": "162 (12 months ago 162; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.27,
+    "history_mean_settled_pct": 0.0,
+    "history_settled_minus_asked_pct": -2.27,
+    "we_pay_days_after_due_mean": 1.0,
+    "we_pay_late_share_pct": 66,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:340012: price 319.11 vs cost:340012 273.72 (its own plant): +16.6 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 100.0, ppm 0) → 2026Q1 green (otd 100.0, ppm 0) → 2026Q2 green (otd 95.8, ppm 0) → 2026Q3 green (otd 95.8, ppm 0)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "577f24400ce5c4fe",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:54",
+    "seconds": 46.4,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70420-340012",
+      "EV-2026-70420-340012",
+      "EV-2024-70420-340012",
+      "EV-2025-70420-340012",
+      "EV-2026-70420-340012"
+    ]
+  }
+}

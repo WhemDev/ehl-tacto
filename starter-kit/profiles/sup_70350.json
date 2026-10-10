@@ -1,0 +1,191 @@
+{
+  "supplier_id": "sup:70350",
+  "name": "Oberflächentechnik Weißacher GmbH",
+  "archetype": "cash_short",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.85,
+  "summary": "Founder-led sheet-metal and powder-coating shop with 30 staff and 2-5 M EUR turnover. It is our 100 % source for the cover plate set, and we own the tooling. Liquidity is deteriorating fast: credit index went from 248 to 343, equity ratio is 24.9 %, it was downgraded for paying its own suppliers late, the bank reviews it monthly, and the MD keeps asking us to pay earlier. At the same time its quality and delivery are in free fall: red for three quarters, ppm 1877 → 5556, OTD 53.8 %.",
+  "situation": {
+    "cash_pressure": 0.85,
+    "capacity": "unknown",
+    "dependency_on_us": 0.45,
+    "our_dependency": 0.55,
+    "relationship": "strained",
+    "decision_maker": "managing director (founder-owned GmbH, no group); he leads talks personally and refuses anything that cuts margin"
+  },
+  "negotiation_pattern": "Asks for small increases and settles flat: asked +2.8 % and +1.9 %, settled 0.0 % both times. In 2023 it offered -2.6 % and we pushed it to -6.0 %. Mean asked is +0.7 %, mean settled -2.0 %, so price pressure has worked before. Now it has quoted flat at 9.99 with a request for 10-day payment. The MD said he 'cannot sign anything that lowers our margin now.' Under payment friction it threatens to 'review our conditions'.",
+  "wants": [
+    "Faster payment: 10 days, using the existing 2 % skonto rather than an extra concession",
+    "Reliable on-time payment from us (overdue invoices are a sore point)",
+    "No margin erosion: unit price at least flat",
+    "Keeping the 100 % single-source volume (about 22k pcs/yr) to show the bank"
+  ],
+  "protects": [
+    "unit_price: no reduction, MD explicitly will not sign margin cuts",
+    "Payment terms: may tighten them if we keep paying late"
+  ],
+  "trades": [
+    {
+      "give": "payment_days 30 → 10 with the contractual 2 % skonto, plus a commitment to pay reliably on time",
+      "get": "unit_price held flat at 9.99 for 2027, plus a binding ppm target with a written quality improvement plan and closure of the 3 open 8Ds",
+      "why": "Cash is worth far more to them than to us. 2 % for 20 days early is roughly 36 % p.a., well above our cost of money, and it buys the quality fixes we need.",
+      "ids": [
+        "doc:20260821-70350-M2",
+        "doc:20260912-70350-M1",
+        "quote:7300070",
+        "ctr:4600070350#4.1",
+        "sc:70350@2026Q3"
+      ]
+    },
+    {
+      "give": "payment_days 10 (fast cash)",
+      "get": "ppm_commitment (e.g. <1500 ppm within 2 quarters) and enforcement of the EUR 150 chargeback_eur_per_complaint",
+      "why": "Ties the liquidity they need to the quality and delivery we are not getting. Only EUR 450 has been recharged against 8 complaints.",
+      "ids": [
+        "ctr:4600070350#6.1",
+        "sc:70350@2026Q3"
+      ]
+    },
+    {
+      "give": "Keep the current 100 % quota for now",
+      "get": "Written confirmation of our tooling ownership with a right to remove it at short notice, plus OTD recovery to the 95 % target",
+      "why": "Secures supply in case of insolvency without threatening the volume they need for the bank.",
+      "ids": [
+        "sc:70350@2026Q3",
+        "ctr:4600070350#6.1",
+        "news:20260904-26"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We can ease your liquidity right away: 10-day payment with the 2 % skonto already in our contract. No price cut is needed, but delivery and quality must recover.",
+      "ids": [
+        "ctr:4600070350#4.1",
+        "doc:20260821-70350-M2",
+        "doc:20260912-70350-M1"
+      ]
+    },
+    {
+      "point": "Your scorecard has been red for three quarters: ppm went 1877 → 5556 and OTD is 53.8 % against a 95 % target. Our volume depends on a credible recovery plan.",
+      "ids": [
+        "sc:70350@2025Q4",
+        "sc:70350@2026Q3",
+        "ctr:4600070350#6.1"
+      ]
+    },
+    {
+      "point": "Your own quote is flat at 9.99, and no price change notice under clause 3.1 is on file. 2027 stays at 9.99. The notice deadline is about 2 Oct 2026.",
+      "ids": [
+        "quote:7300070",
+        "ctr:4600070350#3.1"
+      ]
+    },
+    {
+      "point": "We own the tooling and you are our only source. Stability for both sides needs a documented tooling access arrangement.",
+      "ids": [
+        "sc:70350@2026Q3"
+      ]
+    }
+  ],
+  "avoid": [
+    "Pushing for a price reduction: the MD has said he cannot sign margin cuts, and it could tip a fragile firm",
+    "Paying late again: 43 % of our payments are late and they have already complained about overdue invoices",
+    "Prepayment or advance payment before goods are received (insolvency risk)",
+    "Long new commitments (contract_months, volume_per_year) while quality is red and solvency is unclear",
+    "Waiving chargebacks or quality targets in exchange for faster payment"
+  ],
+  "tone": "Calm, factual and supportive on cash, firm on quality. Write to the managing director directly, with clear numbers and deadlines.",
+  "red_flags": [
+    "Insolvency risk: credit index 343 (was 248), downgraded for late payments to its own suppliers, bank watching monthly, equity 24.9 %",
+    "Single source (100 % quota, 0 alternatives) for part:330060, and our tooling sits at their site",
+    "Quality and OTD collapsing: ppm 5556, OTD 53.8 %, 8 QNs, 3 open 8Ds, last complaint 2026-09-19",
+    "Their late payments to their own suppliers can disrupt coating and steel supply, which would worsen OTD further",
+    "Threat to review conditions if our payments stay late",
+    "Recommend starting second-source qualification with our tooling as a contingency"
+  ],
+  "evidence": [
+    {
+      "claim": "Credit index worsened from 248 to 343 (>300 weak); equity ratio 24.9 %",
+      "ids": [
+        "sup:70350"
+      ]
+    },
+    {
+      "claim": "Credit agency downgraded it after delayed payments to its own suppliers",
+      "ids": [
+        "news:20260904-26"
+      ]
+    },
+    {
+      "claim": "MD asked twice for earlier payment, said the bank watches monthly and he cannot accept lower margin",
+      "ids": [
+        "doc:20260912-70350-M1"
+      ]
+    },
+    {
+      "claim": "Supplier requested 10-day payment in exchange for a cash discount; latest quote is flat at 9.99 with 10-day payment",
+      "ids": [
+        "doc:20260821-70350-M2",
+        "quote:7300070"
+      ]
+    },
+    {
+      "claim": "Supplier complained about overdue invoices and threatened to review conditions",
+      "ids": [
+        "doc:20260820-70350-P"
+      ]
+    },
+    {
+      "claim": "Scorecard red for three quarters: ppm 1877 → 5556, OTD 59.3 → 53.8 %, score 70.2 → 49.1",
+      "ids": [
+        "sc:70350@2025Q4",
+        "sc:70350@2026Q1",
+        "sc:70350@2026Q2",
+        "sc:70350@2026Q3"
+      ]
+    },
+    {
+      "claim": "Quality agreement sets a 95 % OTD target and EUR 150 per complaint; only EUR 450 recharged for 8 complaints, 3 8Ds open",
+      "ids": [
+        "ctr:4600070350#6.1",
+        "sc:70350@2026Q3"
+      ]
+    },
+    {
+      "claim": "Past renewals: asked +2.8 % and +1.9 %, settled 0 %; in 2023 settled -6.0 % against its -2.6 % offer",
+      "ids": []
+    },
+    {
+      "claim": "Price fixed per calendar year with 90 days' notice for changes; framework runs to 2027-06-30 and auto-extends 12 months unless terminated with 90 days' notice",
+      "ids": [
+        "ctr:4600070350#3.1",
+        "ctr:4600070350#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "343 (12 months ago 248; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 0.7,
+    "history_mean_settled_pct": -2.0,
+    "history_settled_minus_asked_pct": -2.7,
+    "we_pay_days_after_due_mean": -6.7,
+    "we_pay_late_share_pct": 43,
+    "skonto_taken_share_pct": 55,
+    "scorecard_trend": "2025Q4 amber (otd 59.3, ppm 1877) → 2026Q1 red (otd 60.0, ppm 2218) → 2026Q2 red (otd 60.0, ppm 3850) → 2026Q3 red (otd 53.8, ppm 5556)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "c9a23ac771b902cc",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:14",
+    "seconds": 37.1,
+    "release": false,
+    "dropped_ids": [
+      "EV-2025-70350-330060",
+      "EV-2026-70350-330060",
+      "EV-2024-70350-330060"
+    ]
+  }
+}

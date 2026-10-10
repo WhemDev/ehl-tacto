@@ -1,0 +1,4 @@
+{
+  "note": "orchestra exactly as .env configures it (no overrides): what `arena run --agent orchestra` plays today",
+  "agent": "orchestra"
+}

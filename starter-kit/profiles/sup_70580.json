@@ -1,0 +1,202 @@
+{
+  "supplier_id": "sup:70580",
+  "name": "Motorenwerk Saalach GmbH",
+  "archetype": "group_approval_ladder",
+  "secondary_archetype": null,
+  "confidence": 0.65,
+  "summary": "Motorenwerk Saalach is a 650-staff, group-owned motor maker (182 M EUR turnover) with sound finances, a stable credit index of 171 and an equity ratio of 30.2 %. It supplies 100 % of our IE4 30 kW motor (part:350013). It is refocusing on large key accounts, and its new sales director called our volume (0.6 % of its turnover) 'not strategic'. Replies have slowed, its latest quote is 'list conditions, supply from stock only', and it is annoyed that we pay late almost every time.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "unknown",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.55,
+    "relationship": "strained",
+    "decision_maker": "Key account manager up to 2 % price change; above 2 % the pricing committee (meets every two weeks); the new sales director sets account strategy"
+  },
+  "negotiation_pattern": "At annual renewals it asks for moderate increases (2.4–3.9 %) and settles far lower: -1.5 %, then 0.0 %, then 1.7 %. The mean settlement is +0.07 % against a mean ask of 3.2 %. The price for part:350013 fell from the awarded 1671.86 (2024 quote) to 1608.32. It has given way on price within a fixed-per-year, list-based framework. It now protects list conditions and service level more actively and hints it will 'review conditions' if we keep paying late.",
+  "wants": [
+    "on-time payment at the agreed 30 days net (its open grievance)",
+    "volume and key-account relevance (more spend per customer)",
+    "standard-range, stock-based business with low handling effort",
+    "price stability within list policy (no moves above 2 % that need committee approval)",
+    "longer-term commitment / forecast visibility"
+  ],
+  "protects": [
+    "unit_price (list conditions; anything above 2 % needs the pricing committee)",
+    "payment_days (will not accept longer terms; already complaining about overdue invoices)",
+    "lead_time_days (42 days, now 'supply from stock only')",
+    "service effort on small accounts"
+  ],
+  "trades": [
+    {
+      "give": "payment_days: firm commitment to pay on time at 30 days net (fix our 97 % late-payment record)",
+      "get": "unit_price for part:350013 held at 1608.32 for 2027, no increase",
+      "why": "Costs us little beyond discipline and removes its main grievance and the threat to review conditions.",
+      "ids": [
+        "doc:20260612-70580-P",
+        "ctr:4600070580#4.1",
+        "quote:7300057"
+      ]
+    },
+    {
+      "give": "volume_per_year: add part:350011 (IE3 7.5 kW, already qualified, quoted 421.06) plus a rolling forecast for part:350013",
+      "get": "unit_price reduction of up to 2 % on part:350013 (within the account manager's authority) and better pricing on part:350011",
+      "why": "It explicitly rewards customers with volume; bundling makes us bigger without needing committee approval.",
+      "ids": [
+        "quote:7200002",
+        "doc:20260908-70580-M3",
+        "news:20260327-07",
+        "doc:20260322-70580-M2"
+      ]
+    },
+    {
+      "give": "contract_months: renew the framework for 24–36 months",
+      "get": "lead_time_days 42 guaranteed as a delivery commitment (not 'from stock only') and price fixed per year",
+      "why": "Longer commitment counters the 'not strategic' view and secures our only active source.",
+      "ids": [
+        "ctr:4600070580#8.1",
+        "ctr:4600070580#5.1",
+        "quote:7300057",
+        "doc:20260926-70580-M1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We are a stable, growing account of about 1.15 M EUR a year with zero complaints and zero ppm. We want to consolidate more motor volume with them, not less.",
+      "ids": [
+        "sc:70580@2026Q3",
+        "quote:7200002"
+      ]
+    },
+    {
+      "point": "Under the framework, price changes need written notice at least 90 days before year-end, i.e. by 2 Oct 2026. The latest quote confirms the unchanged 1608.32, so 2027 should stay at this price.",
+      "ids": [
+        "ctr:4600070580#3.1",
+        "quote:7300057"
+      ]
+    },
+    {
+      "point": "Past renewals settled close to zero (-1.5 %, 0.0 %, +1.7 %), so a price hold is the established norm.",
+      "ids": []
+    },
+    {
+      "point": "Keep any requested price move at or below 2 % so their account manager can agree without committee approval.",
+      "ids": [
+        "doc:20260322-70580-M2"
+      ]
+    },
+    {
+      "point": "We acknowledge the late payments and commit to correcting them. This should land with them as respect for their terms.",
+      "ids": [
+        "doc:20260612-70580-P"
+      ]
+    }
+  ],
+  "avoid": [
+    "Threatening to switch or cut volume: we are 0.6 % of their turnover and they already call us 'not strategic'.",
+    "Asking for longer payment terms or skonto-style extras while we pay 19 days late on average.",
+    "Demanding cuts above 2 %, which trigger the pricing committee and delays.",
+    "Leaning hard on should-cost: their price is only +2.6 % above cost:350013, and that estimate has 5 % confidence.",
+    "Tight ultimatums: their replies are already slow, and pressure invites de-prioritisation."
+  ],
+  "tone": "Businesslike and constructive. Present us as a reliable partner that wants to grow and is fixing its payment behaviour, with clear, simple, low-effort proposals.",
+  "red_flags": [
+    "Walk-away risk: the framework auto-extends unless terminated by about 2 Oct 2026 (90 days before 31 Dec). Given the 'not strategic' remark, the supplier could terminate or de-prioritise us.",
+    "Service downgrade already visible: 'list conditions; supply from stock only' and slower replies since summer.",
+    "Our late payment (97 % late, mean 19.4 days) may trigger a review of their conditions.",
+    "Single active source for part:350013 (100 % quota); only one other source is listed. We should secure supply and prepare the alternative.",
+    "OTD dipped to 92.3 % in two quarters, below the 95 % target, although quality is otherwise excellent."
+  ],
+  "evidence": [
+    {
+      "claim": "Group-owned; account manager can move up to 2 %, the pricing committee handles anything above.",
+      "ids": [
+        "doc:20260322-70580-M2"
+      ]
+    },
+    {
+      "claim": "Refocusing on key accounts; our volume is called 'not strategic' and replies are slower.",
+      "ids": [
+        "news:20260327-07",
+        "doc:20260908-70580-M3",
+        "doc:20260926-70580-M1"
+      ]
+    },
+    {
+      "claim": "Supplier complained about overdue invoices and threatened to review conditions.",
+      "ids": [
+        "doc:20260612-70580-P"
+      ]
+    },
+    {
+      "claim": "Latest quote for part:350013 is unchanged at 1608.32, list conditions, supply from stock only.",
+      "ids": [
+        "quote:7300057"
+      ]
+    },
+    {
+      "claim": "Price is +2.6 % over the no-margin should-cost estimate (low confidence).",
+      "ids": [
+        "cost:350013"
+      ]
+    },
+    {
+      "claim": "Excellent quality: 0 ppm and green scores in all four quarters.",
+      "ids": [
+        "sc:70580@2026Q3",
+        "sc:70580@2026Q2",
+        "sc:70580@2026Q1",
+        "sc:70580@2025Q4"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2026-12-31, auto-extends 12 months, 90-day notice; prices fixed per calendar year.",
+      "ids": [
+        "ctr:4600070580",
+        "ctr:4600070580#8.1",
+        "ctr:4600070580#3.1"
+      ]
+    },
+    {
+      "claim": "Part:350011 is already qualified at this supplier and quoted at 421.06, offering potential for volume bundling.",
+      "ids": [
+        "quote:7200002"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.6,
+    "our_spend_eur": {
+      "FY2024": 897362,
+      "FY2025": 1154510,
+      "FY2026": 1151452
+    },
+    "credit_index": "171 (12 months ago 171; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 3.2,
+    "history_mean_settled_pct": 0.07,
+    "history_settled_minus_asked_pct": -3.13,
+    "we_pay_days_after_due_mean": 19.4,
+    "we_pay_late_share_pct": 97,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:350013: price 1608.32 vs cost:350013 1567.9 (its own plant): +2.6 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 92.3, ppm 0) → 2026Q1 green (otd 92.3, ppm 0) → 2026Q2 green (otd 100.0, ppm 0) → 2026Q3 green (otd 95.8, ppm 0)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "28e9263646a2cb32",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:32:51",
+    "seconds": 47.6,
+    "release": false,
+    "dropped_ids": [
+      "current_prices:EV-2026-70580-350013",
+      "EV-2024-70580-350013",
+      "EV-2025-70580-350013",
+      "EV-2026-70580-350013"
+    ]
+  }
+}

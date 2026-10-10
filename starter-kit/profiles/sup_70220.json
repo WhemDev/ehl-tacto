@@ -1,0 +1,203 @@
+{
+  "supplier_id": "sup:70220",
+  "name": "CNC-Technik Obermaier & Huber GmbH",
+  "archetype": "capacity_constrained",
+  "secondary_archetype": "quality_problem",
+  "confidence": 0.8,
+  "summary": "CNC-Technik Obermaier & Huber is a founder-owned machining shop founded in 2004, with 35 staff and 2-5 M EUR turnover. It is our only active source (100 % quota) for flange part:320030. It has been fully booked for more than six months, has stopped taking new projects, and on 2026-09-15 said it cannot confirm our full forecast and will favour customers with firm long-term commitments. Delivery has been weak for a year (OTD 56-61.5 %, amber every quarter), and it asked in May to be paid within 10 days in return for a cash discount.",
+  "situation": {
+    "cash_pressure": 0.35,
+    "capacity": "full",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.55,
+    "relationship": "neutral",
+    "decision_maker": "Founder/managing director decides price and allocation. The day-to-day contact is a new inside-sales colleague (since Oct 2025) with likely little authority."
+  },
+  "negotiation_pattern": "It opens annual renewals with small increases (+3.1 %, +3.5 %) and settled at 0.0 % both times. In 2023 it asked -0.4 % and conceded -4.1 %. On average it settles 3.44 pts below its ask, so it has historically folded under pressure. That was before its order book filled. Its leverage now is allocation and lead time, not price: it already announced it will not confirm our full forecast. Its stated condition is firm, long-term commitments, and it has also asked for faster payment.",
+  "wants": [
+    "Firm, long-term volume commitment (contract length plus binding forecast). This is its explicit criterion for who gets capacity.",
+    "Faster payment: 10 days instead of 30, with a cash discount. At minimum, on-time payment, since we currently pay late 94 % of the time, about 8 days after due.",
+    "A stable price with no further cuts; it likely hopes for an increase for 2027.",
+    "Keeping Hollerau as a reference customer, though this matters less while it is full."
+  ],
+  "protects": [
+    "lead_time_days and capacity allocation: it will not confirm the full forecast without commitment.",
+    "unit_price downward: the margin over should-cost is thin, about +4 %.",
+    "Tighter quality penalties are likely resisted: chargeback_eur_per_complaint is a flat 150 EUR today."
+  ],
+  "trades": [
+    {
+      "give": "contract_months up: extend the framework beyond 2027-06-30 (e.g. +24 months), with a binding volume_per_year of about 9,500 pcs",
+      "get": "Written allocation for our full forecast, adherence to the 35-day lead_time_days, and unit_price held at 16.02 for 2027",
+      "why": "It explicitly prioritises customers with firm long-term commitments, and the current term ends 2027-06-30.",
+      "ids": [
+        "doc:20260915-70220-P09",
+        "ctr:4600070220#8.1",
+        "ctr:4600070220#5.1",
+        "sc:70220@2026Q3"
+      ]
+    },
+    {
+      "give": "payment_days down: from 30 net to 10 days with skonto, and actually pay on time",
+      "get": "A skonto percentage, plus priority slots or confirmed delivery dates and no 2027 price increase",
+      "why": "It asked for this itself in May, and we currently pay late on almost every invoice, so the gesture costs us little and lands.",
+      "ids": [
+        "doc:20260511-70220-M1",
+        "ctr:4600070220#4.1"
+      ]
+    },
+    {
+      "give": "A rolling 12-month forecast with a frozen firm horizon",
+      "get": "A delivery improvement plan with OTD rising toward the 95 % target, with milestones",
+      "why": "Better planning visibility helps a full shop sequence our orders; OTD has been 56-61.5 % against a 95 % target.",
+      "ids": [
+        "ctr:4600070220#6.1",
+        "sc:70220@2026Q3",
+        "sc:70220@2026Q1",
+        "sc:70220@2025Q4"
+      ]
+    },
+    {
+      "give": "chargeback_eur_per_complaint kept at the current 150 EUR flat (no increase)",
+      "get": "ppm_commitment below 500, and closure of the open 8D",
+      "why": "ppm has been 626-1040 over four quarters; one 8D is still open, with the last complaint on 2026-08-30.",
+      "ids": [
+        "ctr:4600070220#6.1",
+        "sc:70220@2026Q3",
+        "sc:70220@2026Q2"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We offer exactly what it said it wants: a firm, long-term commitment. In return we expect to be among the prioritised customers.",
+      "ids": [
+        "doc:20260915-70220-P09"
+      ]
+    },
+    {
+      "point": "It called Hollerau an important reference customer. Reference customers need reliable delivery, not 56 % OTD.",
+      "ids": [
+        "doc:20260224-70220-M2",
+        "sc:70220@2026Q3"
+      ]
+    },
+    {
+      "point": "Delivery and quality have been amber for four straight quarters against a contractual 95 % OTD target. A price increase is not justified on this performance.",
+      "ids": [
+        "ctr:4600070220#6.1",
+        "sc:70220@2025Q4",
+        "sc:70220@2026Q1",
+        "sc:70220@2026Q2",
+        "sc:70220@2026Q3"
+      ]
+    },
+    {
+      "point": "The price is already above our bottom-up cost estimate (16.02 vs 15.40). Use this only as soft support for a price hold: the estimate has 5 % confidence.",
+      "ids": [
+        "cost:320030"
+      ]
+    },
+    {
+      "point": "We are answering its own request for 10-day payment.",
+      "ids": [
+        "doc:20260511-70220-M1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a price cut or open resourcing threats. It is full and could simply deprioritise or drop us.",
+    "Asking for faster lead times or expedites without commitment. It will charge for urgency or refuse.",
+    "Raising penalty levels aggressively. Frame quality as a joint improvement plan.",
+    "Long chains with the new inside-sales contact. Ask for the founder/MD on allocation and term questions.",
+    "Promising early payment while our AP keeps paying late. Fix the late payments first or the offer loses credibility."
+  ],
+  "tone": "Respectful, partner-like and concrete: offer commitment and fast payment first, then ask for allocation, OTD and a price hold. Keep any pressure factual and low-key.",
+  "red_flags": [
+    "Supply risk: it will not confirm our full forecast, lead times already exceed the agreed 35 days, and we single-source part:320030 (100 % quota).",
+    "A 2027 price-increase notice is likely: clause 3.1 lets it notify up to 90 days before year-end, i.e. until about 2026-10-02.",
+    "Delivery chronically far below target (OTD 56 % vs 95 %); ppm 626-1040; one open 8D.",
+    "Fallback exists: Hollerau owns the tooling and there is 1 other source. Its capacity is unknown, so check it quietly before negotiating.",
+    "Mild liquidity signal from the May early-payment request, but the credit index is stable at 245 and the equity ratio is 31.1 %, so insolvency risk is low."
+  ],
+  "evidence": [
+    {
+      "claim": "Fully booked: backlog over 6 months, no new projects accepted.",
+      "ids": [
+        "news:20260320-04"
+      ]
+    },
+    {
+      "claim": "Cannot confirm our full forecast for part:320030; lead times longer than agreed; prioritises firm long-term commitments.",
+      "ids": [
+        "doc:20260915-70220-P09"
+      ]
+    },
+    {
+      "claim": "Asked to be paid within 10 days in exchange for a cash discount.",
+      "ids": [
+        "doc:20260511-70220-M1"
+      ]
+    },
+    {
+      "claim": "Amber four quarters running; OTD 56.0 % and ppm 731 in the latest period, against a 95 % OTD target and a 150 EUR flat fee per complaint.",
+      "ids": [
+        "sc:70220@2026Q3",
+        "sc:70220@2025Q4",
+        "ctr:4600070220#6.1"
+      ]
+    },
+    {
+      "claim": "Last two renewals: asked +3.1 % and +3.5 %, settled at 0.0 %.",
+      "ids": []
+    },
+    {
+      "claim": "Current price 16.02 is 4.0 % above the no-margin should-cost of 15.40 (estimate confidence 5 %).",
+      "ids": [
+        "cost:320030"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 with 90-day notice; prices fixed per calendar year; changes need 90 days' notice before year-end.",
+      "ids": [
+        "ctr:4600070220",
+        "ctr:4600070220#3.1",
+        "ctr:4600070220#8.1"
+      ]
+    },
+    {
+      "claim": "Hollerau is an important reference customer for them.",
+      "ids": [
+        "doc:20260224-70220-M2"
+      ]
+    }
+  ],
+  "indicators": {
+    "credit_index": "245 (12 months ago 245; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 2.07,
+    "history_mean_settled_pct": -1.37,
+    "history_settled_minus_asked_pct": -3.44,
+    "we_pay_days_after_due_mean": 8.1,
+    "we_pay_late_share_pct": 94,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:320030: price 16.02 vs cost:320030 15.4 (its own plant): +4.0 %"
+    ],
+    "scorecard_trend": "2025Q4 amber (otd 61.5, ppm 907) → 2026Q1 amber (otd 57.7, ppm 1040) → 2026Q2 amber (otd 60.0, ppm 626) → 2026Q3 amber (otd 56.0, ppm 731)"
+  },
+  "practice_cases": [
+    "P09"
+  ],
+  "meta": {
+    "key": "5a2297673b7f3617",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:30:37",
+    "seconds": 49.7,
+    "release": false,
+    "dropped_ids": [
+      "EV-2025-70220-320030",
+      "EV-2026-70220-320030"
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "note": "writer: Claude Sonnet 5.5, effort low",
+  "agent": "orchestra",
+  "env": {"LLM_PROVIDER": "anthropic", "LLM_MODEL": "claude-sonnet-5-5", "LLM_EFFORT": "low"}
+}

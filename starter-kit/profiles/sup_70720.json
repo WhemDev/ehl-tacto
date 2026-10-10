@@ -1,0 +1,208 @@
+{
+  "supplier_id": "sup:70720",
+  "name": "Stahlhandel Rupprecht-Kessel GmbH",
+  "archetype": "family_relationship",
+  "secondary_archetype": null,
+  "confidence": 0.7,
+  "summary": "Stahlhandel Rupprecht-Kessel is a family-owned steel stockholder founded in 1908, with 500 staff and EUR 196 M turnover, sound finances and a stable credit index of 177. The owner deals with us personally and has twice offered to open his calculation. On 2026-09-16 he proposed a new price basis for sheet part:370020 with a PPI-C241 price adjustment clause, just ahead of the 2026-12-31 contract end and its 60-day notice deadline.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "unknown",
+    "dependency_on_us": 0.15,
+    "our_dependency": 0.4,
+    "relationship": "good",
+    "decision_maker": "owner (handles price calls personally)"
+  },
+  "negotiation_pattern": "It has always settled below its own opening ask, on average 2.37 pp lower (mean ask -2.95 %, mean settled -5.32 %). It even opened with cuts in 2023 (-5.9 % / -9.4 %, settled -9.1 % / -11.7 %). In 2024 it asked +1.5 % on part:370012 and settled flat. In 2025 it asked 0 % / -0.8 % and settled -2.3 % on both parts. It is cooperative and transparency-minded: the owner offered open-book costing (hourly rates and material) twice. It now wants to move from fixed annual prices to an index clause.",
+  "wants": [
+    "Index clause on PPI-C241 for part:370020 (material risk pass-through)",
+    "Fair, respectful treatment and on-time payment (we pay late in 82 % of cases)",
+    "Long-term relationship and reference-customer status with Hollerau",
+    "Volume security / more share on part:370012 (holds only 40 %; its 2025 RFQ quote was not awarded)"
+  ],
+  "protects": [
+    "Material cost risk: wants index pass-through instead of a fixed annual price",
+    "unit_price below its calculation; it will defend with open-book data",
+    "payment_days (30 net, no skonto, no sign of interest in trading it)"
+  ],
+  "trades": [
+    {
+      "give": "index_clause: accept PPI-C241 on part:370020",
+      "get": "Symmetric clause (decreases passed through too), a defined material share with deadband, and a lower base unit_price set at today's index level",
+      "why": "This is its current ask; we only make it neutral by insisting on symmetry and a reset base.",
+      "ids": [
+        "doc:20260916-70720-P16",
+        "ctr:4600070720#3.1"
+      ]
+    },
+    {
+      "give": "volume_per_year: raise quota on part:370012 above 40 %",
+      "get": "unit_price reduction on part:370012 and on-time-delivery improvement toward the 95 % target",
+      "why": "It quoted for more business in 2025 and lost; a loyalty-minded family firm values more share.",
+      "ids": [
+        "quote:7100067",
+        "ctr:4600070720#6.1",
+        "sc:70720@2026Q3"
+      ]
+    },
+    {
+      "give": "contract_months: renew the framework for 24 months",
+      "get": "Price hold or reduction on both parts and a formal lead_time_days commitment of 10",
+      "why": "A steady long-term commitment is what an owner-led firm rewards.",
+      "ids": [
+        "ctr:4600070720#8.1",
+        "ctr:4600070720#5.1"
+      ]
+    },
+    {
+      "give": "Pay strictly on the 30-day due date (stop late payments)",
+      "get": "Goodwill on price and acceptance of a symmetric index clause",
+      "why": "We pay late 82 % of the time; fixing that costs us little and builds trust.",
+      "ids": [
+        "ctr:4600070720#4.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Accept the owner's offer to walk through the calculation and set the price basis on open-book figures.",
+      "ids": [
+        "doc:20260415-70720-M2",
+        "doc:20260712-70720-M3"
+      ]
+    },
+    {
+      "point": "An index clause is only fair if it works both ways and starts from a base agreed today.",
+      "ids": [
+        "doc:20260916-70720-P16"
+      ]
+    },
+    {
+      "point": "Hollerau is its stated reference customer. A long-term, steady partnership is on offer if terms are fair.",
+      "ids": [
+        "doc:20260409-70720-M4",
+        "doc:20260924-70720-M1"
+      ]
+    },
+    {
+      "point": "OTD of 92.2 % is still below the 95 % contractual target, so there is room to ask for a delivery commitment.",
+      "ids": [
+        "sc:70720@2026Q3",
+        "ctr:4600070720#6.1"
+      ]
+    },
+    {
+      "point": "Our spend fell from EUR 486k to EUR 441k. More share on part:370012 is available for a competitive price.",
+      "ids": [
+        "quote:7100067"
+      ]
+    }
+  ],
+  "avoid": [
+    "Hard pressure or threats of resourcing: the owner remembers treatment and has been cooperative",
+    "Ignoring the index-clause letter or stalling past the notice deadline",
+    "Accepting a one-sided index clause (increases only) or one without a defined material share and base",
+    "Claiming leverage from our size: we are only 0.2 % of its turnover",
+    "Raising complaints aggressively: quality is green and improving"
+  ],
+  "tone": "Personal, respectful, partnership-oriented. Address the owner directly, thank him for the open-book offer and argue with facts.",
+  "red_flags": [
+    "Contract ends 2026-12-31 and extends automatically. Notice and price-change deadlines are 60 days before year end, i.e. about 2026-11-01.",
+    "part:370020 is single source (100 %, no other source); a steel index clause exposes us to rising material prices.",
+    "Low dependency on us (0.2 % of turnover): it can walk away from a bad deal more easily than we can.",
+    "OTD 92.2 % is still below the 95 % target; one 8D is open (last complaint 2026-09-11).",
+    "Our chronic late payment (82 % of invoices) could sour the relationship."
+  ],
+  "evidence": [
+    {
+      "claim": "Family-owned, founded 1908, 500 staff, EUR 196 M turnover, equity ratio 39 %, credit index 177 (unchanged from 12 months ago): no cash stress.",
+      "ids": [
+        "sup:70720"
+      ]
+    },
+    {
+      "claim": "The owner personally offered to walk us through hourly rates and material, twice.",
+      "ids": [
+        "doc:20260415-70720-M2",
+        "doc:20260712-70720-M3"
+      ]
+    },
+    {
+      "claim": "It proposes a new price basis with a PPI-C241 adjustment clause for part:370020.",
+      "ids": [
+        "doc:20260916-70720-P16"
+      ]
+    },
+    {
+      "claim": "Last renewal settled at -2.3 % on both parts versus asks of 0 % and -0.8 %.",
+      "ids": []
+    },
+    {
+      "claim": "Contract runs to 2026-12-31, renews by 12 months automatically, 60-day notice; prices are fixed per calendar year.",
+      "ids": [
+        "ctr:4600070720",
+        "ctr:4600070720#8.1",
+        "ctr:4600070720#3.1"
+      ]
+    },
+    {
+      "claim": "Scorecard green for four quarters; OTD rose from 90.0 to 92.2 %, ppm at 44, score 95.9.",
+      "ids": [
+        "sc:70720@2025Q4",
+        "sc:70720@2026Q3"
+      ]
+    },
+    {
+      "claim": "Sole source for sheet part:370020; holds 40 % of part:370012, with one other source.",
+      "ids": [
+        "part:370020",
+        "part:370012"
+      ]
+    },
+    {
+      "claim": "Its 2025 RFQ quote for part:370012 at EUR 129.78/100 was not awarded; the current price is EUR 126.05/100.",
+      "ids": [
+        "quote:7100067"
+      ]
+    },
+    {
+      "claim": "It calls Hollerau an important reference customer.",
+      "ids": [
+        "doc:20260409-70720-M4",
+        "doc:20260924-70720-M1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.2,
+    "our_spend_eur": {
+      "FY2024": 486292,
+      "FY2025": 481847,
+      "FY2026": 440941
+    },
+    "credit_index": "177 (12 months ago 177; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -2.95,
+    "history_mean_settled_pct": -5.32,
+    "history_settled_minus_asked_pct": -2.37,
+    "we_pay_days_after_due_mean": 2.2,
+    "we_pay_late_share_pct": 82,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 90.0, ppm 56) → 2026Q1 green (otd 90.2, ppm 45) → 2026Q2 green (otd 90.6, ppm 32) → 2026Q3 green (otd 92.2, ppm 44)"
+  },
+  "practice_cases": [
+    "P16"
+  ],
+  "meta": {
+    "key": "f75ffcfbcb34d323",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:33:28",
+    "seconds": 36.5,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70720-370012",
+      "EV-2026-70720-370020",
+      "EV-2026-70720-370012"
+    ]
+  }
+}

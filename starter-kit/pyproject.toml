@@ -31,3 +31,4 @@ select = ["E", "F", "I", "B", "UP"]
 
 [tool.ruff.lint.per-file-ignores]
 "arena_kit/vault.py" = ["E501"]  # markdown templates
+"arena_kit/profiles.py" = ["E501"]  # the prompt and SQL

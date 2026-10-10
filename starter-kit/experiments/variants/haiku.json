@@ -1,0 +1,5 @@
+{
+  "note": "writer: Claude Haiku 5.5, effort low",
+  "agent": "orchestra",
+  "env": {"LLM_PROVIDER": "anthropic", "LLM_MODEL": "claude-haiku-5-5", "LLM_EFFORT": "low"}
+}

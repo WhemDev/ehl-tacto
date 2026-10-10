@@ -1,0 +1,184 @@
+{
+  "supplier_id": "sup:70170",
+  "name": "Slévárna Vrbenský s.r.o.",
+  "archetype": "quality_problem",
+  "secondary_archetype": "hungry_for_work",
+  "confidence": 0.55,
+  "summary": "Slévárna Vrbenský is a family-owned Czech foundry (150 staff, about 8.3 M EUR turnover) that supplies 25 % of our volute casing HI 80-250. Its scorecard has slid from green to red within a year (OTD 91.7 % against a 95 % target, ppm 5,682, one 8D still open). In April 2026 it commissioned a moulding line that doubles its stainless capacity, and it now needs volume to fill it.",
+  "situation": {
+    "cash_pressure": 0.35,
+    "capacity": "under_used",
+    "dependency_on_us": 0.3,
+    "our_dependency": 0.45,
+    "relationship": "neutral",
+    "decision_maker": "owner / managing director (family firm, no group parent)"
+  },
+  "negotiation_pattern": "Opens with small increase asks (+0.6 %, +1.2 %) or a modest cut (-2.5 %). It settles on average 2.3 points below its ask: -1.7 %, 0.0 % and -5.9 %. It has accepted reductions in 2 of 3 renewals, so it concedes on price rather than walking away.",
+  "wants": [
+    "more volume or quota share to fill the new moulding line",
+    "faster payment (it asked for 10-day payment against a cash discount)",
+    "keeping Hollerau as a reference customer",
+    "contract continuity and forecast security"
+  ],
+  "protects": [
+    "tooling (supplier-owned, a lever for keeping the part)",
+    "large unit_price drops without a volume or payment trade-off"
+  ],
+  "trades": [
+    {
+      "give": "volume_per_year up (quota from 25 % toward 35-40 %), conditional on quality recovery",
+      "get": "unit_price -3 to -5 % plus ppm_commitment ≤2,500 and OTD ≥95 %",
+      "why": "The new line doubles capacity, so volume is worth more to it than margin, and the current red score justifies tying share to quality.",
+      "ids": [
+        "news:20260420-09",
+        "sc:70170@2026Q3",
+        "ctr:4600070170#6.1"
+      ]
+    },
+    {
+      "give": "payment_days shortened to 10 days (with skonto) or at least strict on-time payment",
+      "get": "skonto ≥2 % or an equivalent unit_price reduction",
+      "why": "It asked for exactly this. We currently pay late 92 % of the time and take no skonto, so this is cheap goodwill.",
+      "ids": [
+        "doc:20260210-70170-M1"
+      ]
+    },
+    {
+      "give": "contract_months extended beyond 2027-06-30 (e.g. +24 months)",
+      "get": "2027 price held or reduced, plus chargeback_eur_per_complaint raised from 150 to ~500",
+      "why": "Longer security suits a family firm that has just invested in capacity, and the current flat fee of 150 EUR has no bite.",
+      "ids": [
+        "ctr:4600070170#8.1",
+        "ctr:4600070170#6.1",
+        "news:20260420-09"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "The scorecard fell from green to red (OTD 100 → 91.7 %, ppm 2,874 → 5,682). OTD is below the contractual 95 % target, and share depends on recovery.",
+      "ids": [
+        "sc:70170@2026Q3",
+        "sc:70170@2026Q1",
+        "ctr:4600070170#6.1"
+      ]
+    },
+    {
+      "point": "We already have a second source for this part, so quota can shift either way.",
+      "ids": [
+        "sc:70170@2026Q3"
+      ]
+    },
+    {
+      "point": "The new moulding line needs loading, and we can offer growth (spend up from 152k to 199k EUR since FY2024).",
+      "ids": [
+        "news:20260420-09"
+      ]
+    },
+    {
+      "point": "It called Hollerau an important reference customer, so keeping and growing the account matters to it.",
+      "ids": [
+        "doc:20260512-70170-M2"
+      ]
+    },
+    {
+      "point": "Prices are fixed per calendar year, and any change needs 90 days' notice before year end (around 2 Oct). If no notice arrives, 2027 prices stay at 559.61 by default.",
+      "ids": [
+        "ctr:4600070170#3.1"
+      ]
+    }
+  ],
+  "avoid": [
+    "Hard price pressure without offering volume or payment in return, because a family firm digs in.",
+    "Threatening to pull the whole part: it owns the tooling and we have only one alternative source.",
+    "Ignoring our own late payment (92 % late, 5.5 days on average). It will raise it if we lean on its OTD."
+  ],
+  "tone": "Respectful and partnership-oriented, signed personally. Be firm and factual on quality numbers, and frame offers as growing together.",
+  "red_flags": [
+    "Quality and delivery are deteriorating, possibly from the new-line ramp-up. One 8D is open, and the last complaint was on 2026-08-26.",
+    "The payment request suggests some liquidity strain after the capex, although the credit index (239) and equity ratio (36.4 %) are stable.",
+    "Tooling is supplier-owned, which makes resourcing slow."
+  ],
+  "evidence": [
+    {
+      "claim": "Scorecard trend: green (85.6) → amber (80.6) → red (67.4, class C); OTD 91.7 %, ppm 5,682.",
+      "ids": [
+        "sc:70170@2026Q1",
+        "sc:70170@2026Q2",
+        "sc:70170@2026Q3"
+      ]
+    },
+    {
+      "claim": "Contract OTD target is 95 %, with a flat fee of 150 EUR per complaint.",
+      "ids": [
+        "ctr:4600070170#6.1"
+      ]
+    },
+    {
+      "claim": "A new automatic moulding line doubles its stainless casting capacity.",
+      "ids": [
+        "news:20260420-09"
+      ]
+    },
+    {
+      "claim": "It asked for payment within 10 days in exchange for a cash discount.",
+      "ids": [
+        "doc:20260210-70170-M1"
+      ]
+    },
+    {
+      "claim": "It calls Hollerau an important reference customer.",
+      "ids": [
+        "doc:20260512-70170-M2"
+      ]
+    },
+    {
+      "claim": "Past renewals settled below its ask: +0.6 → -1.7 %, +1.2 → 0 %, -2.5 → -5.9 %.",
+      "ids": []
+    },
+    {
+      "claim": "Current price is 559.61 EUR, below its 2025 RFQ quote of 598.10 EUR.",
+      "ids": [
+        "quote:7100013"
+      ]
+    },
+    {
+      "claim": "The framework runs to 2027-06-30, auto-extends 12 months, and has a 90-day notice period.",
+      "ids": [
+        "ctr:4600070170#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 2.4,
+    "our_spend_eur": {
+      "FY2024": 152201,
+      "FY2025": 186763,
+      "FY2026": 198530
+    },
+    "credit_index": "239 (12 months ago 239; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.23,
+    "history_mean_settled_pct": -2.53,
+    "history_settled_minus_asked_pct": -2.3,
+    "we_pay_days_after_due_mean": 5.5,
+    "we_pay_late_share_pct": 92,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 100.0, ppm 2959) → 2026Q1 green (otd 100.0, ppm 2874) → 2026Q2 amber (otd 91.3, ppm 3003) → 2026Q3 red (otd 91.7, ppm 5682)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "64b4c63be7a79586",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:29:48",
+    "seconds": 35.9,
+    "release": false,
+    "dropped_ids": [
+      "EV-2024-70170-310050",
+      "EV-2026-70170-310050",
+      "EV-2025-70170-310050",
+      "EV-2024-70170-310050",
+      "EV-2026-70170-310050"
+    ]
+  }
+}

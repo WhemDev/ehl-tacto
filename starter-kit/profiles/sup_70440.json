@@ -1,0 +1,200 @@
+{
+  "supplier_id": "sup:70440",
+  "name": "Kohlering-Technik Pirkheim GmbH",
+  "archetype": "capacity_constrained",
+  "secondary_archetype": "group_approval_ladder",
+  "confidence": 0.6,
+  "summary": "Kohlering-Technik is a family-owned seal maker (140 staff, ~35 M EUR turnover, founded 1972) with stable finances. It is currently allocating standard mechanical seals based on last year's call-offs, and its delivery performance is slipping: OTD fell from 80.4 % to 75.5 % against a 95 % contract target, and ppm is rising. It runs a formal price policy: no discounts on standard items, only multi-year volume agreements change prices, and any move above 2 % goes to a pricing committee that meets every two weeks.",
+  "situation": {
+    "cash_pressure": 0.15,
+    "capacity": "full",
+    "dependency_on_us": 0.1,
+    "our_dependency": 0.5,
+    "relationship": "neutral",
+    "decision_maker": "Key account manager up to 2 % price change. Above that, the pricing committee, which meets every two weeks."
+  },
+  "negotiation_pattern": "It asks for moderate annual increases (mean 3.18 %) and settles far lower (mean 0.65 %). When it asks below about 4 %, it usually ends at 0 %. When it asks about 4.7–4.8 %, it gets roughly 2 % (2.1 % and 1.8 %). It never settled above 2.1 %, which matches its 2 % approval threshold. It has not yet sent a 2027 increase notice in the dossier. Its stated line is no discounts on standard items unless there is a multi-year volume deal.",
+  "wants": [
+    "Multi-year volume security and reliable forecasts, the only stated lever for price changes",
+    "Predictable call-offs that fit its allocation logic",
+    "On-time payment from us (we pay late 87 % of the time)",
+    "Annual price increases of 2 % or less, which avoids the committee"
+  ],
+  "protects": [
+    "unit_price on standard items (no-discount policy, committee above 2 %)",
+    "Allocation volumes beyond last year's call-offs",
+    "lead_time_days while capacity is tight"
+  ],
+  "trades": [
+    {
+      "give": "contract_months up (extend the framework beyond 2027-06-30 to a multi-year term)",
+      "get": "unit_price frozen for 2027, or a reduction on part:340011",
+      "why": "It says only multi-year volume agreements move prices.",
+      "ids": [
+        "doc:20260910-70440-M1",
+        "ctr:4600070440#8.1"
+      ]
+    },
+    {
+      "give": "volume_per_year commitment plus a rolling forecast",
+      "get": "Allocation share that covers our growth, plus a firm lead_time_days of 35",
+      "why": "Allocation is based on last year's call-offs, but our spend keeps rising, so a forecast secures supply.",
+      "ids": [
+        "news:20260827-25",
+        "ctr:4600070440#5.1"
+      ]
+    },
+    {
+      "give": "payment_days: commit to paying on time at 30 net",
+      "get": "Price hold, or any increase capped well below 2 %",
+      "why": "This costs us almost nothing; we currently pay about 2.9 days late on average, 87 % of the time.",
+      "ids": [
+        "ctr:4600070440#4.1"
+      ]
+    },
+    {
+      "give": "volume share kept at today's quota (60 % / 50 %) rather than shifted to the second source",
+      "get": "ppm_commitment ≤ 300 and an OTD improvement plan toward 95 %",
+      "why": "OTD and ppm are deteriorating against contract targets.",
+      "ids": [
+        "sc:70440@2026Q3",
+        "ctr:4600070440#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "Clause 3.1 requires written notice of price changes at least 90 days before year-end, i.e. by about 2 Oct 2026. Without timely notice, 2027 prices stay as they are.",
+      "ids": [
+        "ctr:4600070440#3.1"
+      ]
+    },
+    {
+      "point": "OTD is 75.5 % (confirmed 79.2 %) against the 95 % contract target and has declined for three quarters. An increase is hard to justify while it is underdelivering.",
+      "ids": [
+        "sc:70440@2026Q3",
+        "sc:70440@2025Q4",
+        "ctr:4600070440#6.1"
+      ]
+    },
+    {
+      "point": "ppm rose from 322 to 387, with 11 complaints in 12 months and 2 open 8D reports.",
+      "ids": [
+        "sc:70440@2026Q1",
+        "sc:70440@2026Q3"
+      ]
+    },
+    {
+      "point": "Our spend with it has grown every year (220k → 264k → 288k EUR). We are a growing customer worth a multi-year deal.",
+      "ids": [
+        "ctr:4600070440"
+      ]
+    },
+    {
+      "point": "Both parts have a qualified second source, so we can shift quota if supply or price is unsatisfactory.",
+      "ids": [
+        "sc:70440@2026Q3"
+      ]
+    }
+  ],
+  "avoid": [
+    "Demanding a straight discount on standard items; it has explicitly refused this.",
+    "Leaning hard on the should-cost gap (+8.1 %). The estimate has only 5 % confidence and an 8 % margin is normal.",
+    "Asking for an index clause. Material is only about 4.86 of 34.74 EUR per unit, so it offers little benefit.",
+    "Threatening a volume cut during allocation. It may simply allocate less to us.",
+    "Asking for anything above 2 % in a single round; it triggers the committee and costs about two weeks."
+  ],
+  "tone": "Factual and partnership-oriented. Frame every request as part of a multi-year volume package, and cite contract clauses and scorecard figures precisely.",
+  "red_flags": [
+    "Allocation based on last year's call-offs may not cover our rising demand on part:340011.",
+    "OTD is falling (75.5 %) and ppm is rising (387) with 2 open 8D reports.",
+    "A 2027 increase notice may arrive right before the clause 3.1 deadline (about 2 Oct).",
+    "We matter little to it (0.8 % of its turnover), so it has little reason to prioritise us under allocation."
+  ],
+  "evidence": [
+    {
+      "claim": "Deliveries of standard mechanical seals are being allocated based on last year's call-offs.",
+      "ids": [
+        "news:20260827-25"
+      ]
+    },
+    {
+      "claim": "Standard items are not discounted; only multi-year volume agreements change prices.",
+      "ids": [
+        "doc:20260910-70440-M1"
+      ]
+    },
+    {
+      "claim": "Price changes above 2 % need pricing committee approval; the committee meets every two weeks.",
+      "ids": [
+        "doc:20260524-70440-M2"
+      ]
+    },
+    {
+      "claim": "OTD fell from 80.4 % to 75.5 % and ppm rose from 322 to 387, against a 95 % OTD target.",
+      "ids": [
+        "sc:70440@2026Q1",
+        "sc:70440@2026Q3",
+        "ctr:4600070440#6.1"
+      ]
+    },
+    {
+      "claim": "Prices are fixed per calendar year; changes require 90 days' notice before year-end.",
+      "ids": [
+        "ctr:4600070440#3.1"
+      ]
+    },
+    {
+      "claim": "Largest settlements were 2.1 % and 1.8 %; four of six renewals settled at 0 %.",
+      "ids": []
+    },
+    {
+      "claim": "Part:340011 price is 37.55 EUR vs a no-margin should-cost of 34.74 EUR (+8.1 %, low confidence).",
+      "ids": [
+        "cost:340011"
+      ]
+    },
+    {
+      "claim": "Framework runs to 2027-06-30 and auto-extends by 12 months unless terminated with 90 days' notice.",
+      "ids": [
+        "ctr:4600070440#8.1"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 0.8,
+    "our_spend_eur": {
+      "FY2024": 220409,
+      "FY2025": 264102,
+      "FY2026": 287769
+    },
+    "credit_index": "147 (12 months ago 147; higher is worse, >300 weak)",
+    "history_mean_asked_pct": 3.18,
+    "history_mean_settled_pct": 0.65,
+    "history_settled_minus_asked_pct": -2.53,
+    "we_pay_days_after_due_mean": 2.9,
+    "we_pay_late_share_pct": 87,
+    "skonto_taken_share_pct": 0,
+    "price_vs_should_cost_no_margin": [
+      "part:340011: price 37.55 vs cost:340011 34.74 (its own plant): +8.1 %"
+    ],
+    "scorecard_trend": "2025Q4 green (otd 80.4, ppm 360) → 2026Q1 green (otd 80.4, ppm 322) → 2026Q2 green (otd 76.0, ppm 378) → 2026Q3 green (otd 75.5, ppm 387)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "292c5db3408acb8f",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:48",
+    "seconds": 33.8,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70440-340011",
+      "EV-2025-70440-340040",
+      "EV-2026-70440-340040",
+      "EV-2025-70440-340011",
+      "EV-2024-70440-340011",
+      "EV-2024-70440-340040"
+    ]
+  }
+}

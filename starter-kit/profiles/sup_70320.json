@@ -1,0 +1,178 @@
+{
+  "supplier_id": "sup:70320",
+  "name": "Stahlbau Ganghofer-Lenz GmbH",
+  "archetype": "cash_short",
+  "secondary_archetype": "family_relationship",
+  "confidence": 0.55,
+  "summary": "Stahlbau Ganghofer-Lenz is a family-owned sheet-metal and welding shop founded in 1968, with 110 staff and €11.3 M turnover. It is our single source for the welded, painted base frame HN 100 (part:330011, ~€384k/yr). Its credit index is moderate and stable at 251 and its equity ratio is 25.6%, but in June it asked us to pay within 10 days in exchange for a cash discount, while we pay 89% of invoices late.",
+  "situation": {
+    "cash_pressure": 0.45,
+    "capacity": "unknown",
+    "dependency_on_us": 0.2,
+    "our_dependency": 0.5,
+    "relationship": "neutral",
+    "decision_maker": "Most likely the owner or managing director (family-owned GmbH, 110 staff, no group parent). No named sales contact appears in the dossier."
+  },
+  "negotiation_pattern": "It opens its own annual renewal offers modestly (asks of -3.9%, +3.1% and -0.7%) and settles about 2.3 points below its ask: -6.6%, 0.0% and -1.9%. When it asked for an increase (+3.1%), it accepted 0.0% rather than escalate. It is cooperative and gives way under reasoned pressure. It has proactively raised payment speed, with a skonto offered in return.",
+  "wants": [
+    "faster payment (10 days) – it offered a skonto for it",
+    "reliable, on-time payment from us (we pay late 89% of the time, 4.4 days on average)",
+    "steady volume and continuation of the framework beyond 2027-06-30",
+    "fair, respectful treatment as a long-standing family supplier"
+  ],
+  "protects": [
+    "unit_price beyond a moderate cut (it has already conceded -1.9% for 2026 and -6.6% earlier)",
+    "liquidity: it will resist longer payment_days",
+    "the contractual price mechanics: prices are fixed per calendar year and changes need 90 days' notice before year-end"
+  ],
+  "trades": [
+    {
+      "give": "payment_days 30 → 10, with a firm commitment to pay on time",
+      "get": "a skonto, or an equivalent unit_price reduction for 2027, anchored clearly above our cost of capital",
+      "why": "It asked for exactly this, and its value to a family firm with 25.6% equity exceeds our interest cost.",
+      "ids": [
+        "doc:20260607-70320-M1",
+        "sup:70320",
+        "ctr:4600070320#4.1"
+      ]
+    },
+    {
+      "give": "contract_months: extend the framework beyond 2027-06-30 (e.g. +24 months)",
+      "get": "unit_price held or reduced for 2027, plus an OTD/lead_time commitment towards the 95% target",
+      "why": "Volume security matters to an owner-led firm, and we are single-sourced with 100% quota anyway.",
+      "ids": [
+        "ctr:4600070320#8.1",
+        "ctr:4600070320#6.1",
+        "sc:70320@2026Q3"
+      ]
+    },
+    {
+      "give": "volume_per_year: a confirmed annual forecast of ~2,100 pcs",
+      "get": "ppm_commitment back below ~500 and on-time delivery ≥95%",
+      "why": "Ppm doubled from 486 to 949 and OTD of 88% is below target. Forecast security helps it plan and fix this.",
+      "ids": [
+        "sc:70320@2025Q4",
+        "sc:70320@2026Q3",
+        "ctr:4600070320#6.1"
+      ]
+    }
+  ],
+  "arguments": [
+    {
+      "point": "We are ready to meet your request for 10-day payment and to fix our late-payment record, in return for a cash discount reflected in the 2027 price.",
+      "ids": [
+        "doc:20260607-70320-M1"
+      ]
+    },
+    {
+      "point": "On-time delivery is 88% against the agreed 95% target, and ppm has risen from 486 to 949. Improvement commitments are part of a fair deal.",
+      "ids": [
+        "sc:70320@2026Q3",
+        "sc:70320@2025Q4",
+        "ctr:4600070320#6.1"
+      ]
+    },
+    {
+      "point": "We offer continuity: a stable spend of €364k, €380k and €384k over three years, and a possible framework extension.",
+      "ids": [
+        "sup:70320",
+        "ctr:4600070320#8.1"
+      ]
+    },
+    {
+      "point": "Hollerau owns the tooling for part:330011, so the part is transferable. Mention this lightly and only if needed.",
+      "ids": [
+        "sup:70320"
+      ]
+    }
+  ],
+  "avoid": [
+    "Aggressive price demands or threats to resource: it is a family firm that has cooperated every year, and pressure risks goodwill on a sole-sourced part.",
+    "Asking for longer payment terms: it signalled a cash need.",
+    "Ignoring our own late payments (89% late): it weakens our position on any quality or OTD complaint.",
+    "Missing the contractual notice timing: price changes for 2027 need written notice ≥90 days before year-end (around 2 Oct 2026)."
+  ],
+  "tone": "Personal, respectful and partnership-oriented. Acknowledge the long relationship and its payment request first, then put the trade clearly on the table.",
+  "red_flags": [
+    "Single source with no alternative supplier for an A-class part (quota 100%, other_sources 0).",
+    "Delivery is unreliable: OTD 80.8–88.0% against a 95% target.",
+    "Ppm roughly doubled from 486 to 949 within a year.",
+    "Liquidity is moderate: equity 25.6%, credit index 251 (stable but not strong), and it requested faster payment.",
+    "The notice deadline for 2027 price changes under clause 3.1 is effectively now."
+  ],
+  "evidence": [
+    {
+      "claim": "The supplier asked for invoice payment within 10 days in exchange for a cash discount.",
+      "ids": [
+        "doc:20260607-70320-M1"
+      ]
+    },
+    {
+      "claim": "We pay late in 89% of cases (4.4 days on average) and have never taken a skonto.",
+      "ids": [
+        "sup:70320"
+      ]
+    },
+    {
+      "claim": "It is family-owned, founded 1968, with 110 staff, €11.3 M turnover, 25.6% equity ratio and a credit index of 251, unchanged over 12 months.",
+      "ids": [
+        "sup:70320"
+      ]
+    },
+    {
+      "claim": "Past renewals settled below the supplier's ask: -0.7% → -1.9%, +3.1% → 0.0%, and -3.9% → -6.6%.",
+      "ids": []
+    },
+    {
+      "claim": "Prices are fixed per calendar year, with 90 days' notice required for changes. The framework runs to 2027-06-30 and auto-extends by 12 months.",
+      "ids": [
+        "ctr:4600070320#3.1",
+        "ctr:4600070320#8.1"
+      ]
+    },
+    {
+      "claim": "OTD was 88.0% and ppm 949 in 2026Q3, against a 95% OTD target and a €150 fee per complaint.",
+      "ids": [
+        "sc:70320@2026Q3",
+        "ctr:4600070320#6.1"
+      ]
+    },
+    {
+      "claim": "Single source at 100% quota with Hollerau-owned tooling. Current price is €181.29/pc.",
+      "ids": [
+        "sup:70320"
+      ]
+    }
+  ],
+  "indicators": {
+    "our_share_of_its_turnover_pct": 3.4,
+    "our_spend_eur": {
+      "FY2024": 364154,
+      "FY2025": 379969,
+      "FY2026": 384465
+    },
+    "credit_index": "251 (12 months ago 251; higher is worse, >300 weak)",
+    "history_mean_asked_pct": -0.5,
+    "history_mean_settled_pct": -2.83,
+    "history_settled_minus_asked_pct": -2.33,
+    "we_pay_days_after_due_mean": 4.4,
+    "we_pay_late_share_pct": 89,
+    "skonto_taken_share_pct": 0,
+    "scorecard_trend": "2025Q4 green (otd 80.8, ppm 486) → 2026Q1 green (otd 83.3, ppm 981) → 2026Q2 green (otd 87.5, ppm 997) → 2026Q3 green (otd 88.0, ppm 949)"
+  },
+  "practice_cases": [],
+  "meta": {
+    "key": "1a38c2856e686e30",
+    "model": "claude-opus-5-5",
+    "prompt_version": "1",
+    "built": "2026-10-10 14:31:07",
+    "seconds": 35.5,
+    "release": false,
+    "dropped_ids": [
+      "EV-2026-70320-330011",
+      "EV-2025-70320-330011",
+      "EV-2024-70320-330011",
+      "EV-2026-70320-330011"
+    ]
+  }
+}
