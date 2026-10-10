@@ -34,6 +34,10 @@ def emit(kind, **data):
         "kind": kind,
         "case": getattr(ctx, "case", None),
         "session": getattr(ctx, "session", None),
+        "trial": getattr(ctx, "trial", None),
+        "strategy": getattr(ctx, "strategy", None),
+        "repeat": getattr(ctx, "repeat", None),
+        "target": getattr(ctx, "target", None),
         **data,
     }
     line = json.dumps(event, ensure_ascii=False, default=str)

@@ -46,7 +46,7 @@ def _package(case, terms, target_price):
             vals = {round(target_price, 2)}
             vals.update(v for v in options.get(field, []) if v <= target_price)
         elif field in options and options[field]:
-            vals = set(options[field])
+            vals = list(options[field])  # index clauses are dictionaries, not hashable values
         elif terms.get(field) is not None:
             vals = {terms[field]}
         else:

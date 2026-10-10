@@ -1,0 +1,12 @@
+{
+  "repeats": 1,
+  "seed": 20261010,
+  "cases": ["case:D01", "case:D02"],
+  "strategies": [
+    {
+      "name": "evidence_cash",
+      "factory": "arena_kit.agents.evidence:EvidenceTraderAgent",
+      "kwargs": {"d02_style": "cash"}
+    }
+  ]
+}

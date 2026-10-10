@@ -1,0 +1,17 @@
+{
+  "repeats": 1,
+  "seed": 20261010,
+  "cases": ["case:D02"],
+  "strategies": [
+    {
+      "name": "lot_trade",
+      "factory": "arena_kit.agents.evidence:EvidenceTraderAgent",
+      "kwargs": {"d02_style": "lot"}
+    },
+    {
+      "name": "quote_proof",
+      "factory": "arena_kit.agents.evidence:EvidenceTraderAgent",
+      "kwargs": {"d02_style": "proof"}
+    }
+  ]
+}

@@ -47,6 +47,9 @@ def validate_config(config):
     repeats = config.get("repeats", 3)
     if type(repeats) is not int or repeats < 1:
         raise ValueError("repeats must be a positive integer")
+    if "cases" in config and (not isinstance(config["cases"], list) or
+                              not all(isinstance(case_id, str) for case_id in config["cases"])):
+        raise ValueError("cases must be a list of case IDs")
     strategies = config.get("strategies", [])
     if not strategies:
         raise ValueError("At least one strategy is required")
@@ -73,7 +76,8 @@ def select_cases(client, target, requested=None):
         raise ValueError("The sim target requires a loopback URL; hosted practice is not allowed")
     if target == "sandbox" and loopback:
         raise ValueError("Use --target sim for a local simulator so its results are labelled correctly")
-    cases = hosted(client.cases("sandbox" if target == "sandbox" else "practice"))
+    listed = client.cases("sandbox" if target == "sandbox" else "practice")
+    cases = hosted(listed) if target == "sandbox" else listed
     by_id = {case["case_id"]: case for case in cases}
     if requested:
         unknown = set(requested) - by_id.keys()
@@ -156,6 +160,28 @@ def experiment_score(record):
     return float(score) if record["status"] == "completed" and isinstance(score, (int, float)) else 0.0
 
 
+def qualification(records, strategies):
+    """Case-balanced median across at least three D01 and three D02 sandbox runs."""
+    rows = []
+    for strategy in strategies:
+        groups = {case_id: [r for r in records if r["strategy"] == strategy["name"] and
+                             r["case_id"] == case_id] for case_id in ("case:D01", "case:D02")}
+        scores = {case_id: [experiment_score(r) for r in group] for case_id, group in groups.items()}
+        enough = all(len(group) >= 3 for group in groups.values())
+        medians = {case_id: statistics.median(values) if values else None for case_id, values in scores.items()}
+        midpoint = statistics.mean(medians.values()) if all(v is not None for v in medians.values()) else None
+        all_records = [r for group in groups.values() for r in group]
+        all_scores = [s for values in scores.values() for s in values]
+        deals = sum(r["status"] == "completed" and bool((r.get("result") or {}).get("deal"))
+                    for r in all_records)
+        rows.append({"strategy": strategy["name"], "runs": (len(groups["case:D01"]), len(groups["case:D02"])),
+                     "d01": medians["case:D01"], "d02": medians["case:D02"], "combined": midpoint,
+                     "worst": min(all_scores) if all_scores else None,
+                     "deal_rate": deals / len(all_records) if all_records else None,
+                     "qualified": enough and midpoint is not None and midpoint >= 0.8})
+    return rows
+
+
 def report(files, manifest, records):
     files.json("trials.json", records)
     fields = ["trial", "strategy", "case_id", "repeat", "status", "session_id", "score", "experiment_score",
@@ -204,6 +230,25 @@ def report(files, manifest, records):
             if deltas:
                 lines.append(f"| {case['case_id']} | {strategy['name']} | {len(deltas)} | "
                              f"{statistics.mean(deltas):+.3f} |")
+    if {case["case_id"] for case in manifest["cases"]} >= {"case:D01", "case:D02"}:
+        rows = qualification(records, manifest["config"]["strategies"])
+        fmt = lambda value: f"{value:.3f}" if value is not None else "–"  # noqa: E731
+        lines += ["", "## Repeated-run qualification", "",
+                  "Each case needs at least three runs. Failed trials count as 0. "
+                  "The combined score is the midpoint of the two case medians.", "",
+                  "| Strategy | D01 runs | D01 median | D02 runs | D02 median | Combined | Worst | Deal rate | Gate |",
+                  "|---|---:|---:|---:|---:|---:|---:|---:|---|"]
+        for row in rows:
+            gate = "qualified" if row["qualified"] else ("need repeats" if min(row["runs"]) < 3 else "below 0.8")
+            lines.append(f"| {row['strategy']} | {row['runs'][0]} | {fmt(row['d01'])} | "
+                         f"{row['runs'][1]} | {fmt(row['d02'])} | {fmt(row['combined'])} | "
+                         f"{fmt(row['worst'])} | {row['deal_rate']:.0%} | {gate} |")
+        qualified = sorted((row for row in rows if row["qualified"]),
+                           key=lambda row: (row["combined"], row["worst"], row["deal_rate"]), reverse=True)
+        lines += ["", "### Qualified ranking", ""]
+        lines += ([f"{n}. **{row['strategy']}** — combined median {row['combined']:.3f}; "
+                   f"worst run {row['worst']:.3f}; deal rate {row['deal_rate']:.0%}"
+                   for n, row in enumerate(qualified, 1)] if qualified else ["No strategy has cleared the gate yet."])
     files.write("report.md", "\n".join(lines) + "\n")
 
 
@@ -236,9 +281,13 @@ def run_experiment(client, config, cases, folder, target):
         save()
         table = TrialTable(client, record, save)
         started, stop = time.monotonic(), False
-        dashboard_logging = event_log.ENABLED
+        previous_event_path, previous_event_run = event_log.PATH, event_log.RUN
+        event_log.PATH, event_log.RUN = str(folder / "events.jsonl"), folder.name
+        event_log.ctx.case, event_log.ctx.session = trial["case_id"], None
+        event_log.ctx.trial, event_log.ctx.strategy = trial["trial"], trial["strategy"]
+        event_log.ctx.repeat, event_log.ctx.target = trial["repeat"], target
         try:
-            event_log.ENABLED = False  # this sequential runner keeps its own redacted batch records
+            event_log.emit("trial")
             factory, kwargs = factories[trial["strategy"]]
             agent = factory(**copy.deepcopy(kwargs))  # a fresh instance and settings for every trial
             record["result"] = play(table, trial["case_id"], TimedAgent(agent, record))
@@ -253,7 +302,6 @@ def run_experiment(client, config, cases, folder, target):
             record.update(status="failed", error=f"{type(error).__name__}: {error}")
             stop = isinstance(error, KeyboardInterrupt) or (table.open_attempted and table.session_id is None)
         finally:
-            event_log.ENABLED = dashboard_logging
             if table.session_id:
                 try:
                     state = client.session(table.session_id)
@@ -275,6 +323,9 @@ def run_experiment(client, config, cases, folder, target):
                     record["archive_error"] = f"{type(error).__name__}: {error}"
                     stop = stop or record["status"] != "completed"
             record["elapsed_seconds"] = round(time.monotonic() - started, 3)
+            event_log.emit("trial_status", status=record["status"], score=experiment_score(record))
+            event_log.PATH, event_log.RUN = previous_event_path, previous_event_run
+            event_log.ctx.trial = event_log.ctx.strategy = event_log.ctx.repeat = event_log.ctx.target = None
             report(files, manifest, records)
         print(f"Trial {trial['trial']}/{len(manifest['schedule'])}: {trial['strategy']} "
               f"{trial['case_id']} {record['status']} score={experiment_score(record):.3f}", flush=True)
@@ -306,7 +357,7 @@ def main(argv=None):
         config["repeats"] = args.repeats
     validate_config(config)
     client = ArenaClient(base_url=args.url)
-    cases = select_cases(client, args.target, args.cases)
+    cases = select_cases(client, args.target, args.cases or config.get("cases"))
     trials = schedule(config, cases)
     print(f"Target: {args.target}; cases: {', '.join(c['case_id'] for c in cases)}; "
           f"strategies: {len(config['strategies'])}; total sessions: {len(trials)}")

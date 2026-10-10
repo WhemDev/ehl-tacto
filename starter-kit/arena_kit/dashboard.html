@@ -49,7 +49,7 @@ details summary{cursor:pointer;color:var(--muted);font-size:12px}pre{font:11px/1
   <select id="run"></select><label><input type="checkbox" id="follow" checked> follow latest run</label>
   <div class="stats" id="stats"></div>
 </header>
-<main><aside id="list"></aside><section id="detail"><div class="empty">Waiting for a run… start <code>arena play</code> or <code>arena run</code>.</div></section></main>
+<main><aside id="list"></aside><section><div id="overview"></div><div id="detail"><div class="empty">Waiting for a run… start <code>arena play</code>, <code>arena run</code>, or <code>arena-experiment</code>.</div></div></section></main>
 <script>
 const S={runs:new Map(),run:null,sel:null,open:new Set()};
 const tog=(k,el)=>{S.open.has(k)?S.open.delete(k):S.open.add(k);el&&el.classList.toggle("open")};
@@ -68,9 +68,10 @@ function runOf(id,ts){if(!S.runs.has(id))S.runs.set(id,{id,start:ts,sessions:new
 function ingest(e){
   const r=runOf(e.run,e.ts);r.last=e.ts;
   if(!e.case)return;
-  const k=e.case;
-  if(!r.sessions.has(k))r.sessions.set(k,{case:e.case,start:e.ts,events:[],suppliers:{},state:"opening",buyerMsgs:0,colors:{}});
+  const k=e.trial?e.case+"#"+e.trial:e.case;
+  if(!r.sessions.has(k))r.sessions.set(k,{key:k,case:e.case,start:e.ts,events:[],suppliers:{},state:"opening",buyerMsgs:0,colors:{}});
   const s=r.sessions.get(k);s.events.push(e);s.last=e.ts;if(e.session)s.session=e.session;
+  if(e.strategy)s.strategy=e.strategy;if(e.repeat)s.repeat=e.repeat;if(e.target)s.target=e.target;
   const sup=id=>{if(!s.suppliers[id]){s.suppliers[id]={offers:[],status:null};s.colors[id]=COLORS[Object.keys(s.colors).length%3]}return s.suppliers[id]};
   switch(e.kind){
     case"case":Object.assign(s,{info:e,title:e.title,state:"negotiating"});(e.suppliers||[]).forEach(sup);break;
@@ -79,6 +80,7 @@ function ingest(e){
     case"decided":s.thinking=null;s.lastDecision=e;if(e.decision==="send"){s.state="supplier replying";s.waiting=e.ts}else s.state=e.decision;break;
     case"buyer":{const p=sup(e.supplier);s.buyerMsgs++;p.asks=p.asks||[];p.asks.push({x:p.offers.length-0.5,sheets:e.sheets||[]});break}
     case"result":s.result=e;s.state=e.deal?"deal":"no deal";s.thinking=s.waiting=null;break;
+    case"trial_status":if(e.status==="failed")s.state="failed";break;
   }
 }
 function render(){
@@ -87,20 +89,30 @@ function render(){
   $("run").innerHTML=runs.map(r=>`<option value="${r.id}" ${r.id===S.run?"selected":""}>run ${r.id} · ${new Date(r.start*1000).toLocaleTimeString()} · ${r.sessions.size} case${r.sessions.size===1?"":"s"}</option>`).join("");
   const run=S.runs.get(S.run);if(!run)return;
   const ss=[...run.sessions.values()].sort((a,b)=>a.start-b.start);
-  if(!S.sel||!run.sessions.has(S.sel))S.sel=ss[0]?.case;
+  if(!S.sel||!run.sessions.has(S.sel))S.sel=ss[0]?.key;
   const done=ss.filter(s=>s.result),deals=done.filter(s=>s.result.deal),scores=done.map(s=>s.result.score).filter(v=>v!=null);
   const saved=done.reduce((a,s)=>a+((s.result.c_open??0)-(s.result.c_deal??s.result.c_alt??s.result.c_open??0)),0);
   $("stats").innerHTML=[["cases",ss.length],["live",ss.length-done.length],["deals",`${deals.length}/${done.length}`],["mean score",scores.length?(100*scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):"–"],["€ saved vs opening",eur(saved)]].map(([l,v])=>`<div class="stat"><b>${v}</b>${l}</div>`).join("");
+  $("overview").innerHTML=comparison(ss);
   $("list").innerHTML=ss.map(card).join("")||'<div class="empty">no cases yet</div>';
   const s=run.sessions.get(S.sel);if(s)detail(s);
 }
+function comparison(ss){const groups=new Map();
+  for(const s of ss){if(!s.strategy)continue;const g=groups.get(s.strategy)||[];g.push(s);groups.set(s.strategy,g)}
+  if(!groups.size)return"";
+  const rows=[...groups].map(([name,g])=>{const done=g.filter(s=>s.result),scores=done.map(s=>s.result.score).filter(v=>v!=null);
+    const mean=scores.length?scores.reduce((a,b)=>a+b,0)/scores.length:null;
+    return`<tr><td>${esc(name)}</td><td>${done.length}/${g.length}</td><td>${pct(mean)}</td><td>${done.filter(s=>s.result.deal).length}/${done.length}</td></tr>`}).join("");
+  const target=ss.find(s=>s.target)?.target||"";
+  return`<div class="panel"><h3>Experiment comparison · ${esc(target)}</h3><table><tr><th>strategy</th><th>completed</th><th>mean score</th><th>deals</th></tr>${rows}</table></div>`}
 function statePill(s){const m={"deal":"ok","no deal":"bad","thinking":"live","supplier replying":"warn","agent's turn":"live","opening":"","negotiating":"live","accept":"ok","walk_away":"bad"};return`<span class="pill ${m[s.state]??""}">${esc(s.state)}</span>`}
 function timer(s){const now=Date.now()/1000;if(s.thinking)return` · thinking <b data-since="${s.thinking}"></b>`;if(s.waiting)return` · reply <b data-since="${s.waiting}"></b>`;return""}
 function card(s){
   const lim=s.info?.round_limit||10,n=Object.keys(s.suppliers).length||1,used=s.buyerMsgs/(lim*n);
   const offers=Object.entries(s.suppliers).map(([id,p])=>{const o=p.offers.at(-1);return`<span style="color:${s.colors[id]}">${esc(short(id))}</span> ${eur(o?.c)}`}).join(" · ");
-  return`<div class="card ${s.case===S.sel?"sel":""}" onclick="S.sel='${s.case}';render()">
-  <div style="display:flex;justify-content:space-between;gap:8px"><span class="t">${esc(short(s.case))}</span>${statePill(s)}</div>
+  return`<div class="card ${s.key===S.sel?"sel":""}" onclick="S.sel='${s.key}';render()">
+  <div style="display:flex;justify-content:space-between;gap:8px"><span class="t">${esc(short(s.case))}${s.repeat?" · r"+esc(s.repeat):""}</span>${statePill(s)}</div>
+  ${s.strategy?`<div class="sub"><b>${esc(s.strategy)}</b> · ${esc(s.target||"")}</div>`:""}
   <div class="sub">${esc(s.title||"")}</div><div class="sub">${esc(s.info?.type||"")} · ${esc(s.info?.goal||"")}${timer(s)}</div>
   <div class="sub">${offers||"&nbsp;"}</div>
   ${s.result?`<div class="sub">score <b>${pct(s.result.score)}</b> · deal ${eur(s.result.c_deal)}</div>`:""}
@@ -131,7 +143,7 @@ function claims(c){return(c||[]).length?`<div class="chips" style="margin-top:6p
 function detail(s){
   const i=s.info||{},t0=s.start;const rel=ts=>{const d=Math.max(0,Math.round(ts-t0));return Math.floor(d/60)+":"+String(d%60).padStart(2,"0")};
   const musts=(i.must_haves||[]).map(m=>`${LABEL[m.field]||m.field} ${m.op} ${m.value}`).join(", ")||"none";
-  let h=`<div class="top"><h2>${esc(short(s.case))} · ${esc(s.title||"")}</h2>${statePill(s)}<span class="sub">${esc(s.session||"")}</span></div>
+  let h=`<div class="top"><h2>${esc(short(s.case))} · ${esc(s.title||"")}</h2>${statePill(s)}<span class="sub">${esc(s.session||"")}</span>${s.strategy?`<span class="pill">${esc(s.strategy)} · r${esc(s.repeat)}</span>`:""}</div>
   <div class="grid">${[["type · goal",`${i.type||"–"} · ${i.goal||"–"}`],["need",i.need?`${(+i.need).toLocaleString("en-US")}/yr × ${i.horizon} yr`:"–"],["current / fallback price",`${fmtv(i.current_price)} / ${fmtv(i.fallback_price)}`],["no-deal alternative",i.c_alt!=null?eur(i.c_alt):(i.alternative?.kind||"none")],["must-haves",esc(musts)],["negotiable",(i.negotiable||[]).map(k=>LABEL[k]||k).join(", ")]].map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join("")}</div>`;
   if(s.result){const r=s.result;const bd=Object.entries(r.breakdown||{}).filter(([,v])=>Math.abs(v)>0.5);
     h+=`<div class="panel"><h3>Result</h3><div class="result"><div><div class="score">${pct(r.score)}</div><div class="sub">${r.deal?"deal with "+esc(short(r.supplier)):"no deal"} · ${esc(r.end_reason||"")}</div></div>

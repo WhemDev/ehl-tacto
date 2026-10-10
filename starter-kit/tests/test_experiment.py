@@ -102,3 +102,18 @@ def test_config_guard_and_repeatable_order():
         experiment.validate_config(config(0))
     cases = [{"case_id": "case:D01"}, {"case_id": "case:D02"}]
     assert experiment.schedule(config(), cases) == experiment.schedule(config(), cases)
+
+
+def test_qualification_uses_case_medians_and_requires_repeats():
+    settings = [{"name": "candidate"}]
+    records = [
+        {"strategy": "candidate", "case_id": case, "status": "completed",
+         "result": {"score": value, "deal": True}}
+        for case, values in (("case:D01", [0.84, 0.84, 0.2]), ("case:D02", [0.76, 0.76, 0.0]))
+        for value in values
+    ]
+    row = experiment.qualification(records, settings)[0]
+    assert row["d01"] == 0.84 and row["d02"] == 0.76
+    assert row["combined"] == 0.8 and row["worst"] == 0.0
+    assert row["qualified"]
+    assert not experiment.qualification(records[:-1], settings)[0]["qualified"]

@@ -59,8 +59,8 @@ def create_app(path=PATH):
     return app
 
 
-def serve(port=8765, host="127.0.0.1"):
+def serve(port=8765, host="127.0.0.1", path=PATH):
     import uvicorn
 
-    print(f"arena dashboard: http://{host}:{port}  (log: {PATH})", flush=True)
-    uvicorn.run(create_app(), host=host, port=port, log_level="warning")
+    print(f"arena dashboard: http://{host}:{port}  (log: {path})", flush=True)
+    uvicorn.run(create_app(path), host=host, port=port, log_level="warning")

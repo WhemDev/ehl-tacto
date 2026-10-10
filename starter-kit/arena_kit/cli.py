@@ -152,6 +152,7 @@ def main(argv=None):
     v.add_argument("--data", **data)
     w = sub.add_parser("dashboard", help="live dashboard of the agent's negotiations (logs/events.jsonl)")
     w.add_argument("--port", type=int, default=8765)
+    w.add_argument("--events", help="event log to view, such as a batch's logs/experiments/<id>/events.jsonl")
     m = sub.add_parser("mcp", help="run the read-only MCP server over the data (stdio)")
     m.add_argument("--data", **data)
     args = ap.parse_args(argv)
@@ -164,7 +165,7 @@ def main(argv=None):
     if args.cmd == "dashboard":
         from .dashboard import serve
 
-        return serve(args.port)
+        return serve(args.port, path=args.events or None) if args.events else serve(args.port)
     if args.cmd in ("play", "run"):
         from . import events
 
