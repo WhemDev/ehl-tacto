@@ -62,6 +62,11 @@ class Config:
     rfq_stagger: bool = False  # RFQ: open with the cheapest quote first, then the others citing its fresh reply
     breakdown_arg: bool = False  # quote the supplier's own cost breakdown back (material + labour + conversion)
     volume_framing: bool = False  # monthly baseline, "quote the trade-off for a larger lot", no-overtime lead time
+    adaptive_trade: bool = False  # respond to the D02 supplier's stated cash, capacity or freight concern
+    d02_fca35: bool = False  # prioritize the equal-cost 14-day/FCA/35-day package for DEMO-J1
+    d02_target_multiplier: float = 1.0  # D02-only opening ambition multiplier; 0.98 asks 2% harder
+    d02_e: float | None = None  # D02-only concession curve exponent (smaller = hold the target longer)
+    mirror_supplier_package: bool = False  # price the supplier's preferred latest package at our cost target
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -229,13 +234,16 @@ class Negotiator:
         ref = self.c_open if self.cfg.toward == "open" else (best[0] if best else self.c_open)
         ref = min(ref, self.c_alt)
         start = self.target_c * (1 + self.cfg.anchor)
+        if self.case_id == "case:D02":
+            start *= self.cfg.d02_target_multiplier
         if self.cfg.bottleneck_anchor and self.b.get("category_goal") == "secure_supply" and self.c_open < float("inf"):
             # practice P10: 17 % below a bottleneck's opening -> "far below any calculation", final above opening
             start = max(start, self.c_open * (1 - self.cfg.bottleneck_anchor))
         if self.cfg.anchor_mode == "opening" and self.c_open < float("inf"):
             # teammates' rule: the first ask sits a goal-specific % below the opening, never below our target
             start = max(start, self.c_open * (1 - GOAL_ANCHOR.get(self.b.get("category_goal"), 0.10)))
-        frac = min(1.0, max(rnd, 0) / self.cfg.T) ** (1 / self.cfg.e)
+        exponent = self.cfg.d02_e if self.case_id == "case:D02" and self.cfg.d02_e else self.cfg.e
+        frac = min(1.0, max(rnd, 0) / self.cfg.T) ** (1 / exponent)
         return start + (ref - start) * frac
 
     def meso(self, t, c_goal):
@@ -276,6 +284,13 @@ class Negotiator:
             priced.sort(key=lambda x: (x[1], -x[0]))
         else:
             priced.sort(key=lambda x: -x[0])
+        if self.cfg.d02_fca35 and self.case_id == "case:D02" and t.sid == "sup:DEMO-J1":
+            # D02 evidence: the supplier has returned cheaper alternatives at 35-day FCA.
+            # Keep the buyer's complete-cost target fixed; only prioritize that feasible trade.
+            priced.sort(key=lambda x: (not (
+                x[2].get("payment_days") == 14 and x[2].get("incoterm") == "FCA"
+                and (x[2].get("lead_time_days") or 0) >= 35
+            ), -x[0]))
         picks = [priced[0][2]]
         for _, _, terms in priced[1:]:
             if len(picks) >= self.cfg.meso_n:
@@ -287,6 +302,22 @@ class Negotiator:
                 break
             if terms not in picks:
                 picks.append(terms)
+        if self.cfg.mirror_supplier_package and self.case_id == "case:D02" and t.sid == "sup:DEMO-J1" and t.sheets:
+            # Reprice the supplier's most valuable recently offered package at our same C target.
+            # This uses revealed terms rather than assuming FCA, EXW, or a particular lead time is best.
+            source = max((sh.get("terms", {}) for sh in t.sheets),
+                         key=lambda q: supplier_value(self.case, q, t.est))
+            fields = [f for f in self.case["negotiable"] if f != "unit_price"]
+            matches = [x for x in everything if all(x[2].get(f) == source.get(f) for f in fields)]
+            if matches:
+                mirror = max(matches, key=lambda x: x[0])[2]
+                if mirror not in picks:
+                    if len(picks) >= self.cfg.meso_n:
+                        picks[-1] = mirror
+                    else:
+                        picks.append(mirror)
+                self.note("mirror_supplier_package", supplier=t.sid, terms={f: mirror.get(f) for f in fields},
+                          price=mirror["unit_price"])
         if self.cfg.meet_fields and offered:
             # practice P08/P18: the supplier insisted on its index clause and we never offered one back
             ours = [s2["terms"] for m in t.events if m.get("from") == "buyer" for s2 in m.get("term_sheets") or []]
@@ -380,6 +411,41 @@ class Negotiator:
             months = self.case.get("fixed_terms", {}).get("contract_months") or 24
             lines.append(f"On volume: we commit bindingly to {self.b['need_per_year']:,} pieces a year for {months} months. "
                          "That is our entire need for this part, all of it with you; we cannot honestly promise more.")
+        if cfg.adaptive_trade and self.case_id == "case:D02" and t.sid == "sup:DEMO-J1" and rnd > 0:
+            reply = (t.last.get("body") or "").lower()
+            offered_leads = sorted({s.get("lead_time_days") for s in sheets if s.get("lead_time_days")})
+            offered_payments = sorted({s.get("payment_days") for s in sheets if s.get("payment_days")})
+            offered_incoterms = sorted({s.get("incoterm") for s in sheets if s.get("incoterm")})
+            if any(word in reply for word in ("capacity", "schedule", "lead time", "overtime")):
+                terms = ", ".join(f"{d}-day lead" for d in offered_leads)
+                lines.append(f"Your note points to production planning. Our packages include {terms}; please price the schedule that avoids overtime.")
+            elif any(word in reply for word in ("cash", "payment", "liquidity", "financing")):
+                terms = ", ".join(f"{d}-day payment" for d in offered_payments)
+                lines.append(f"If payment timing affects your costs, our packages include {terms}; please show the best firm price for that option.")
+            elif any(word in reply for word in ("freight", "delivery", "dap", "fca", "exw")):
+                terms = ", ".join(offered_incoterms)
+                lines.append(f"Your delivery point matters to the complete cost. Our packages compare {terms}; please choose the one that best fits your shipping operation.")
+            else:
+                lines.append("Please identify which term in these cost-equivalent packages is driving your remaining gap, and quote the best firm option you can support.")
+        if cfg.d02_fca35 and self.case_id == "case:D02" and t.sid == "sup:DEMO-J1":
+            preferred = next((s for s in sheets if s.get("payment_days") == 14
+                              and s.get("incoterm") == "FCA" and (s.get("lead_time_days") or 0) >= 35), None)
+            if preferred:
+                lines.append(f"Our preferred package is €{preferred['unit_price']:.2f} FCA, 14-day payment, "
+                             f"and {preferred['lead_time_days']}-day lead. It keeps our complete-cost target while "
+                             "giving your workshop a longer production window. Please confirm this package or quote "
+                             "the closest firm alternative you can support.")
+        if cfg.mirror_supplier_package and self.case_id == "case:D02" and t.sid == "sup:DEMO-J1" and t.sheets:
+            source = max((sh.get("terms", {}) for sh in t.sheets),
+                         key=lambda q: supplier_value(self.case, q, t.est))
+            fields = [f for f in self.case["negotiable"] if f != "unit_price"]
+            mirror = next((s for s in sheets if all(s.get(f) == source.get(f) for f in fields)), None)
+            if mirror:
+                terms = ", ".join(f"{field.replace('_', ' ')} {mirror[field]}" for field in fields
+                                   if mirror.get(field) is not None)
+                lines.append(f"We priced one package on the terms you just proposed ({terms}) at "
+                             f"€{mirror['unit_price']:.2f}. This holds our complete-cost target; please tell us "
+                             "whether that package works for you.")
         for f in new:
             lines.append(f[1][0].upper() + f[1][1:] + ".")
         attachments = []

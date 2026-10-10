@@ -17,6 +17,81 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 | A2 (+ fixes from practice) | 0.979 | 0.626 | safe push, bottleneck anchor, say-fixed, meet supplier terms, RFQ in-flight guard |
 | **A3 (+ staggered RFQ opening)** | **0.979** | **0.728** (0.740, 0.740, 0.703) | **main algorithm**; the D02 friend replay scored 0.661 |
 
+## Side-by-side D01/D02 sandbox comparison (2026-10-10)
+
+Tugra A3 is the current lead. The earlier target-cost policy is preserved as
+`target_cost_candidate.py` so we can continue comparing it without replacing A3.
+These are separate policies; do not combine a strategy's D01 and another strategy's D02.
+
+| Policy | D01, 3 runs (median) | D02, 3 runs (median) | D02 complete cost | Qualification |
+|---|---:|---:|---:|---|
+| **A3** (`variants.py`) | **0.978834** | **0.740063** | **€171,700.05** | Combined median mean **0.859448**; passes the team's both-demo average ≥0.8 rule. D02 alone is below 0.8. |
+| Target-cost adaptive packages (`target_cost_candidate.py`, 171k opening target) | Not tested | **0.703004** | **€173,833.07** | D02-only result; not yet qualified on both demos. |
+
+The target-cost candidate's opening target is 171,000, next target is 170,638.57, and
+the extra closing probe is off. Three repeated D02 runs produced the same 0.703004
+score and closed at €13.90 FCA, 14-day payment, and 35-day lead. Its D02 result is
+0.037059 below A3, with €2,133.02 higher complete cost. A separate three-run check
+with the older 174,000 default scored 0.638965; the defaults now match the recorded
+171,000 configuration to avoid that accidental mismatch.
+
+The comparison uses only sandbox demos and spends no hosted-practice negotiations.
+Raw logs are git-ignored under `proto/runs/variants/` and
+`proto/runs/target_cost_candidate/`. A3 replay IDs are recorded in the variant log:
+`6888db9acac91243`, `2d4225afbc1da555`, `ff01c73080e84a97` for D02;
+`9fe1bdd53756b403`, `3ea524bfc4c5a533`, `b44121f3adca032b` for D01.
+
+To repeat the candidate's three D02 runs (sandbox only):
+
+```bash
+PYTHONPATH=. uv run python proto/run_target_cost_candidate.py --repeats 3
+```
+
+To repeat A3 on the same demos:
+
+```bash
+PYTHONPATH=. uv run python proto/variants.py --cases case:D01:3 case:D02:3 --variants A3
+```
+
+## D02-focused hybrid experiments (2026-10-10)
+
+Since A3 is already saturated on D01, these experiments change D02 behavior and use D01 only as
+a guardrail. All results below are repeated sandbox sessions; no practice quota was used. A3's
+eight D02 control runs all scored 0.740063.
+
+| D02 policy | Runs | Median | Mean | Readout |
+|---|---:|---:|---:|---|
+| A3 control | 8 | 0.740063 | 0.740063 | Stable baseline |
+| A3 + response-aware trade wording | 3 | 0.703004 | 0.724065 | One 0.766 run, two 0.703 runs; not reliable |
+| A3 + response wording, breakdown argument and volume framing | 3 | 0.703430 | 0.710166 | No gain |
+| A3 + response wording and three MESOs | 3 | 0.703430 | 0.710166 | More package choices did not help |
+| A3 + three MESOs, nearest supplier terms first | 3 | 0.724492 | 0.724350 | Still below A3 |
+| A3 + response-aware wording, prioritize equal-cost 14-day FCA / 35-day lead | 10 | 0.743021 | 0.740494 | Best hybrid median by 0.003; mean is effectively tied with A3 and outcomes vary from 0.724066 to 0.766189 |
+| Same 35-day FCA policy, 2% more ambitious target | 5 | 0.724066 | 0.673517 | Too aggressive; two poor outcomes at 0.577 and 0.619 |
+| Same 35-day FCA policy, slower concessions (e=1.2) | 5 | 0.682368 | 0.678156 | Holding firm longer performed worse |
+| A3 + response wording, mirror the supplier's preferred latest package | 5 | 0.703004 | 0.708139 | Matching revealed terms alone did not improve the deal |
+
+The strongest single outcome was **0.766189**, closing at **€13.60 FCA, 14-day payment, 35-day
+lead** (replays `a50fea99baa10de1` and `37d18a914f629766`). The 35-day FCA policy produced that
+package twice, but other runs ended at €13.70 or €13.80 on the same delivery terms. Its ten-run
+mean is nearly identical to A3, so this is not a robust improvement yet. The test supports a
+useful hypothesis—J1 may trade a longer production window for a lower price—but not a fixed rule
+to push harder on every run. The tested `A3fca35` flag prioritizes that package unconditionally;
+a future version should enable the preference only after the supplier signals that the longer
+lead or FCA terms suit it.
+
+The D02-only 35-day FCA policy kept the D01 guardrail at 0.978834. The more aggressive and
+slower-concession changes also left D01 at 0.978834 because those controls apply only to D02.
+For now, keep A3 as the overall champion. Collect more runs before promoting the 35-day FCA
+policy. To reproduce the tournament:
+
+```bash
+PYTHONPATH=. uv run python proto/variants.py --cases case:D02:5 --variants A3 A3fca35
+```
+
+The code flags and runner output are in `engine.py`, `variants.py`, and the git-ignored
+`proto/runs/variants/results.jsonl`.
+
 ## Run
 
 From `starter-kit/` (keys in the root `.env`, as in the rest of the repo; `load_env()` reads `.env` in the working

@@ -43,6 +43,29 @@ VARIANTS = {
     "A3": ("Main algorithm: A2 + staggered RFQ opening (= F)", replace(VARIANTS_A2, rfq_stagger=True)),
     "A2all": ("A2 but pushing after every final offer (to price the safety)",
               replace(A, push="all", bottleneck_anchor=0.03, say_fixed=True, meet_fields=True)),
+    # Hybrid experiments: preserve A3's Target C, equal-cost MESOs, staggered RFQ and acceptance;
+    # add the target-cost candidate's response-conditioned package trade language.
+    "A3trade": ("A3 + response-aware D02 trade wording",
+                replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True)),
+    "A3trade_facts": ("A3trade + supplier breakdown and volume framing",
+                      replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True,
+                              breakdown_arg=True, volume_framing=True)),
+    "A3trade3": ("A3trade + three equal-cost package choices",
+                 replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True, meso_n=3)),
+    "A3trade3near": ("A3trade3 + package selection nearest supplier terms",
+                     replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True,
+                             meso_n=3, pick="near")),
+    "A3fca35": ("A3 + response-aware trade, prioritize equal-cost 14-day FCA/35-day lead",
+                replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True, d02_fca35=True)),
+    "A3fca35_ambitious": ("A3fca35 + 2% lower D02 opening target",
+                           replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True, d02_fca35=True,
+                                   d02_target_multiplier=0.98)),
+    "A3fca35_patient": ("A3fca35 + slower D02 concessions (e=1.2)",
+                         replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True, d02_fca35=True,
+                                 d02_e=1.2)),
+    "A3mirror": ("A3 + response-aware trade + supplier-preferred package repriced at target cost",
+                 replace(VARIANTS_A2, rfq_stagger=True, adaptive_trade=True,
+                         mirror_supplier_package=True)),
 }
 
 
