@@ -51,6 +51,22 @@ def citable(ref):
         return ref in pkg().facts
 
 
+# Fact planner: the share of verified claims a supplier answered "it holds and we took it into account" (or "we did
+# not know that") in 1,061 practice replies, by the arena's claim type. Our own order prices: 0 of 198.
+PRIOR = {"notice_period": 0.95, "quality_record": 0.9, "index_change": 0.8, "should_cost": 0.75, "volume_change": 0.6,
+         "rival_quote": 0.5, "delivery_record": 0.3}
+TYPE_WORDS = {"delivery record": "delivery_record", "scorecard": "delivery_record", "on-time": "delivery_record",
+              "index change": "index_change", "index": "index_change", "not our reality": "index_change",
+              "price history": "price_history", "rival quote": "rival_quote", "competing": "rival_quote",
+              "should cost": "should_cost", "should-cost": "should_cost", "volume change": "volume_change",
+              "forecast": "volume_change", "quality record": "quality_record", "quality": "quality_record",
+              "notice period": "notice_period", "notice": "notice_period"}
+LANDED = ("took it into account", "took them into account", "did not know", "fair point", "pass this saving",
+          "adjusted our calculation", "factored")
+REJECTED = ("does not change our", "already taken", "already factored", "does not concern", "not our reality",
+            "cannot give up margin", "does not alter", "do not alter", "not relevant")
+
+
 CITE_RE = re.compile(r"\b(?:idx|quote|offer|sc|qn|po|cost|fc|news|doc|ctr|gr|inv|rfq):[\w.:@#/-]*\w")
 
 
@@ -89,6 +105,8 @@ def cash_rate(sid):
 
 class PracticeNegotiator(Negotiator):
     def facts_for(self, t):
+        if self.cfg.plan_facts:
+            return [(f["ids"] if len(f["ids"]) > 1 else f["ids"][0], f["text"]) for f in self.fact_queue(t)]
         if hasattr(t, "facts"):
             return t.facts
         case, b = self.case, self.b
@@ -197,6 +215,122 @@ class PracticeNegotiator(Negotiator):
         t.facts = facts
         return facts
 
+    # ---------- fact planner ----------
+    def inventory(self, t):
+        """Every checkable, favourable fact for this supplier (facts.json + the Sunday release), typed as the arena
+        types claims: never our own order prices, never a plain statement without an ID ("send us the data")."""
+        if hasattr(t, "inventory"):
+            return t.inventory
+        case, b = self.case, self.b
+        part, own = case["parts"][0], set(case.get("refs") or [])
+        asked = t.sheets[0]["terms"].get("unit_price") if t.sheets else None
+        facts = pkg().facts
+        inv = []
+
+        def add(ids, text, ctype, weight=1.0):
+            ids = list(ids) if isinstance(ids, (list, tuple)) else [ids]
+            taken = {i for f in inv for i in f["ids"]}
+            if ids and all(citable(i) or i in own for i in ids) and not taken & set(ids):
+                inv.append({"ids": ids, "text": text, "type": ctype, "prior": PRIOR[ctype], "weight": weight})
+
+        # notice: the letter gives less notice than the contract requires
+        for d in (r for r in own if r.startswith("doc:")):
+            df = lookup(d) or {}
+            for c in (r for r in own if r.startswith("ctr:")):
+                cf = lookup(c) or {}
+                if df.get("days") and cf.get("days") and df["days"] < cf["days"] and cf.get("supplier") in (None, t.sid):
+                    add([d, c], f"Your letter {d} gives {df['days']} days' notice, while our contract {c} requires "
+                                f"{cf['days']} days, so a new price cannot start before then", "notice_period")
+        # should-cost of this part below its price
+        for r in q("SELECT id, unit_cost FROM should_cost WHERE part_id = ? ORDER BY supplier_id = ? DESC", (part, t.sid))[:1]:
+            if asked is None or r["unit_cost"] < asked:
+                add(r["id"], f"Our bottom-up should-cost estimate for this part is €{r['unit_cost']:.2f} ({r['id']})",
+                    "should_cost")
+        # each cost driver that fell, once: its steepest fall over 3, 6 or 12 months to the latest month
+        for d in q("SELECT series_id, weight FROM cost_drivers WHERE part_id = ? ORDER BY weight DESC", (part,)):
+            best = None
+            for mths in (3, 6, 12):
+                ch = index_change(d["series_id"], mths)
+                if ch and ch[0] < -0.5 and (best is None or ch[0] < best[0]):
+                    best = ch
+            if best:
+                chg, a, z, ma, mz = best
+                add([a, z], f"{series_name(d['series_id'])} fell {chg:.1f}% from {ma} to {mz} ({a}, {z})", "index_change",
+                    1.0 if (d["weight"] or 0) >= 0.1 else 0.5)
+        # quality: this supplier's complaints on this part in the last 18 months, newest first, three per claim
+        qn = sorted(((k, v) for k, v in facts.items() if k.startswith("qn:") and v.get("supplier") == t.sid
+                     and v.get("part") == part and v.get("ppm") is not None), key=lambda kv: kv[1].get("date") or "", reverse=True)
+        if qn:
+            latest = qn[0][1].get("date") or ""
+            cut = f"{int(latest[:4]) - 1}{latest[4:]}" if latest[:4].isdigit() else ""
+            recent = [kv for kv in qn if (kv[1].get("date") or "") >= cut[:7]][:9]
+            for i in range(0, len(recent), 3):
+                chunk = recent[i:i + 3]
+                ppm = sum(v["ppm"] for _, v in chunk) / len(chunk)
+                ids = [k for k, _ in chunk]
+                add(ids, f"Our quality notifications {', '.join(ids)} on this part record an average of {ppm:.1f} ppm",
+                    "quality_record", (1.0 if b.get("category_goal") == "quality_first" else 0.45) * 0.85 ** (i // 3))
+        # forecasts of this part that grew, the newest citable snapshots of the last 12 months first
+        fcs = sorted(((k, v) for k, v in facts.items() if k.startswith("fc:") and v.get("part") == part),
+                     key=lambda kv: kv[0].split("@")[-1], reverse=True)
+        if fcs:
+            top = fcs[0][0].split("@")[-1]
+            cut = f"{int(top[:4]) - 1}{top[4:]}" if top[:4].isdigit() else ""
+            for j, (k, v) in enumerate(kv for kv in fcs if kv[0].split("@")[-1] >= cut and (kv[1].get("change_pct") or 0) > 0):
+                add(k, f"Our demand forecast {k} shows {v['change_pct']:+.1f}% for this part", "volume_change", 0.75 ** j)
+        # weak delivery quarters of this supplier (on-time below 92 %) in the last 12 months, newest first
+        scs = sorted(((k, v) for k, v in facts.items() if k.startswith("sc:") and v.get("supplier") == t.sid),
+                     key=lambda kv: kv[1].get("quarter") or "", reverse=True)[:4]
+        for j, (k, v) in enumerate(kv for kv in scs if (kv[1].get("otd_pct") or 100) < 92):
+            add(k, f"Your scorecard {k} shows {v['otd_pct']}% on-time delivery", "delivery_record", 0.8 ** j)
+        # our alternative quote, if it is cheaper than its opening
+        alt = b.get("alternative") or {}
+        if (alt.get("ref") or "").startswith("quote:"):
+            af = lookup(alt["ref"]) or {}
+            if af.get("unit_price") and asked and af["unit_price"] < asked:
+                add(alt["ref"], f"We hold another quote at €{af['unit_price']:.2f} ({alt['ref']})", "rival_quote")
+        t.inventory = inv
+        self.note("inventory", supplier=t.sid, facts=[(f["type"], f["ids"], round(f["prior"] * f["weight"], 2)) for f in inv])
+        return inv
+
+    def posterior(self, t):
+        """Land chance per claim type for this supplier, from its own replies: a type it took into account rises to
+        0.9; a type it waved off ("does not change our calculation", "already taken") drops to 0.05."""
+        post = {}
+        for m in t.events:
+            if m.get("from") == "buyer":
+                continue
+            for sent in re.split(r"(?<=[.!?])\s+", (m.get("body") or "").lower()):
+                types = {v for k, v in TYPE_WORDS.items() if k in sent}
+                if not types:
+                    continue
+                if any(w in sent for w in LANDED):
+                    post.update({x: 0.9 for x in types})
+                elif any(w in sent for w in REJECTED):
+                    post.update({x: 0.05 for x in types if post.get(x) != 0.9})
+        return post
+
+    def fact_queue(self, t):
+        """The best unsent fact of each type (a shared one not yet sent to anyone), most likely to land first: one
+        claim per type in a mail, the next of its type in the next mail."""
+        post = self.posterior(t)
+        sent = t.__dict__.setdefault("sent_ids", set()) | self.__dict__.setdefault("spent", set())
+        queue = sorted((dict(f, p=post.get(f["type"], f["prior"]) * f["weight"]) for f in self.inventory(t)
+                        if not set(f["ids"]) & sent), key=lambda f: -f["p"])
+        # one claim per type in a mail (a second forecast snapshot draws "already taken"); index series count apart
+        kind = lambda f: f["ids"][0].split("@")[0] if f["type"] == "index_change" else f["type"]  # noqa: E731
+        firsts, seen = [], set()
+        for f in queue:
+            if kind(f) not in seen:
+                seen.add(kind(f))
+                firsts.append(f)
+        if any(f["p"] >= 0.1 for f in firsts):  # a type it waved off only when nothing likelier is left
+            firsts = [f for f in firsts if f["p"] >= 0.1]
+        return firsts
+
+    def facts_left(self, t):
+        return max((f["p"] for f in self.fact_queue(t)), default=0.0) if self.cfg.plan_facts else 0.0
+
     def _estimate(self):
         b, case = self.b, self.case
         part = case["parts"][0]
@@ -250,7 +384,12 @@ class PracticeNegotiator(Negotiator):
                   floors={s: (t.est.get("floor"), t.est.get("basis"), t.est.get("interest_rate")) for s, t in self.threads.items()})
 
     def write(self, t, rnd, sheets, rival=None):
+        if self.cfg.plan_facts:
+            t.facts_used = 0  # the planner's queue holds only unsent facts
         msg = super().write(t, rnd, sheets, rival)
+        if self.cfg.plan_facts:
+            t.__dict__.setdefault("sent_ids", set()).update(msg.get("refs") or [])
+            t.fc_cited = True  # forecasts come from the planner's queue
         own = set(self.case.get("refs") or [])
         ok = lambda r: r.startswith("offer:") or citable(r) or r in own  # noqa: E731
         msg["refs"] = [r for r in msg.get("refs") or [] if ok(r)]  # never an ID the arena cannot check

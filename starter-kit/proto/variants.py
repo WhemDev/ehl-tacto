@@ -104,6 +104,20 @@ VARIANTS = {
                           price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                           holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
                           facts_later=1, hold_back=0.75)),
+    # 22:50, the fact planner (Plan/Options 2026-10-10 - beyond tuning, O1): every checkable, favourable fact for the
+    # supplier ranked by measured land rate, 3 claims in the first mail and 2 after, a type the supplier waved off drops
+    # back, and the holds go on (a quarter step each) while a fact likely to land is left
+    "A9h-plan": ("A9h + fact planner: typed inventory ranked by land rate, 3 then 2 claims, holds while facts last",
+                 replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                         bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                         price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                         holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0, plan_facts=True)),
+    "A9h-plan-rfq": ("A9h-plan + RFQ rival loop: no close at goal while a rival still bids down, fresh better rival offers",
+                     replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                             bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                             price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                             holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0, plan_facts=True,
+                             auction_rfq=True)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,

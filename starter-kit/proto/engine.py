@@ -104,6 +104,17 @@ class Config:
     patient: bool = False
     patient_gap: float = 0.015  # our late ask sits this share of C below the supplier's standing offer
     stall_gave: float = 0.001  # a reply that moved less than this share of C is a stall: take the offer
+    # Fact planner (2026-10-10 22:45, 1,061 practice replies): a new fact that lands is what moves a supplier
+    # (moved + landed: 82 % conceded, 1.8 % mean, 8 % final; moved, nothing landed: 54 %, 0.9 %, 27 % final), and
+    # suppliers go final when we run out of new facts, not rounds. Our own order prices landed 0 of 198 times.
+    plan_facts: bool = False  # every checkable, favourable fact for the supplier, ranked by land rate (practice adapter)
+    plan_first: int = 3  # claims in the first mail (the arena checks at most 3 per message)
+    plan_later: int = 2  # new claims per later mail (a rival's offer is one more)
+    plan_hold: float = 0.5  # keep holding past `holds` while a fact at least this likely to land is left
+    # RFQ rival loop (Options note O3): an open best offer at our goal is not taken while a rival is still bidding down,
+    # and every bidder is shown the best rival offer it has not seen yet, only if it beats its own (practice RFQs:
+    # 2.1 % mean concession with a rival's offer cited vs 0.3 % without; final 25 % vs 62 %)
+    auction_rfq: bool = False
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -576,6 +587,29 @@ class Negotiator:
         """[(ref or [refs], sentence)] to drip into the e-mails; subclasses build them from data."""
         return FACTS.get(self.case_id, {}).get(t.sid, [])
 
+    def moving(self, t):
+        """Its own last two offers differ by more than a stall (or it has answered fewer than twice)."""
+        own = [self.C(t, m["term_sheets"][0]["terms"]) for m in t.events
+               if m.get("from") not in ("buyer", "arena") and m.get("term_sheets")]
+        return len(own) < 2 or own[-2] - own[-1] > self.cfg.stall_gave * own[-1]
+
+    def rival_for(self, t):
+        """Auction: the best rival offer that beats t's own and that t has not been shown yet (a new offer ID is a
+        fresh, checkable fact for it); else the best rival offer that beats t's own; else none."""
+        own = self.C(t, t.sheets[0]["terms"]) if t.sheets else float("inf")
+        shown = {r for m in t.events if m.get("from") == "buyer" for r in m.get("refs") or [] if r.startswith("offer:")}
+        others = sorted((self.C(x, s2["terms"]), s2["term_sheet_id"], s2["terms"]) for x in self.threads.values()
+                        if x is not t and x.status not in ENDED for s2 in x.sheets[:1]
+                        if must_haves_ok(self.case, s2["terms"], x.std))
+        better = [o for o in others if o[0] < own]
+        fresh = [o for o in better if o[1] not in shown]
+        pick = (fresh or better or [None])[0]
+        return pick[1:] if pick else None
+
+    def facts_left(self, t):
+        """The planner's best land chance among the facts not yet sent to `t` (0 without a planner)."""
+        return 0.0
+
     def pick_facts(self, t, facts, n):
         """RFQ: a case fact counts once per case (api.md), so a shared one (should-cost, forecast, orders, an index,
         news, a quote) goes only to the supplier whose standing offer is best for us now, and never twice; a
@@ -619,6 +653,8 @@ class Negotiator:
         cfg, warm = self.cfg, self.cfg.tone == "warm"
         facts = self.facts_for(t)
         n_facts = cfg.facts if rnd == 0 or not cfg.facts_later else cfg.facts_later
+        if cfg.plan_facts:
+            n_facts = cfg.plan_first if rnd == 0 else cfg.plan_later
         if cfg.allocate_facts and len(self.threads) > 1:
             new = self.pick_facts(t, facts, n_facts)
         else:
@@ -861,10 +897,12 @@ class Negotiator:
                 own = [self.C(bt, m["term_sheets"][0]["terms"]) for m in bt.events
                        if m.get("from") not in ("buyer", "arena") and m.get("term_sheets")]
                 stalled = len(own) >= 2 and own[-2] - own[-1] <= cfg.stall_gave * own[-1]
-                if (state["holds"] < cfg.holds and c <= next_goal and bt.status == "open" and gave > cfg.hold_gave * c
-                        and bt.sent() < limit - 2):
+                auction = cfg.auction_rfq and any(self.moving(x) and x.sent() < limit - 2 for x in open_rivals)
+                more = cfg.plan_facts and self.facts_left(bt) >= cfg.plan_hold and not stalled
+                if (((state["holds"] < cfg.holds and gave > cfg.hold_gave * c) or auction or more) and c <= next_goal
+                        and bt.status == "open" and bt.sent() < limit - 2):
                     state["holds"] += 1
-                    self.note("hold", c=c, gave=round(gave), goal=round(goal))
+                    self.note("hold", c=c, gave=round(gave), goal=round(goal), auction=auction, facts=more)
                     t.rounds -= cfg.hold_back
                     goal = self.goal(t.rounds)
                 elif (cfg.rfq_bar and bt.status == "agreed" and open_rivals and not state.get("bar")
@@ -910,6 +948,8 @@ class Negotiator:
             others = [(self.C(x, s2["terms"]), s2["term_sheet_id"], s2["terms"]) for x in self.threads.values()
                       if x is not t and x.status not in ENDED for s2 in x.sheets if must_haves_ok(self.case, s2["terms"], x.std)]
             rival = min(others, key=lambda o: o[0])[1:] if cfg.rival and others and (t.rounds >= 1 or getattr(t, "staggered", False)) else None
+            if cfg.auction_rfq and rival is not None:
+                rival = self.rival_for(t)
             msg = self.write(t, t.rounds, sheets, rival)
             self.note("send", supplier=t.sid, rnd=t.rounds, goal=round(goal), sheets=[(s2, round(self.C(t, s2))) for s2 in sheets],
                       refs=msg["refs"], attachments=[a["name"] for a in msg.get("attachments", [])], body=msg["body"])
@@ -926,6 +966,8 @@ class Negotiator:
             others = [(self.C(x, s2["terms"]), s2["term_sheet_id"], s2["terms"]) for x in self.threads.values()
                       if x is not t and x.status not in ENDED for s2 in x.sheets if must_haves_ok(self.case, s2["terms"], x.std)]
             rival = min(others, key=lambda o: o[0])[1:] if cfg.rival and others and (t.rounds >= 1 or getattr(t, "staggered", False)) else None
+            if cfg.auction_rfq and rival is not None:
+                rival = self.rival_for(t)
             msg = self.write(t, t.rounds, sheets, rival)
             self.note("send", supplier=t.sid, rnd=t.rounds, goal=round(goal), sheets=[(s2, round(self.C(t, s2))) for s2 in sheets],
                       refs=msg["refs"], attachments=[a["name"] for a in msg.get("attachments", [])], body=msg["body"])
@@ -1007,11 +1049,14 @@ class Negotiator:
                 gave = (prev_c - c) if prev_c is not None else 0
                 prev_c = c
                 stalled = not first and gave <= cfg.stall_gave * c
-                if (holds < cfg.holds and c <= next_goal and t.status == "open" and gave > cfg.hold_gave * c
-                        and t.sent() < limit - 2):
+                more = (cfg.plan_facts and not (stalled and getattr(t, "stalled_before", False))
+                        and self.facts_left(t) >= cfg.plan_hold)
+                t.stalled_before = stalled
+                if ((holds < cfg.holds and gave > cfg.hold_gave * c) or more) and c <= next_goal and t.status == "open" \
+                        and t.sent() < limit - 2:
                     holds += 1  # it is still moving: one more round at our current goal before we take it
-                    self.note("hold", c=c, gave=round(gave), goal=round(goal))
-                    rnd -= cfg.hold_back  # the goal stays (or moves a fraction of a step) this round
+                    self.note("hold", c=c, gave=round(gave), goal=round(goal), facts=more)
+                    rnd -= cfg.hold_back if not more else min(cfg.hold_back, 0.75)  # facts left: a small move too
                 elif cfg.patient and t.status == "open" and not stalled and t.sent() < limit - 2:
                     # it is open and still moving: ask again, a little below its offer (it may agree), with a new fact
                     goal = min(goal, c * (1 - cfg.patient_gap))
