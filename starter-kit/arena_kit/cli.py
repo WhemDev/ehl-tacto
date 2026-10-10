@@ -70,12 +70,20 @@ def local():
     return urlparse(os.environ.get("ARENA_URL", "")).hostname in ("127.0.0.1", "localhost", "::1")
 
 
+def selected(cases, only):
+    """The cases named on the command line (`P02` or `case:P02`), else all of them."""
+    if not only:
+        return cases
+    want = {o if o.startswith("case:") else f"case:{o}" for o in only}
+    return [c for c in cases if c["case_id"] in want]
+
+
 def guard_practice(client, args):
     """The team shares 200 practice sessions a day: spending them needs --practice."""
     if local() or getattr(args, "practice", False):
         return
     if args.cmd == "run" and args.set == "practice":
-        n = len(hosted(client.cases("practice")))
+        n = len(selected(hosted(client.cases("practice")), getattr(args, "cases", None)))
     elif args.cmd == "play" and args.case_id in {c["case_id"] for c in client.cases("practice")}:
         n = 1
     else:
@@ -149,6 +157,7 @@ def main(argv=None):
     a.add_argument("--parallel", type=int, default=8, help="cases at once (at most 10)")
     a.add_argument("--waves", type=int, default=5, help="final: stop after this many waves have closed")
     a.add_argument("--practice", **spend)
+    a.add_argument("--cases", nargs="+", metavar="CASE", help="only these cases, e.g. P02 P05 (default: all hosted)")
     d = sub.add_parser("data", help="download and unpack the data (package, Sunday release once public)")
     d.add_argument("--out", default="data", help="folder to unpack into")
     sub.add_parser("me", help="your team: practice quota used and left, best score per case")
@@ -241,7 +250,7 @@ def main(argv=None):
     elif args.cmd == "run" and args.set == "final":  # waits for each wave and plays its cases within the cap
         out = play_waves(client, agent_factory(args.agent, args.data), args.waves, min(args.parallel, 10))
     elif args.cmd == "run":
-        ids = [case["case_id"] for case in hosted(client.cases(args.set))]
+        ids = [case["case_id"] for case in selected(hosted(client.cases(args.set)), args.cases)]
         out = play_all(
             lambda: RemoteTable(client),
             ids,
