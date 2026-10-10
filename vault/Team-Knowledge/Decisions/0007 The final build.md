@@ -55,6 +55,14 @@ change before the final is the RFQ port from the R4 fork, if it passes the sandb
   facts we send (Werdenfels 5.40, Donautal 5.44); a round concedes about the same with 1, 2 or 3 new facts landing,
   so facts change the path, not the endpoint. The variant stays in `proto/variants.py`.
 
+**Since 00:30 (2026-10-11)**
+- **Clause packages in supplier-health cases** (`14ee055`): a package with an index clause goes out at the payment term
+  and price cheapest for us, priced against the supplier's opening payment term and a 6.4 % cost of money (the arena's
+  supplier-health charge fits P02's 24 deals exactly that way). P02 fresh: 0.735 x 2 vs 0.628-0.682. Only cases with a
+  supplier-health charge and a negotiable clause and payment term are affected. The 21:05 build is `A9h-frozen`.
+- **Network outages** (`764deef`): the client retries DNS and connection failures for 30 s, and the engine survives a
+  failed send. A 23:26 DNS outage had killed a P02 session (three buyer timeouts, walk-away, 0.0).
+
 **Sunday checklist**
 - 08:00 `cd starter-kit && uv run arena data`, then `ls data/release-sunday/facts.json`: `DataPackage` merges a
   `release-sunday` folder next to the package by itself (rehearsed 2026-10-10 20:00 with a synthetic release:
