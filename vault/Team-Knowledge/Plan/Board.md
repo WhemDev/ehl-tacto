@@ -27,7 +27,6 @@ kanban-plugin: basic
 
 ## Doing
 
-- [ ] Validation pass of the 20:45 build (A9h + decision 0008 rules), all 10 cases fresh (`a9i-fresh`) - adopt if ≥ 0.72 with no case collapsing
 
 - [ ] Final runner: retry `429 at most 10 open sessions` until the cap (`play_waves` and `proto/final.py`)
 - [ ] A9: when every supplier's final offer is dearer than our alternative, walk at once instead of waiting for the cap (sim D02; the worktree's R-engine has it)
@@ -48,6 +47,7 @@ kanban-plugin: basic
 - [x] Knob passes (40 sessions): 6 holds 0.701, −6 % ask 0.672, linear curve (P02 0.46) - the build's settings are a local optimum
 - [x] Three parallel replay reviews → [[0008 Replay review findings]]: should-cost / 1.02 is the arena's full cost, P05's phantom forecast ID, one fact per round, no pushes, compliant RFQ lead, 18 % first-ask cap (`26c9b1e`)
 - [x] The 9 unseen case files on arena-sim with the final config: 9/9 clean; P06's 31 %-below first ask found and capped
+- [x] Validation passes of the review rules: 0.717 (cap from the first offer raised targets - fixed), 0.715 (= baseline within noise). **Final build frozen 21:05** = A9h in `proto/variants.py` ([[0007 The final build]]); pacing changes parked as `A9h-paced`
 - [x] Full practice pass of the final build: mean 0.694, 10/10 deals, P08 0.603 and P18 0.532 new bests, P05 0.665 fresh ([[Testing]])
 - [x] Fresh practice pass, all 10 at once: mean 0.692, 10/10 deals, < 3 min for the whole wave, P05 0.688 new best ([[Testing]])
 - [x] Bug #9 fixed: attachments no longer delay a reply (17-21 s per quote PDF), a best final offer is accepted within 15 s of its arrival, A9's accept recovery ([[Progress/Bugs]], `tests/test_engine_clock.py`)

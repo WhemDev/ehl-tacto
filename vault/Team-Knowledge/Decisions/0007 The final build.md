@@ -20,6 +20,11 @@ the ehl.gg submission (`git rev-parse HEAD` on the final machine).
   generic rules (clause at our cheapest deadband, lead-time cap, cheaper orders elsewhere, falling drivers, answers,
   bottleneck anchor, never walk without an alternative, accept recovery) with **A6's RFQ play** (A9's RFQ-only search
   settings lose 0.13 on fresh sandbox D02) and **3 holds** while the supplier still gives ≥ 0.3 % a round.
+- **Since 21:05 (decision [[0008 Replay review findings]]):** RFQ fact allocation (a shared fact to the leading
+  bidder only), the arena's full cost = own-plant should-cost / 1.02 with the floor capped at the lowest price the
+  supplier itself offered / (1 + margin), only data IDs present in `facts.json` are cited, the stagger lead is the
+  cheapest quote that keeps our must-haves, no pushes after a final offer, the first ask never more than 18 % below
+  the lowest opening. Fresh practice passes of the build: 0.715-0.726, 60 deals in 60 sessions, 0 failed accepts.
 - **Every case goes to the engine**; our orchestra is only the fallback if the engine cannot start on a case.
 - **The e-mails:** the engine's template, rewritten by Sonnet 5.5 (`ENGINE_WRITER=llm`, the default): every data-ID
   sentence verbatim, no figure the code did not choose, the template on any failure or after 15 s.

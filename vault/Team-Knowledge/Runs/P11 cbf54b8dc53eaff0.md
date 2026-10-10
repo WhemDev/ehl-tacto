@@ -1,0 +1,230 @@
+---
+case: "case:P11"
+session: "cbf54b8dc53eaff0"
+set: "practice"
+score: 0.71
+deal: true
+supplier: "sup:70140"
+end_reason: "accepted"
+rounds: 5
+c_open: 817578.0
+c_deal: 750082.5
+c_best: 722500.02
+agent: "hybrid+a9j-fresh"
+commit: "deb068a"
+tags: ["run"]
+---
+# P11 · score 0.71
+
+[Replay](https://arena.tacto.ai/replay/cbf54b8dc53eaff0) · deal with sup:70140 · accepted
+
+## Result
+- terms: payment_days 60, lead_time_days 56, volume_per_year 15900, contract_months 12, effective_date "2027-01-01", index_clause null, incoterm "FCA", tooling_eur 0.0, ppm_commitment 300, chargeback_eur_per_complaint 0.0, unit_price 45.5
+- C open 817578.0 · C deal 750082.5 · C alt 894383.19 · C best 722500.02
+
+| item | eur |
+|---|---|
+| price | 723450.0 |
+| uncovered_need | 0.0 |
+| fallback_risk | 0.0 |
+| payment_terms | 0.0 |
+| freight | 24486.0 |
+| late_delivery | 0.0 |
+| quality | 2146.5 |
+| tooling | 0.0 |
+| index_clause | 0.0 |
+| index_risk | 0.0 |
+| relationship | 0.0 |
+
+## Negotiation
+### Round 0 · sup:70140
+**open**
+- term sheet `offer:70140-0`: unit_price 47.0, ppm_commitment 6400
+- signals: {"reply_delay_days": 4, "validity_days": 30}
+> Hello,
+> here is our price.
+> Our terms: a price of €47.00 per unit, a quality commitment of 6400 ppm.
+> We are ready when you are!
+> Kind regards
+> Marek Lis
+> Export Manager, Odlewnia Kalwisz Sp. z o.o.
+### Round 1 · buyer
+Kalwisz: bearing brackets in red
+- term sheet: ppm_commitment 300, chargeback_eur_per_complaint 0, unit_price 42.49
+- term sheet: ppm_commitment 800, chargeback_eur_per_complaint 150, unit_price 42.38
+> Hello,
+> 
+> Thank you for your quote and for your enthusiasm about working together. We appreciate it.
+> We'd like to award this part to a partner for the full 24 months.
+> Producer prices DE: electric power generation, transmission and distribution changed -3.7% from 2025-08 to 2026-08 (idx:PPI-D351@2025-08, idx:PPI-D351@2026-08).
+> Our recent orders po:4500014429-10, po:4500014373-10, po:4500014306-10 show the price level we have been paying.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> Could you also send us your cost breakdown, so we can see which costs really moved?
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 1 · sup:70140
+**open**
+- term sheet `offer:70140-1`: unit_price 46.5, ppm_commitment 300, chargeback_eur_per_complaint 0.0
+- claims: [{"index": 0, "result": "verified"}, {"index": 1, "result": "verified"}]
+- signals: {"reply_delay_days": 4, "validity_days": 30}
+> Hello,
+> many thanks, good to have your reply!
+> we can move a bit:
+> Our terms: a price of €46.50 per unit, a quality commitment of 300 ppm, a chargeback of €0.00 per complaint.
+> Please let me explain.
+> We checked the index change data you cited; it holds and we took it into account.
+> We checked the price history data you cited; it holds, but it does not change our calculation.
+> We see your figures, but we cannot give up margin right now. Faster payment would help us more than anything.
+> Thanks for the info, but we don't share detailed cost breakdowns; anyway, our actual costs haven't dropped like that index.
+> I can offer 46.50 EUR for the 300 ppm and 0 chargeback package, so let's get this moving!
+> Material accounts for about 30 % of our cost; more detail we do not share.
+> We are ready when you are!
+> Kind regards
+> Marek Lis
+> Export Manager, Odlewnia Kalwisz Sp. z o.o.
+
+**Reasons:**
+- We checked the index change data you cited; it holds and we took it into account.
+- We checked the price history data you cited; it holds, but it does not change our calculation.
+- We see your figures, but we cannot give up margin right now. Faster payment would help us more than anything.
+- Thanks for the info, but we don't share detailed cost breakdowns; anyway, our actual costs haven't dropped like that index.
+- I can offer … EUR for the … ppm and … chargeback package, so let's get this moving!
+- Material accounts for about … of our cost; more detail we do not share.
+### Round 2 · buyer
+Kalwisz: bearing brackets in red
+- term sheet: ppm_commitment 300, chargeback_eur_per_complaint 0, unit_price 44.49
+- term sheet: ppm_commitment 800, chargeback_eur_per_complaint 150, unit_price 44.39
+> Hello,
+> 
+> Thank you for moving on chargeback_eur_per_complaint and ppm_commitment and price. That helps. We also appreciate you checking the data we cited and sharing your view on costs.
+> Please note: payment terms is fixed in this enquiry at 60. The term sheet covers everything we can still move.
+> Your scorecard sc:70140@2026Q3 shows 2376 ppm.
+> In your last 3 renewals of this part we settled on average 1.7 points below your initial ask.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> What would you need from us to get closer to these numbers?
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 2 · sup:70140
+**open**
+- term sheet `offer:70140-2`: unit_price 46.0, ppm_commitment 300, chargeback_eur_per_complaint 0.0
+- claims: [{"index": 0, "result": "verified"}]
+- signals: {"reply_delay_days": 4, "validity_days": 30}
+> Hello,
+> thank you for your mail, we are very happy to hear from you!
+> we can move a bit:
+> Our terms: a price of €46.00 per unit, a quality commitment of 300 ppm, a chargeback of €0.00 per complaint.
+> To be fully transparent with you:
+> We checked the quality record data you cited; it holds and we took it into account.
+> We see your figures, but we cannot give up margin right now. Faster payment would help us more than anything.
+> We looked at the scorecard data you cited, it holds and we factored it in.
+> Since payment terms are fixed at 60 days and we really need cash flow, I can only drop the price to 46.00 EUR for the 300 ppm package.
+> If you want us to get closer to your numbers, we need more volume.
+> Which volume can you commit to?
+> Our standard Zahlungsziel is 60 days net.
+> Faster payment is welcome; we can reflect it in the price.
+> A binding higher volume would help us and can improve the price.
+> We really want this business - let's make it happen!
+> Kind regards
+> Marek Lis
+> Export Manager, Odlewnia Kalwisz Sp. z o.o.
+
+**Reasons:**
+- We checked the quality record data you cited; it holds and we took it into account.
+- We see your figures, but we cannot give up margin right now. Faster payment would help us more than anything.
+- We looked at the scorecard data you cited, it holds and we factored it in.
+- Since payment terms are fixed at … days and we really need cash flow, I can only drop the price to … EUR for the … ppm package.
+- If you want us to get closer to your numbers, we need more volume.
+- Which volume can you commit to?
+- Our standard Zahlungsziel is … days net.
+- Faster payment is welcome; we can reflect it in the price.
+- A binding higher volume would help us and can improve the price.
+### Round 3 · buyer
+Kalwisz: bearing brackets in red
+- term sheet: ppm_commitment 300, chargeback_eur_per_complaint 0, unit_price 44.97
+- term sheet: ppm_commitment 800, chargeback_eur_per_complaint 150, unit_price 44.87
+> Hello,
+> 
+> Thank you for moving on price. That helps.
+> Please note: payment terms is fixed in this enquiry at 60. The term sheet covers everything we can still move.
+> On volume: we commit bindingly to 15,900 pieces a year for 12 months. That is our entire need for this part, all of it with you; we cannot honestly promise more.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> How could we close the remaining gap today?
+> 
+> Our current forecast (fc:310020@2026-09) backs this binding volume.
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 3 · sup:70140
+**open**
+- term sheet `offer:70140-3`: unit_price 45.5, ppm_commitment 300, chargeback_eur_per_complaint 0.0
+- claims: [{"index": 0, "result": "verified"}]
+- signals: {"reply_delay_days": 4, "validity_days": 30}
+> Hello,
+> many thanks, good to have your reply!
+> we can move a bit:
+> Our terms: a price of €45.50 per unit, a quality commitment of 300 ppm, a chargeback of €0.00 per complaint.
+> Please let me explain.
+> We checked the volume change data you cited; it holds and we took it into account.
+> We see your figures, but we cannot give up margin right now. Faster payment would help us more than anything.
+> We checked the forecast data you cited; it holds and we factored it in.
+> Thanks for the binding volume commitment of 15,900 pieces, that helps us a bit.
+> I can drop the price to 45.50 EUR for the 300 ppm and 0 chargeback package, which is a big step from our side.
+> A binding higher volume would help us and can improve the price.
+> Which volume can you commit to?
+> We really want this business - let's make it happen!
+> Kind regards
+> Marek Lis
+> Export Manager, Odlewnia Kalwisz Sp. z o.o.
+
+**Reasons:**
+- We checked the volume change data you cited; it holds and we took it into account.
+- We see your figures, but we cannot give up margin right now. Faster payment would help us more than anything.
+- We checked the forecast data you cited; it holds and we factored it in.
+- Thanks for the binding volume commitment of … pieces, that helps us a bit.
+- I can drop the price to … EUR for the … ppm and … chargeback package, which is a big step from our side.
+- A binding higher volume would help us and can improve the price.
+- Which volume can you commit to?
+### Round 4 · buyer
+Kalwisz: bearing brackets in red
+- term sheet: ppm_commitment 300, chargeback_eur_per_complaint 0, unit_price 45.1
+- term sheet: ppm_commitment 800, chargeback_eur_per_complaint 150, unit_price 44.99
+> Hello,
+> 
+> Thank you for moving on price. That helps.
+> Please note: payment terms is fixed in this enquiry at 60. The term sheet covers everything we can still move.
+> On volume: we commit bindingly to 15,900 pieces a year for 12 months. That is our entire need for this part, all of it with you; we cannot honestly promise more.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> How could we close the remaining gap today?
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 4 · sup:70140
+**final_offer**
+- term sheet `offer:70140-4`: unit_price 45.5, ppm_commitment 300, chargeback_eur_per_complaint 0.0
+- signals: {"reply_delay_days": 5, "validity_days": 7}
+> Hello,
+> 
+> Thanks for confirming the 15,900 pieces, but we are really at the bottom here. Since you can't move on the 60 days payment, 45.50 EUR for the 300 ppm and 0 chargeback package is the absolute best I can do. 
+> 
+> Which figures is that based on? Please send us the data.
+> 
+> So, our offer is a price of €45.50 per unit, a quality commitment of 300 ppm, a chargeback of €0.00 per complaint. This is our final offer (letztes Angebot). Please decide. This is my final offer, let's just wrap it up at 45.50 and get to work! 
+> 
+> Just so you know, our offer remains valid for 7 days.
+> 
+> Kind regards
+> Marek Lis
+> Export Manager, Odlewnia Kalwisz Sp. z o.o.
+
+**Reasons:**
+- Thanks for confirming the … pieces, but we are really at the bottom here.
+- Since you can't move on the … days payment, … EUR for the … ppm and … chargeback package is the absolute best I can do.
+- This is my final offer, let's just wrap it up at … and get to work!
+- Which figures is that based on? Please send us the data.
+### Round 4 · buyer
+
+## Team notes
+
+_Observations from replays, calls with Tacto, hunches. Kept when the note is regenerated._

@@ -1,0 +1,210 @@
+---
+case: "case:P18"
+session: "edeb8ecea6b9d0e2"
+set: "practice"
+score: 0.467
+deal: true
+supplier: "sup:70740"
+end_reason: "accepted"
+rounds: 4
+c_open: 295173.23
+c_deal: 261308.3
+c_best: 222651.27
+agent: "hybrid+knob-holds6"
+commit: "71ecc69"
+tags: ["run"]
+---
+# P18 · score 0.467
+
+[Replay](https://arena.tacto.ai/replay/edeb8ecea6b9d0e2) · deal with sup:70740 · accepted
+
+## Result
+- terms: payment_days 90, lead_time_days 14, volume_per_year 23700, contract_months 24, effective_date "2027-01-01", index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5.0, "base_month": "2026-08"}, incoterm "DAP", tooling_eur 0.0, ppm_commitment 70, chargeback_eur_per_complaint 0.0, unit_price 5.5
+- C open 295173.23 · C deal 261308.3 · C alt 301087.96 · C best 222651.27
+
+| item | eur |
+|---|---|
+| price | 260700.0 |
+| uncovered_need | 0.0 |
+| fallback_risk | 0.0 |
+| payment_terms | -1738.0 |
+| freight | 0.0 |
+| late_delivery | 0.0 |
+| quality | 0.0 |
+| tooling | 0.0 |
+| index_clause | 1173.15 |
+| index_risk | 1173.15 |
+| relationship | 0.0 |
+
+## Negotiation
+### Round 0 · sup:70740
+**open**
+- term sheet `offer:70740-0`: unit_price 6.1, payment_days 30, index_clause null, contract_months 12
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear customer,
+> Thank you for your enquiry. Please find our Angebot below.
+> Our terms: a price of €6.10 per unit, Zahlungsziel 30 days net, a contract term of 12 months, no Preisgleitklausel.
+> A few words on this from our side.
+> AS-14404 rose 5.9 % in twelve months and is 45 % of our cost.
+> LCI-C rose 2.7 % in twelve months and is 5 % of our cost.
+> PPI-C2431 rose 12.3 % in twelve months and is 38 % of our cost.
+> And while we are at it: our whole range is at your disposal, so if there is anything else on your list, just send it over - we are happy to quote.
+> Mit freundlichen Grüßen
+> Franz Seidl
+> Inside Sales, Blankstahl Werdenfels GmbH
+
+**Reasons:**
+- AS-14404 rose … in twelve months and is … of our cost.
+- LCI-C rose … in twelve months and is … of our cost.
+- PPI-C2431 rose … in twelve months and is … of our cost.
+### Round 1 · buyer
+Alloy surcharge and base price for 1.4404 bar (Werdenfels)
+- term sheet: unit_price 5.33, index_clause null, payment_days 90, contract_months 24
+- term sheet: unit_price 5.28, index_clause null, payment_days 45, contract_months 36
+> Hello,
+> 
+> Thank you for your quote and for the background on your cost structure. We'd like to award this part to a partner for the full 24 months.
+> We currently buy the same part from another supplier at EUR 5.45 per unit.
+> Alloy surcharge 1.4404, Isartal Edelstahlwerk (fictional mill, derived) fell -5.5% from 2026-06 to 2026-09 (idx:AS-14404@2026-06, idx:AS-14404@2026-09).
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> Could you also send us your cost breakdown, so we can see which costs really moved?
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 1 · sup:70740
+**open**
+- term sheet `offer:70740-1`: unit_price 5.5, payment_days 90, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 0.0, "base_month": "2026-08"}, contract_months 24
+- claims: [{"index": 0, "result": "verified"}]
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear customer,
+> Many thanks for your e-mail, and great to hear from you; I went through it right away with our team.
+> We have reviewed your offer and can adjust our Angebot as follows.
+> Our terms: a price of €5.50 per unit, Zahlungsziel 90 days net, a contract term of 24 months, a Preisgleitklausel on AS-14404.
+> A few words on this from our side.
+> We checked the index change data you cited; it holds and we took it into account.
+> AS-14404 rose 5.9 % in twelve months and is 45 % of our cost. That remains.
+> LCI-C rose 2.7 % in twelve months and is 5 % of our cost. That remains.
+> PPI-C2431 rose 12.3 % in twelve months and is 38 % of our cost. That remains.
+> We acknowledge the recent movement in the AS-14404 index, but a fixed price over 24 months is not feasible; we have therefore applied an index clause.
+> With this clause in place and by maintaining our standard 30-day payment terms, we can reduce our base price to €5.50.
+> Alternatively, with Zahlungsziel 30 days net: €5.50 per unit.
+> Please send us the competing offer you mentioned.
+> Material accounts for about 45 % of our cost; more detail we do not share.
+> And while we are at it: our whole range is at your disposal, so if there is anything else on your list, just send it over - we are happy to quote.
+> Mit freundlichen Grüßen
+> Franz Seidl
+> Inside Sales, Blankstahl Werdenfels GmbH
+
+**Reasons:**
+- We checked the index change data you cited; it holds and we took it into account.
+- AS-14404 rose … in twelve months and is … of our cost. That remains.
+- LCI-C rose … in twelve months and is … of our cost. That remains.
+- PPI-C2431 rose … in twelve months and is … of our cost. That remains.
+- We acknowledge the recent movement in the AS-14404 index, but a fixed price over … months is not feasible; we have therefore applied an index clause.
+- With this clause in place and by maintaining our standard 30-day payment terms, we can reduce our base price to €….
+- Alternatively, with Zahlungsziel … days net: €… per unit.
+- Please send us the competing offer you mentioned.
+- Material accounts for about … of our cost; more detail we do not share.
+### Round 2 · buyer
+Alloy surcharge and base price for 1.4404 bar (Werdenfels)
+- term sheet: unit_price 5.34, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5, "base_month": "2026-08"}, payment_days 90, contract_months 24
+- term sheet: unit_price 5.29, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5, "base_month": "2026-08"}, payment_days 45, contract_months 36
+> Hello,
+> 
+> Thank you for moving on contract length and index_clause and payment terms and price. That helps. We also appreciate that you reviewed the index data we cited.
+> Producer prices DE: cold drawing of bars fell -2.1% from 2026-05 to 2026-08 (idx:PPI-C2431@2026-05, idx:PPI-C2431@2026-08).
+> Our recent orders po:4500014427-10, po:4500014355-10, po:4500014292-10 show the price level we have been paying.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> What would you need from us to get closer to these numbers?
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 2 · sup:70740
+**open**
+- term sheet `offer:70740-2`: unit_price 5.6, payment_days 90, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5.0, "base_month": "2026-08"}, contract_months 24
+- claims: [{"index": 0, "result": "verified"}, {"index": 1, "result": "verified"}]
+- signals: {"reply_delay_days": 2, "validity_days": 30}
+> Dear customer,
+> Many thanks for your e-mail, and great to hear from you; I went through it right away with our team.
+> We have reviewed your offer and can adjust our Angebot as follows.
+> Our terms: a price of €5.60 per unit, Zahlungsziel 90 days net, a contract term of 24 months, a Preisgleitklausel on AS-14404.
+> Here is the background.
+> We checked the index change data you cited; it holds and we took it into account.
+> We checked the price history data you cited; it holds, but it does not change our calculation.
+> AS-14404 rose 5.9 % in twelve months and is 45 % of our cost. That remains.
+> LCI-C rose 2.7 % in twelve months and is 5 % of our cost. That remains.
+> PPI-C2431 rose 12.3 % in twelve months and is 38 % of our cost. That remains.
+> We build on your requested 24-month term and 90-day payment, but we must maintain the index clause without a deadband.
+> We have verified the PPI-C2431 decrease and pass this saving on to you by reducing our price to €5.40.
+> Alternatively, with a Preisgleitklausel on AS-14404: €5.40 per unit.
+> Which volume can you commit to?
+> Our price follows our main cost drivers: AS-14404, PPI-C2431, LCI-C.
+> A binding higher volume would help us and can improve the price.
+> We look forward to doing good business together, and our team is always there for you.
+> Mit freundlichen Grüßen
+> Franz Seidl
+> Inside Sales, Blankstahl Werdenfels GmbH
+
+**Reasons:**
+- We checked the index change data you cited; it holds and we took it into account.
+- We checked the price history data you cited; it holds, but it does not change our calculation.
+- AS-14404 rose … in twelve months and is … of our cost. That remains.
+- LCI-C rose … in twelve months and is … of our cost. That remains.
+- PPI-C2431 rose … in twelve months and is … of our cost. That remains.
+- We build on your requested 24-month term and 90-day payment, but we must maintain the index clause without a deadband.
+- We have verified the PPI-C2431 decrease and pass this saving on to you by reducing our price to €….
+- Alternatively, with a Preisgleitklausel on AS-14404: €… per unit.
+- Which volume can you commit to?
+- Our price follows our main cost drivers: AS-14404, PPI-C2431, LCI-C.
+- A binding higher volume would help us and can improve the price.
+### Round 3 · buyer
+Alloy surcharge and base price for 1.4404 bar (Werdenfels)
+- term sheet: unit_price 5.39, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5, "base_month": "2026-08"}, payment_days 90, contract_months 24
+- term sheet: unit_price 5.35, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5, "base_month": "2026-08"}, payment_days 60, contract_months 36
+> Hello,
+> 
+> Thank you for moving on index_clause and price. That helps.
+> On volume: we commit bindingly to 23,700 pieces a year for 24 months. That is our entire need for this part, all of it with you; we cannot honestly promise more. The volume is fixed in this enquiry, so the packages below are where we have room to work together.
+> Your scorecard sc:70740@2026Q3 shows 81.0% on-time delivery.
+> In your last 3 renewals of this part we settled on average 2.9 points below your initial ask.
+> We put together 2 packages; each works equally well for us, so pick the one that suits you best.
+> How could we close the remaining gap today?
+> 
+> Our current forecast (fc:370010@2026-09) backs this binding volume.
+> 
+> Best regards
+> Hollerau Pumpenwerke, Purchasing
+### Round 3 · sup:70740
+**final_offer**
+- term sheet `offer:70740-3`: unit_price 5.5, payment_days 90, index_clause {"series": "AS-14404", "material_share": 0.45, "deadband_pct": 5.0, "base_month": "2026-08"}, contract_months 24
+- claims: [{"index": 0, "result": "verified"}, {"index": 1, "result": "verified"}]
+- signals: {"reply_delay_days": 3, "validity_days": 7}
+> Dear customer,
+> Many thanks for your e-mail, and great to hear from you; I went through it right away with our team.
+> This is our final offer (letztes Angebot). Please decide.
+> Our terms: a price of €5.50 per unit, Zahlungsziel 90 days net, a contract term of 24 months, a Preisgleitklausel on AS-14404.
+> A few words on this from our side.
+> We checked the volume change data you cited; it holds and we took it into account.
+> We appreciate your binding volume commitment of 23,700 pieces per year, which allows us to improve our pricing.
+> We have reviewed the delivery scorecard data you cited; it holds, but it does not change our calculation.
+> Building on your requested 24-month term and 90-day payment, we can reduce our price to €5.50 per unit with the AS-14404 index clause.
+> A binding higher volume would help us and can improve the price.
+> Which volume can you commit to?
+> Our conditions follow our Preisliste and discount tiers.
+> We look forward to doing good business together, and our team is always there for you.
+> Mit freundlichen Grüßen
+> Franz Seidl
+> Inside Sales, Blankstahl Werdenfels GmbH
+
+**Reasons:**
+- We checked the volume change data you cited; it holds and we took it into account.
+- We appreciate your binding volume commitment of … pieces per year, which allows us to improve our pricing.
+- We have reviewed the delivery scorecard data you cited; it holds, but it does not change our calculation.
+- Building on your requested 24-month term and 90-day payment, we can reduce our price to €… per unit with the AS-14404 index clause.
+- A binding higher volume would help us and can improve the price.
+- Which volume can you commit to?
+### Round 3 · buyer
+
+## Team notes
+
+_Observations from replays, calls with Tacto, hunches. Kept when the note is regenerated._
