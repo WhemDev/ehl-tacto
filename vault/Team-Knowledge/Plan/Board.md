@@ -27,7 +27,6 @@ kanban-plugin: basic
 
 ## Doing
 
-- [ ] Fresh practice pass (`ENGINE_WRITER=vary`, 10 sessions): 7 of the 10 cases only replayed A9's cached replies; a tagged subject makes the suppliers negotiate anew (variance, robustness under load)
 - [ ] Final runner: retry `429 at most 10 open sessions` until the cap (`play_waves` and `proto/final.py`)
 - [ ] A9: when every supplier's final offer is dearer than our alternative, walk at once instead of waiting for the cap (sim D02; the worktree's R-engine has it)
 - [ ] Merge or drop the worktree's uncommitted R4 engine (`.claude/worktrees/tugra`, sandbox D02 ~0.79): its fact allocation and supplier's-levers package are not in A9
@@ -37,6 +36,7 @@ kanban-plugin: basic
 
 - [x] **Decided (Arda, 19:00): the final runs `arena run --set final --agent hybrid` (A9h, our runner), not `proto/final.py`**
 - [x] Full practice pass of the final build: mean 0.694, 10/10 deals, P08 0.603 and P18 0.532 new bests, P05 0.665 fresh ([[Testing]])
+- [x] Fresh practice pass, all 10 at once: mean 0.692, 10/10 deals, < 3 min for the whole wave, P05 0.688 new best ([[Testing]])
 - [x] Bug #9 fixed: attachments no longer delay a reply (17-21 s per quote PDF), a best final offer is accepted within 15 s of its arrival, A9's accept recovery ([[Progress/Bugs]], `tests/test_engine_clock.py`)
 - [x] A6-A9 merged into `arda`; the hybrid plays A9h (A9's rules, A6's RFQ play) for every case type (A9 practice mean 0.688: P08 0.586, P18 0.485, P01 0.956; board 72.7; A9's RFQ settings lose 0.13 on fresh sandbox D02)
 - [x] Does an LLM writer pay for Tugra's engine? Sonnet 5.5 vs template, 5 runs/case: no (80.0-82.8 vs 83.3); templates stay ([[0005 Writer model]])
