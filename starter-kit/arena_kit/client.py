@@ -22,6 +22,11 @@ ME_PATH = "/me"
 # A 429 with a short Retry-After is the per-second rate limit: wait and retry. Any other 429 (the
 # practice quota, too many open sessions) does not go away by retrying.
 MAX_RETRY_AFTER_S = 5
+# The network, not the arena (DNS, a dropped connection): keep retrying this long. Practice P02 (2026-10-10 23:26): a
+# DNS outage outlasted the old three quick retries (3.5 s), the case's mails stopped, the arena logged three buyer
+# timeouts and the supplier walked away - a zero. Each move carries one X-Move-Id across retries, so a retry after a
+# lost response is answered from the arena's dedup, not played twice.
+NET_RETRY_S = 30.0
 
 
 class ArenaError(Exception):
@@ -37,6 +42,7 @@ class ArenaClient:
         api_key=None,
         *,
         retries=3,
+        net_retry_s=NET_RETRY_S,
         transport=None,
         timeout=TIMEOUT_S,
         rate=CALLS_PER_SECOND,
@@ -47,6 +53,7 @@ class ArenaClient:
         key = api_key or os.environ.get("ARENA_API_KEY")
         headers = {"X-API-Key": key} if key else {}
         self.retries, self.rate, self._lock, self._next = retries, rate, threading.Lock(), 0.0
+        self.net_retry_s = net_retry_s
         self.practice_remaining = None  # from the last practice reply that said so
         self.http = httpx.Client(base_url=f"{base_url}/v1", headers=headers, timeout=timeout, transport=transport)
 
@@ -59,20 +66,23 @@ class ArenaClient:
 
     def _call(self, method, path, body=None, params=None, raw=False):
         headers = {MOVE_ID_HEADER: uuid.uuid4().hex} if method == "POST" else {}
-        for attempt in range(self.retries + 1):
+        attempt, net, t0 = 0, 0, time.monotonic()
+        while True:
             self._pace()
             try:
                 r = self.http.request(method, path, json=body, params=params, headers=headers)
             except httpx.TransportError:
-                if attempt == self.retries:
+                net += 1
+                if time.monotonic() - t0 >= self.net_retry_s:
                     raise
-                wait = None
-            else:
-                wait = r.headers.get("Retry-After", "")
-                short = wait.isdigit() and int(wait) <= MAX_RETRY_AFTER_S
-                if r.status_code not in RETRY_STATUS or attempt == self.retries or (r.status_code == 429 and not short):
-                    break
+                time.sleep(min(0.5 * 2 ** (net - 1), 5.0))
+                continue
+            wait = r.headers.get("Retry-After", "")
+            short = wait.isdigit() and int(wait) <= MAX_RETRY_AFTER_S
+            if r.status_code not in RETRY_STATUS or attempt == self.retries or (r.status_code == 429 and not short):
+                break
             time.sleep(float(wait) if wait and wait.isdigit() else 0.5 * 2**attempt)
+            attempt += 1
         if (left := r.headers.get(REMAINING_HEADER, "")).isdigit():
             self.practice_remaining = int(left)
         if r.status_code >= 400:

@@ -18,6 +18,8 @@ from concurrent.futures import ThreadPoolExecutor
 from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
+import httpx
+
 from arena_kit import ArenaClient, ArenaError, complete_offer, must_haves_ok, total_cost
 from arena_kit.cli import load_env
 from arena_kit.cost import supplier_value
@@ -799,6 +801,15 @@ class Negotiator:
             self.note("error", supplier=t.sid, status=e.status, detail=str(e.detail)[:300])
             if e.status == 409:
                 self.resync(t)
+            return None
+        except httpx.TransportError as e:
+            # the network, after the client's ~30 s of retries: keep the case alive (practice P02 23:26 - the engine
+            # died here, nothing more was sent, three buyer timeouts later the supplier walked away: a zero)
+            self.note("error", supplier=t.sid, status=None, detail=f"network: {e}"[:300])
+            try:
+                self.resync(t)
+            except (ArenaError, httpx.TransportError):
+                pass
             return None
         if "result" in r and "status" not in r:
             return r

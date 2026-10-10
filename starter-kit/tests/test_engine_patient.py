@@ -74,3 +74,32 @@ def test_the_frozen_build_gives_up_earlier_on_a_slowly_moving_supplier():
     patient, _ = run(replace(VARIANTS["A10"][1], rfq_pushes=0), **slow)
     assert frozen.accepted_after < patient.accepted_after
     assert patient.offers[patient.accepted_after - 1] < frozen.offers[frozen.accepted_after - 1]  # a better price
+
+
+class FlakyFoundry(Foundry):
+    """The network drops on our second mail (after the client's retries): DNS, not the arena."""
+
+    def __init__(self, **kw):
+        super().__init__(**kw)
+        self.calls = 0
+
+    def send_message(self, session_id, sup, msg):
+        self.calls += 1
+        if self.calls == 2:
+            import httpx
+            raise httpx.ConnectError("nodename nor servname provided, or not known")
+        return super().send_message(session_id, sup, msg)
+
+    def thread(self, session_id, supplier_id):
+        return {"messages": None, "closed": None}
+
+
+def test_a_network_failure_on_send_does_not_end_the_case():
+    """Practice P02 (2026-10-10 23:26): the engine died on a DNS error, nothing more went out, three buyer timeouts
+    later the supplier walked away. Now the failed mail is noted and the next round goes out."""
+    foundry = FlakyFoundry(moves=3, step=0.01)
+    n = eng.Negotiator(foundry, "case:D01", replace(VARIANTS["A9h"][1], rfq_pushes=0), quiet=True)
+    res = n.run()
+    assert res["deal"]
+    assert any(x.get("kind") == "error" and "network" in str(x.get("detail")) for x in n.log)
+    assert foundry.sent >= 2  # it kept negotiating after the failure
