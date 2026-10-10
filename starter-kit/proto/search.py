@@ -62,7 +62,7 @@ def crossover(a, b, rng):
 
 class Search:
     def __init__(self, workers=10):
-        self.client = ArenaClient()  # thread-safe pacing: one client keeps all sessions under the rate limit
+        self.client = ArenaClient(timeout=25, retries=7)  # under load a reply can stall: re-fetch it (same move id) every 25 s  # thread-safe pacing: one client keeps all sessions under the rate limit
         self.workers = workers
         self.cache = {}  # (config key, case) -> score
         OUT.mkdir(parents=True, exist_ok=True)

@@ -8,6 +8,7 @@ and only when they help us (e.g. never a fallback quote dearer than the supplier
 """
 
 import json
+import re
 import os
 import sys
 import threading
@@ -71,7 +72,8 @@ def cash_rate(sid):
     if not r or r[0]["credit_index"] is None:
         return 0.10
     ci = r[0]["credit_index"]
-    return 0.08 if ci < 200 else 0.10 if ci < 250 else 0.14 if ci < 300 else 0.20
+    # good credit -> cash is cheap for it (below our 8 %), so long payment terms cost it little (P08/P18: 90 days)
+    return 0.05 if ci < 200 else 0.10 if ci < 250 else 0.14 if ci < 300 else 0.20
 
 
 class PracticeNegotiator(Negotiator):
@@ -134,6 +136,22 @@ class PracticeNegotiator(Negotiator):
             af = lookup(alt["ref"]) or {}
             if af.get("unit_price") and asked and af["unit_price"] < asked:
                 facts.append((alt["ref"], f"We hold another quote at €{af['unit_price']:.2f} ({alt['ref']})"))
+        # 8. the case's own reference IDs that the data package does not know (case-only facts, e.g. sandbox or a
+        #    new release): cite them by type without inventing a figure - the arena then checks the data's own value
+        known = {r for f in facts for r in (f[0] if isinstance(f[0], list) else [f[0]])}
+        sup_short = t.sid.split(":")[1]
+        for r in refs:
+            if r in known or lookup(r):
+                continue
+            kind = r.split(":")[0]
+            if kind == "po":
+                facts.append((r, f"Our recent orders ({r}) show the price level we have been paying"))
+            elif kind == "cost":
+                facts.append((r, f"Our should-cost estimate ({r}) is below the current offer"))
+            elif kind == "fc":
+                facts.append((r, f"Our forecast ({r}) backs the full volume over the contract term"))
+            elif kind == "sc" and sup_short in r:
+                facts.append((r, f"Your delivery and quality scorecard ({r}) is part of our review"))
         t.facts = facts
         return facts
 
@@ -146,8 +164,19 @@ class PracticeNegotiator(Negotiator):
             std.setdefault("payment_days", b["reference_payment_days"])
             std.setdefault("incoterm", max(b["freight_eur_per_unit"], key=b["freight_eur_per_unit"].get))
             est = {"standard": std, "interest_rate": cash_rate(s)}
+            from proto.engine import BREAKDOWN
+            txt = " ".join((m.get("body") or "") + " " + " ".join(a.get("text") or "" for a in m.get("attachments") or [])
+                           for m in t.events if m.get("from") != "buyer")
+            mats = [float(m.group(1)) for x in self.threads.values() for m in [BREAKDOWN.search(" ".join(
+                a.get("text") or "" for e in x.events for a in e.get("attachments") or []))] if m]
             sc = q("SELECT unit_cost, supplier_id FROM should_cost WHERE part_id = ? ORDER BY supplier_id = ? DESC", (part, s))
-            if sc:
+            if bd := BREAKDOWN.search(txt):  # its own cost breakdown: material + labour + conversion
+                direct = round(sum(float(x) for x in bd.groups()), 2)
+                est.update(floor=direct, full_cost=direct, basis="own cost breakdown: material + labour + conversion")
+            elif mats and (share := re.search(r"Material accounts for about (\d+) %", txt)):
+                f = round(mats[0] / (int(share.group(1)) / 100), 2)  # a rival's material cost / its material share
+                est.update(floor=f, full_cost=f, basis=f"material {mats[0]} / {share.group(1)} % share")
+            elif sc:
                 est.update(floor=sc[0]["unit_cost"], full_cost=sc[0]["unit_cost"],
                            basis=f"should-cost {sc[0]['unit_cost']} ({'this supplier' if sc[0]['supplier_id'] == s else 'other supplier'})")
             elif b.get("current_unit_price"):
@@ -171,6 +200,27 @@ class PracticeNegotiator(Negotiator):
 
     def write(self, t, rnd, sheets, rival=None):
         msg = super().write(t, rnd, sheets, rival)
+        asked = (t.last.get("body") or "") if rnd else ""
+        if self.cfg.proof and re.search(r"send us the data|which figures|proof|verify|documentation", asked, re.I) \
+                and not getattr(t, "proof_sent", False):
+            # P03/P04/P05/P08/P11: "Which figures is that based on? Please send us the data." -> attach them
+            cited = [r for m in t.events if m.get("from") == "buyer" for r in m.get("refs") or []]
+            rows = []
+            for ref in dict.fromkeys(cited):
+                f = lookup(ref) or {}
+                vals = ", ".join(f"{k} {v}" for k, v in f.items() if k in ("unit_price", "unit_cost", "change_pct", "otd_pct",
+                                                                              "ppm", "value", "month", "days", "part"))
+                rows.append(f"| {ref} | {vals or 'see the shared data'} |")
+            need = f"{self.b['need_per_year']:,} pieces per year"
+            if rows:
+                import base64
+                doc = ("# Data behind our figures\n\n| ID | Values |\n|---|---|\n" + "\n".join(rows)
+                       + f"\n\nOur requirement: {need}, the full need for this part.\n")
+                msg.setdefault("attachments", []).append(
+                    {"name": "our-data.md", "type": "md", "content_b64": base64.b64encode(doc.encode()).decode()})
+                msg["body"] = msg["body"].replace("\nBest regards", "\nYou asked for the data behind our figures: it is attached.\n\nBest regards", 1)
+                t.proof_sent = True
+        return msg
         msg["body"] = msg["body"].replace(
             "Energy and wage costs have clearly been a strain for a foundry this year",
             "Cost pressure has clearly been real for you this year")

@@ -15,7 +15,7 @@ import re
 import sys
 import time
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, replace
 from pathlib import Path
 
 from arena_kit import ArenaClient, ArenaError, complete_offer, must_haves_ok, total_cost
@@ -62,11 +62,31 @@ class Config:
     rfq_stagger: bool = False  # RFQ: open with the cheapest quote first, then the others citing its fresh reply
     breakdown_arg: bool = False  # quote the supplier's own cost breakdown back (material + labour + conversion)
     volume_framing: bool = False  # monthly baseline, "quote the trade-off for a larger lot", no-overtime lead time
+    # fixes from A3 on practice (E21)
+    meet_insist: bool = False  # meet a term at its FIRST explicit insistence ("mandatory", "essential", ...)
+    penalty_aversion: float = 0.0  # extra weight on chargebacks when ranking packages for the supplier (P11)
+    never_walk: bool = False  # no alternative: counter at its price with the must-haves restored instead of walking
+    meet_band: float = 0.0  # a met (insisted) term is priced at most this far below the supplier's price; 0 = off
+    # fixes from A5 on practice (Progress/Practice-Run-A5-Findings)
+    recall_best: bool = False  # if its offers got worse after our move, propose its best earlier package back
+    proof: bool = False  # when asked for data/proof, attach a data sheet with the facts we cited
+    target_prior: bool = False  # leverage/routine/quality: first ask at least a typical room below the opening (P07)
+    price_freeze: bool = False  # "prices are frozen, talk about terms": keep its price, trade terms only (P03)
+    # RFQ-only overrides (None = same as above): tune multi-supplier play without touching single-supplier cases
+    rfq_e: float | None = None
+    rfq_T: int | None = None
+    rfq_anchor: float | None = None
+    rfq_holds: int | None = None
+    rfq_pushes: int | None = None
+    rfq_push_pct: float | None = None
+    rfq_meso_n: int | None = None
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
 
 
+# SANDBOX-ONLY (hand-written for the 3 demo suppliers; the final uses proto/practice.py, which builds facts,
+# floors and cash rates from data). Kept only to reproduce the early sandbox experiments (variants.py --handfacts).
 # Per-supplier priors: how much money now is worth to it (persona-based guesses).
 CASH_RATE = {"sup:DEMO-F1": 0.10, "sup:DEMO-J1": 0.20, "sup:DEMO-C1": 0.12}
 
@@ -96,6 +116,11 @@ FACTS = {
 }
 # teammates' goal anchors: how far below the opening quote our first ask goes (C basis)
 GOAL_ANCHOR = {"routine": 0.12, "leverage": 0.16, "quality_first": 0.10, "stabilise": 0.06, "secure_supply": 0.06}
+# typical room open -> best per goal on the hosted practice cases (P04/P07 routine 1-24 %, P05/P08/P18 leverage
+# 15-27 %, P11 quality 12 %); only used to make a too-timid first ask bolder, never softer
+ROOM_PRIOR = {"leverage": 0.15, "routine": 0.08, "quality_first": 0.08}
+FREEZE = re.compile(r"frozen|freeze|no (further )?price reduction|cannot (reduce|lower|move on) (the |our )?price|"
+                    r"talk about the terms|price (is|remains|stays) (fixed|firm)", re.I)
 FIXED_WORDS = {"payment_days": r"payment|zahlungsziel|pay faster|faster payment", "volume_per_year": r"volume",
                "lead_time_days": r"lead time|lieferzeit|delivery time", "contract_months": r"contract (length|term)",
                "incoterm": r"incoterm|delivery terms|\bDAP\b|\bFCA\b|\bEXW\b", "effective_date": r"start date|valid from"}
@@ -158,6 +183,11 @@ class Negotiator:
         self.c_alt = total_cost(self.case, self.alt["terms"]) if self.alt.get("terms", {}).get("unit_price") else float("inf")
         self.relationship = self.b.get("category_goal") in ("stabilise", "secure_supply")
         self.c_open = min((self.C(t, t.sheets[0]["terms"]) for t in self.threads.values() if t.sheets), default=float("inf"))
+        if len(self.threads) > 1:  # RFQ-only overrides
+            over = {k[4:]: v for k, v in asdict(cfg).items() if k.startswith("rfq_") and v is not None
+                    and k not in ("rfq_bar", "rfq_hold", "rfq_stagger")}
+            if over:
+                self.cfg = cfg = replace(cfg, **over)
         self.note("config", **asdict(cfg))
         self._estimate()
         self.note("open", session=self.sid, c_alt=self.c_alt, c_open=self.c_open)
@@ -229,17 +259,83 @@ class Negotiator:
         ref = self.c_open if self.cfg.toward == "open" else (best[0] if best else self.c_open)
         ref = min(ref, self.c_alt)
         start = self.target_c * (1 + self.cfg.anchor)
-        if self.cfg.bottleneck_anchor and self.b.get("category_goal") == "secure_supply" and self.c_open < float("inf"):
-            # practice P10: 17 % below a bottleneck's opening -> "far below any calculation", final above opening
-            start = max(start, self.c_open * (1 - self.cfg.bottleneck_anchor))
+        if self.cfg.bottleneck_anchor and self.b.get("category_goal") == "secure_supply":
+            # practice P10: never far below a bottleneck's opening PRICE (its opening C is inflated when it covers
+            # only part of the need), but always with full coverage: the cheapest such package at that price
+            start = max(start, self.bottleneck_floor_c())
+        prior = ROOM_PRIOR.get(self.b.get("category_goal"))
+        if self.cfg.target_prior and prior and self.c_open < float("inf"):
+            # practice P07: our data floor gave a first ask above the best possible deal; never be more timid
+            # than a typical room for this goal
+            start = min(start, self.c_open * (1 - prior))
         if self.cfg.anchor_mode == "opening" and self.c_open < float("inf"):
             # teammates' rule: the first ask sits a goal-specific % below the opening, never below our target
             start = max(start, self.c_open * (1 - GOAL_ANCHOR.get(self.b.get("category_goal"), 0.10)))
         frac = min(1.0, max(rnd, 0) / self.cfg.T) ** (1 / self.cfg.e)
         return start + (ref - start) * frac
 
+    def bottleneck_floor_c(self):
+        if getattr(self, "_bfc", None) is None:
+            prices = [t.sheets[0]["terms"]["unit_price"] for t in self.threads.values() if t.sheets]
+            if not prices:
+                return 0.0
+            floor_p = min(prices) * (1 - self.cfg.bottleneck_anchor)
+            t0 = next(iter(self.threads.values()))
+            cs = [self.C(t0, {**g, "unit_price": floor_p}) for g in lever_grid(self.case, t0.std)
+                  if must_haves_ok(self.case, {**g, "unit_price": floor_p}, t0.std)]
+            self._bfc = min(cs) if cs else 0.0
+        return self._bfc
+
+    def recalled(self, t):
+        """P18/P08: its offers got worse after our last move. Propose its best earlier package (it offered it
+        itself, so it will most likely agree) instead of pushing further."""
+        if not self.cfg.recall_best or getattr(t, "recalled_once", False):
+            return []
+        seen = [(self.C(t, s2["terms"]), s2["terms"]) for m in t.events if m.get("from") not in ("buyer", "arena")
+                for s2 in m.get("term_sheets") or [] if must_haves_ok(self.case, s2["terms"], t.std)]
+        if len(seen) < 2 or not t.sheets:
+            return []
+        now = min(self.C(t, s2["terms"]) for s2 in t.sheets)
+        best_c, best_terms = min(seen, key=lambda z: z[0])
+        if best_c < now * 0.997:
+            t.recalled_once = True
+            self.note("recall_best", supplier=t.sid, best_c=round(best_c), now=round(now))
+            return [complete_offer(self.case, best_terms)]
+        return []
+
+    def fallback_counter(self, t):
+        """No package survives the guards (P10): counter at the supplier's own price with every must-have
+        restored and full coverage, the cheapest such package for us - instead of walking away."""
+        their = t.sheets[0]["terms"] if t.sheets else {}
+        p = their.get("unit_price")
+        if p is None:
+            return []
+        ok = [complete_offer(self.case, {**g, "unit_price": p}) for g in lever_grid(self.case, t.std)]
+        ok = [x for x in ok if must_haves_ok(self.case, x, t.std)]
+        ok.sort(key=lambda x: self.C(t, x))
+        return ok[:1]
+
+    def frozen_packages(self, t):
+        """P03: "management has frozen all price reductions - we can talk about the terms instead". Keep its price
+        and propose the packages with the best terms for us at that price."""
+        their = t.sheets[0]["terms"] if t.sheets else {}
+        p = their.get("unit_price")
+        if p is None:
+            return []
+        pk = [complete_offer(self.case, {**g, "unit_price": p}) for g in lever_grid(self.case, {**t.std, **their})]
+        pk = [x for x in pk if must_haves_ok(self.case, x, t.std) and self.C(t, x) < self.C(t, their) - 1]
+        pk.sort(key=lambda x: self.C(t, x))
+        if pk:
+            self.note("price_frozen", supplier=t.sid, price=p, best_c=round(self.C(t, pk[0])))
+        return pk[: self.cfg.meso_n]
+
     def meso(self, t, c_goal):
         """Up to meso_n packages that each cost us c_goal, differing in the levers the supplier may value."""
+        if self.cfg.price_freeze and FREEZE.search(t.last.get("body") or "") and (fp := self.frozen_packages(t)):
+            return fp
+        # "equal cost to us" must be tight where the room is small (P02: 1 % of C was more than the whole room)
+        room = max(self.c_open - self.target_c, 0.0) if self.c_open < float("inf") else 0.01 * c_goal
+        tol = max(min(0.002 * c_goal, 0.1 * room), 0.0005 * c_goal)
         offered = t.sheets[0]["terms"] if t.sheets else {}
         grid = [g for g in lever_grid(self.case, {**t.std, **offered}) if must_haves_ok(self.case, g, t.std)]
         months = self.case.get("term_options", {}).get("contract_months")
@@ -254,22 +350,39 @@ class Negotiator:
             p = price_for_c(self.case, g, t.std, c_goal, t.est if self.relationship else None)
             terms = complete_offer(self.case, {**g, "unit_price": p})
             c = self.C(t, terms)
-            if p <= 0.5 or (abs(c - c_goal) > 0.01 * c_goal and c < c_goal):
+            if p <= 0.5 or (abs(c - c_goal) > max(tol, 0.01 * c_goal) and c < c_goal):
                 continue
-            # guard (teammates' P02 zero): never offer a higher price than the supplier itself asks,
-            # and never a package that costs us more than its standing offer
-            if their_price is not None and (p > their_price or c >= their_c):
+            # guard (teammates' P02 zero): never offer a higher price than the supplier itself asks - cap at its price
+            # (still a better package for us: P10) - and never a package that costs us more than its standing offer
+            capped = False
+            if their_price is not None and p > their_price:
+                terms = complete_offer(self.case, {**g, "unit_price": their_price})
+                p, c, capped = their_price, self.C(t, terms), True
+            if c >= their_c:
                 continue
             near = sum(terms.get(k) != offered.get(k) for k in terms if k != "unit_price" and k in offered)
-            priced.append((supplier_value(self.case, terms, t.est), near, terms, c))
+            terms["_capped"] = capped
+            sv = supplier_value(self.case, {k: v for k, v in terms.items() if k != "_capped"}, t.est)
+            if self.cfg.penalty_aversion:  # suppliers price penalty clauses far above their expected cost (P11)
+                sv -= self.cfg.penalty_aversion * (terms.get("chargeback_eur_per_complaint") or 0) * (terms.get("ppm_commitment") or 0) / 1e6
+            priced.append((sv, near, terms, c))
         everything = list(priced)
-        hits = [x for x in priced if abs(x[3] - c_goal) <= 0.01 * c_goal]
+        hits = [x for x in priced if abs(x[3] - c_goal) <= tol or x[2].get("_capped")]
+        # full coverage first (P10): a package covering the whole need over the horizon beats a partial one
+        def full(x):
+            tt = x[2]
+            vol_ok = (tt.get("volume_per_year") or self.b["need_per_year"]) >= self.b["need_per_year"]
+            months = tt.get("contract_months", self.case.get("fixed_terms", {}).get("contract_months"))
+            return vol_ok and (months is None or months >= 12 * self.b["horizon_years"])
+        if any(full(x) for x in hits):
+            hits = [x for x in hits if full(x)]
         if not hits and priced:
             # the goal is out of reach (e.g. below what the supplier-health term allows): offer the
             # packages closest to it, i.e. the cheapest ones for us, each at its cheapest price
             lowest = min(x[3] for x in priced)
             hits = [x for x in priced if x[3] <= lowest * 1.005]
-        priced = [x[:3] for x in hits]
+        priced = [(x[0], x[1], {k: v for k, v in x[2].items() if k != "_capped"}) for x in hits]
+        everything = [(x[0], x[1], {k: v for k, v in x[2].items() if k != "_capped"}, x[3]) for x in everything]
         if not priced:
             return []
         if self.cfg.pick == "near":
@@ -297,9 +410,30 @@ class Negotiator:
                     continue
                 # only a term the supplier introduced itself (never in our sheets) and kept in its last two offers,
                 # after it has seen at least one of ours - not an echo of our own packages (sandbox D01)
-                if not ours or any(o.get(f) == offered[f] for o in ours) or len(theirs) < 2 \
-                        or any(x.get(f) != offered[f] for x in theirs[-2:]):
+                persisted = f in getattr(t, "met", {}) and t.met[f] == offered[f]
+                insisted = self.cfg.meet_insist and persisted or self.cfg.meet_insist and re.search(
+                    r"mandatory|essential|require|must|not possible|cannot (offer|do)|non-negotiable|only with",
+                    t.last.get("body") or "", re.I)
+                if not ours or (any(o.get(f) == offered[f] for o in ours) and not persisted):
                     continue
+                if not insisted and (len(theirs) < 2 or any(x.get(f) != offered[f] for x in theirs[-2:])):
+                    continue
+                if insisted:
+                    # our best package with only this field changed, re-priced to the goal (not some other package)
+                    base = {**picks[0], f: offered[f]}
+                    p2 = price_for_c(self.case, base, t.std, c_goal, t.est if self.relationship else None)
+                    if their_price is not None and self.cfg.meet_band:
+                        # it insisted on this term: ask close to its own price (P18: 8 % below hardened it)
+                        p2 = min(their_price, max(p2, round(their_price * (1 - self.cfg.meet_band), 2)))
+                    cand = complete_offer(self.case, {**base, "unit_price": p2})
+                    if (must_haves_ok(self.case, cand, t.std) and (their_price is None or 0.85 * their_price <= p2 <= their_price)):
+                        t.met = {**getattr(t, "met", {}), f: offered[f]}  # keep meeting it in later rounds
+                        if len(picks) >= self.cfg.meso_n:
+                            picks[-1] = cand
+                        else:
+                            picks.append(cand)
+                        self.note("meet_field", supplier=t.sid, field=f, value=offered[f], price=p2, why="insisted")
+                        break
                 cands = [x for x in everything if x[2].get(f) == offered[f]
                          and (their_price is None or x[2]["unit_price"] >= 0.85 * their_price)]  # no absurd asks
                 if cands:
@@ -452,7 +586,19 @@ class Negotiator:
             if not r or not t.sheets:
                 return self.walk()
             sheet = t.sheets[0]
-        r = self.c.send_message(self.sid, t.sid, {"action": {"type": "accept", "term_sheet_id": sheet["term_sheet_id"]}})
+        try:
+            r = self.c.send_message(self.sid, t.sid, {"action": {"type": "accept", "term_sheet_id": sheet["term_sheet_id"]}})
+        except ArenaError as e:
+            # P05: late on the arena's clock (our accept counted as a timeout) -> its standing sheet changed. Read the
+            # thread and accept what stands now, if it still beats our alternative and keeps the must-haves.
+            self.note("accept_retry", supplier=t.sid, error=str(e.detail)[:200])
+            self.resync(t)
+            if t.status in ENDED or not t.sheets:
+                raise
+            sheet = t.sheets[0]
+            if not must_haves_ok(self.case, sheet["terms"], t.std) or self.C(t, sheet["terms"]) > self.c_alt:
+                raise
+            r = self.c.send_message(self.sid, t.sid, {"action": {"type": "accept", "term_sheet_id": sheet["term_sheet_id"]}})
         res = r.get("result", r)
         self.note("result", **{k: res.get(k) for k in ("deal", "supplier_id", "terms", "c_open", "c_deal", "c_best", "score", "cost_breakdown")})
         return res
@@ -504,9 +650,32 @@ class Negotiator:
                     state["done"] = self.close(t, sh) if kind == "close" else self.walk()
                 except ArenaError as e:  # e.g. that thread ended meanwhile: take the next best or walk
                     self.note("close_failed", error=str(e.detail)[:200])
-                    self.resync(t)
-                    nb = self.best_standing()
-                    state["done"] = self.close(nb[1], nb[2]) if nb and nb[0] <= self.c_alt else self.walk()
+                    try:
+                        if t is not None:
+                            self.resync(t)
+                        nb = self.best_standing()
+                        state["done"] = self.close(nb[1], nb[2]) if nb and nb[0] <= self.c_alt else self.walk()
+                    except (ArenaError, AttributeError) as e2:
+                        self.note("close_failed_2", error=str(e2)[:200])
+                        st = self.c.session(self.sid)
+                        if st.get("status") != "ended":  # still live: try every acceptable standing sheet, best first
+                            for x in self.threads.values():
+                                self.resync(x)
+                            cands = sorted(((self.C(x, x.sheets[0]["terms"]), x) for x in self.threads.values()
+                                            if x.status not in ENDED and x.sheets and must_haves_ok(self.case, x.sheets[0]["terms"], x.std)),
+                                           key=lambda z: z[0])
+                            for c3, x in cands:
+                                if c3 > self.c_alt:
+                                    break
+                                try:
+                                    r3 = self.c.send_message(self.sid, x.sid, {"action": {"type": "accept", "term_sheet_id": x.sheets[0]["term_sheet_id"]}})
+                                    state["done"] = r3.get("result", r3)
+                                    self.note("result", **{k: state["done"].get(k) for k in ("deal", "supplier_id", "c_deal", "c_best", "score")})
+                                    return
+                                except ArenaError:
+                                    continue
+                            st = self.c.session(self.sid)
+                        state["done"] = st.get("result") or {"deal": False, "score": 0.0, "end_reason": st.get("end_reason")}
 
         def decide(t):
             """Under the lock: ('close'|'walk'|'send'|'wait'|'stop', payload)."""
@@ -519,8 +688,9 @@ class Negotiator:
             rnd = t.rounds  # every thread keeps its own clock (a fast supplier may be negotiated further)
             goal, next_goal = self.goal(rnd), self.goal(rnd + 1)
             untouched = any(x.sent() < 1 and x.status not in ENDED for x in live) and time.time() - t_start < 90
-            hold_close = bool(best) and (untouched or best[1].in_flight or (  # its own offer is about to change, or
-                any(x.in_flight for x in live if x is not best[1]) and time.time() - best[1].replied_at < 45))  # a rival's may beat it
+            hold_close = bool(best) and best[1].status == "open" and (untouched or best[1].in_flight or (  # its offer may change,
+                any(x.in_flight for x in live if x is not best[1]) and time.time() - best[1].replied_at < 20))  # or a rival's beat it
+            # (an agreed or final offer is never held: under load its 60 s may already be running out - P05)
             if best and best[0] <= self.c_alt and not hold_close:
                 # (closing waits while another supplier's reply is on its way - it may be better: sandbox D02 0.269;
                 #  the threads themselves keep negotiating below)
@@ -566,7 +736,7 @@ class Negotiator:
                 if best is None and all(x.status == "final_offer" or x.rounds >= cfg.max_rounds for x in live):
                     return ("walk", None)
                 return ("wait", None)
-            sheets = self.meso(t, goal)
+            sheets = self.recalled(t) or self.meso(t, goal)
             if not sheets:
                 return ("wait", None)
             others = [(self.C(x, s2["terms"]), s2["term_sheet_id"], s2["terms"]) for x in self.threads.values()
@@ -689,7 +859,7 @@ class Negotiator:
             for t in live:
                 if t.status == "final_offer":
                     continue  # rests while a rival is still open
-                sheets = self.meso(t, goal)
+                sheets = self.recalled(t) or self.meso(t, goal)
                 if not sheets:
                     continue
                 others = [(self.C(x, sh["terms"]), sh["term_sheet_id"], sh["terms"]) for x in self.threads.values()
@@ -699,6 +869,11 @@ class Negotiator:
                 self.note("send", supplier=t.sid, sheets=[(s, round(self.C(t, s))) for s in sheets], refs=msg["refs"],
                           attachments=[a["name"] for a in msg.get("attachments", [])], body=msg["body"])
                 jobs.append((t, msg))
+            if not jobs and cfg.never_walk and self.c_alt == float("inf") and rnd < cfg.max_rounds:
+                for t in live:
+                    if t.status != "final_offer" and (counter := self.fallback_counter(t)):
+                        self.note("fallback_counter", supplier=t.sid, sheet=counter[0])
+                        jobs.append((t, self.write(t, rnd, counter, None)))
             if not jobs:
                 if best:
                     self.note("accept", why="no thread left to push", c=best[0])
@@ -713,7 +888,7 @@ class Negotiator:
 
 def play(case_id, cfg=Config(), client=None, log_dir=LOG_DIR, quiet=False, deadline=None):
     """Play one case to its end; always leaves the session closed. Returns (session_id, result)."""
-    client = client or ArenaClient()
+    client = client or ArenaClient(timeout=25, retries=7)
     n = Negotiator(client, case_id, cfg, quiet=quiet, deadline=deadline)
     Path(log_dir).mkdir(parents=True, exist_ok=True)
     with open(Path(log_dir).parent / "opened.txt", "a") as f:  # cleanup may only ever close our own sessions
