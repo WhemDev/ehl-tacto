@@ -28,6 +28,9 @@ MOVE_LIMIT_S = 60
 # In the Live Final, close this long before the wave's cap - or the slowest round of the case so far
 # (your decision plus a supplier reply of up to about a minute) plus a margin, if that is longer.
 CLOSE_BEFORE_CAP_S, ROUND_MARGIN_S = 90, 15
+# Final: a case refused for "at most 10 open sessions per key" is retried every SLOT_RETRY_S while the wave still
+# leaves SLOT_WAIT_MIN_LEFT_S to play it (two rounds and the close).
+SLOT_RETRY_S, SLOT_WAIT_MIN_LEFT_S = 5, 150
 RUNNING = re.compile(r"one session per case in the final: (\S+)")
 # Practice: the case list shows every practice case file; only those marked hosted can be played
 # (a session on another is a 403). Without the marker every listed case counts as hosted.
@@ -243,7 +246,18 @@ def play_waves(client, new_agent, waves=5, parallel=10, poll=5.0):
 
     def one(case, deadline):
         try:
-            return play(RemoteTable(client, case), case["case_id"], new_agent(), deadline)
+            while True:
+                try:
+                    return play(RemoteTable(client, case), case["case_id"], new_agent(), deadline)
+                except ArenaError as e:
+                    # the key's 10 open sessions are shared: another process on it (a teammate's run, a leftover
+                    # session) must not cost us the case - wait for a slot while the wave leaves time to play
+                    cap = deadline() if callable(deadline) else deadline
+                    full = e.status == 429 and "open sessions" in str(e.detail)
+                    if not full or not cap or time.time() > cap - SLOT_WAIT_MIN_LEFT_S:
+                        raise
+                    log.warning("%s: %s - retrying in %ss", case["case_id"], e.detail, SLOT_RETRY_S)
+                    time.sleep(SLOT_RETRY_S)
         except Exception as e:  # one broken case must not stop the others
             log.exception("%s failed", case["case_id"])
             return e
