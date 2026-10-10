@@ -40,7 +40,10 @@ on a case feature (goal, type, a term the supplier insists on, a driver that fel
 change before the final is the RFQ port from the R4 fork, if it passes the sandbox and P05.
 
 **Sunday checklist**
-- 08:00 `cd starter-kit && uv run arena data` → `data/release-sunday/` (merged automatically); `uv run pytest -q`.
+- 08:00 `cd starter-kit && uv run arena data`, then `ls data/release-sunday/facts.json`: `DataPackage` merges a
+  `release-sunday` folder next to the package by itself (rehearsed 2026-10-10 20:00 with a synthetic release:
+  new IDs resolve, old ones stay). If the zip unpacked elsewhere, point `ARENA_RELEASE=<folder>` at it in
+  `starter-kit/.env`. Then `uv run pytest -q`.
 - 09:00 pre-flight on the final machine: `uv run arena play case:P01 --agent hybrid --practice -v`.
 - 11:30 `git pull`, `uv run pytest -q`, start the final command, open the dashboard; **nobody else on the key**.
 - 11:55 submit on ehl.gg: repo, commit hash, description, slides.

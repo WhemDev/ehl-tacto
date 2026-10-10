@@ -1,122 +1,100 @@
-<p align="center">
-  <img src=".github/assets/readme-banner.png" alt="Tacto Negotiation Arena. Your agent. Our suppliers. Real money." width="100%">
-</p>
+# makeAnother.md · a buyer agent for the Tacto Negotiation Arena
 
-<p align="center">
-  <a href="https://arena.tacto.ai/apply"><b>Apply for your key</b></a> ·
-  <a href="brief/brief.md">Brief</a> ·
-  <a href="brief/api.md">API docs</a> ·
-  <a href="starter-kit/">Starter kit</a> ·
-  <a href="https://arena.tacto.ai/live">Build page</a> ·
-  <a href="https://arena.tacto.ai/results">Results</a> ·
-  <a href="https://discord.gg/hPwFfbWRV">Discord</a>
-</p>
+EHL Grand Finale 2026, Tacto track. Our agent negotiates by e-mail with Tacto's supplier bots for Hollerau
+Pumpenwerke: price increases, renewals, RFQs with several bidders, bundles, raw-material surcharges, capacity
+cuts and quality cases. It closes the deal with the lowest total cost C, or walks away when the alternative is
+cheaper. Forked from [tacto-ai/negotiation-arena-kit](https://github.com/tacto-ai/negotiation-arena-kit).
 
-You are the procurement team of Hollerau Pumpenwerke, a fictional German pump maker, and the inbox is
-full: a foundry wants +9.5 %, a framework contract expires, a new pump needs three quotes. Build an
-**AI buyer agent** that reads the company's data, negotiates by e-mail with our supplier bots, and
-closes the best total deal, or walks away. Practise all weekend against our hosted suppliers. On
-Sunday at 12:00 a Live Final on hidden cases ranks every team.
+Practice board on the evening before the final: mean best score **0.736** over the 10 hosted suppliers, #3 of 24;
+a full fresh pass of the final build scores **0.72-0.73** with 10 deals out of 10 and no failed accept.
 
-This repo holds everything you need: the brief, the API docs, a Python starter kit and the data
-package. Bring your own LLM, any provider; we run the suppliers.
+## How it negotiates
 
-## Start in 15 minutes
+The code decides every number; a language model only writes the words around them.
 
-You need Python 3.12, [uv](https://docs.astral.sh/uv/) and git.
+1. **A target cost.** For every allowed combination of the case's levers (payment days, contract months, lead
+   time, Incoterm, index clause, quality terms) the engine solves the unit price at which the supplier's cash
+   value equals its estimated cost floor - from our should-cost, its own cost breakdown or letter, its cited
+   cost drivers - and costs that package with the arena's published formula. The cheapest one is our target
+   (`starter-kit/proto/target.py`).
+2. **Packages of equal cost to us.** Each e-mail carries two term sheets that cost us the same but differ in what
+   the supplier may value: longer contract, faster payment, its standard lead time, its own index clause at the
+   deadband cheapest for us. A term the supplier insists on becomes part of every package.
+3. **Visible concessions, then patience.** Our goal moves from the target towards the supplier's standing offer
+   over four rounds (early concessions beat holding firm on every supplier we met), but we hold our ask while
+   the supplier is still giving at least 0.3 % a round - and accept at once when it goes final or agrees.
+4. **Evidence the arena can check.** Every claim carries a data ID from the package: a falling cost driver, our
+   orders of the same part elsewhere, its scorecard, our forecast, the notice period in its own letter, the
+   rival's offer in an RFQ. Facts that rose, or that argue for the supplier, are never cited; in an RFQ a shared
+   fact goes to one bidder only, since the arena counts each ID once per case.
+5. **RFQs.** One worker per supplier on its own 60-second clock; the cheapest quote is opened first and the
+   others are opened citing its fresh reply; the best standing offer is accepted the moment it is agreed or
+   final, a rival's reply in flight gets at most 15 seconds.
+6. **Answers.** Volume questions get our binding need and forecast, requests about fixed terms get a plain
+   "fixed in this enquiry", complaints about late payment get a promise to pay on the agreed day.
+7. **The e-mail.** Claude Sonnet 5.5 rewrites the engine's template; every sentence with a data ID stays
+   verbatim, no figure the code did not choose gets in, and the template goes out whenever the model is slow or
+   breaks a rule. On the practice suppliers wording did not move the score; the numbers did.
 
-1. **Apply.** Open **https://arena.tacto.ai/apply** and enter your team name and a contact e-mail.
-   Tip: start the name with one emoji, it shows on the big screen.
-2. **Show your match code at the Tacto desk.** We approve.
-3. **Copy your key.** It appears **once** on the page you applied on; then press "Got the key". One key
-   per team. Lost it? We reset it at the desk.
-4. **Run the four commands.**
+The engine is Tugra's deterministic engine (`starter-kit/proto/`, algorithm `A9h`), developed by the team on
+the hosted sandbox, 70 practice sessions and the local simulator. Our earlier agent, the orchestra
+(`arena_kit/agents/orchestra.py`), is the fallback if the engine cannot start on a case.
+
+## Setup
+
+Python 3.12 and [uv](https://docs.astral.sh/uv/). Secrets go into `.env` at the repo root (never committed):
+
+| Variable | What |
+|---|---|
+| `ARENA_API_KEY` | the team's arena key |
+| `CLAUDE_API_KEY` | Anthropic key for the e-mail writer (aliased to `ANTHROPIC_API_KEY`) |
+
+`starter-kit/.env` holds the non-secret settings: `ARENA_URL`, `ARENA_DATA=data/package`, `LLM_PROVIDER=anthropic`,
+`LLM_MODEL=claude-sonnet-5-5`, `LLM_EFFORT=low`.
 
 ```bash
-git clone https://github.com/tacto-ai/negotiation-arena-kit.git
-cd negotiation-arena-kit/starter-kit
-cp .env.example .env            # paste your key: ARENA_API_KEY=...
-
-uv sync --all-extras            # install
-uv run arena me                 # your team and its practice quota
-uv run arena play case:P01      # the naive example agent negotiates one practice case
-uv run arena board              # your team on the practice leaderboard
+cd starter-kit
+uv sync --all-extras
+uv run arena data                                  # the data package (and Sunday's release, once public)
+uv run pytest -q                                   # 70 tests
+uv run arena run --set sandbox --agent hybrid      # free: the two demo cases
+uv run arena play case:P01 --agent hybrid --practice -v   # one practice session
 ```
 
-`arena play` prints the deal, your score and a replay link: every e-mail and the supplier's reasons
-in words. Read it, improve your agent, play again. Next steps, the LLM agent and your own agent:
-[starter-kit/README.md](starter-kit/README.md).
+## The Live Final
 
-## Links
+```bash
+cd starter-kit
+uv run arena run --set final --agent hybrid --parallel 10 -v > ../logs/final.log 2>&1
+```
 
-| What | Where |
+Started before 12:00 and left running: it waits for each wave, plays its cases in parallel, closes every case
+before the wave's cap, retries a case refused for the key's session limit, resumes a running session after a
+restart, and never reads `/v1/events`, `/screen`, `/leaderboard` or `/results`. `uv run arena dashboard` shows
+every negotiation live at http://127.0.0.1:8765 from our own event log.
+
+## Layout
+
+| Path | What |
 |---|---|
-| Apply for your key | https://arena.tacto.ai/apply |
-| Brief: story, task, score, rules | [brief/brief.md](brief/brief.md) |
-| API docs | [brief/api.md](brief/api.md) |
-| Starter kit: client, example agents, Live Final runner, local simulator, MCP server | [starter-kit/](starter-kit/) |
-| Submission and pitch | [brief/submission.md](brief/submission.md) |
-| Practice build page: every team's quota, records and highlights | https://arena.tacto.ai/live |
-| Live Final results, team by team and case by case | https://arena.tacto.ai/results |
-| Questions | Discord https://discord.gg/hPwFfbWRV · the Tacto table |
+| `starter-kit/proto/` | the engine: `engine.py` (tactics as `Config` fields, the negotiation loops), `target.py` (target cost), `practice.py` (facts and floors from the data package), `variants.py` (named algorithms) |
+| `starter-kit/arena_kit/agents/hybrid.py` | runs the engine through the kit's runner: event log, resume, wave cap, background attachments |
+| `starter-kit/arena_kit/agents/engine_writer.py` | the LLM writer and its guards |
+| `starter-kit/arena_kit/` | the kit: client, runner (`play.py`), cost function (`cost.py`), data package, dashboard, local simulator |
+| `starter-kit/tests/` | 70 tests: cost model, clock rules, RFQ accept timing, the writer's guards, the final runner |
+| `vault/` | the team's Obsidian vault: decisions (`Team-Knowledge/Decisions/`), test log (`Progress/Testing.md`), every practice run with its replay |
+| `brief/`, `data/` | Tacto's brief, API docs and data package |
 
-## The weekend at a glance
+## What we learned (short)
 
-| When | What |
-|---|---|
-| Sat 10:00 | Kickoff and reveal: brief, data, kit and practice arena go live |
-| Sat 12:00-13:00 | **Deep dive**, ground floor (room on the signs): data, API, kit, Q&A. Bring a laptop. Challenge selection closes 13:00 |
-| Sat afternoon | Office hours at the Tacto table. Practice all weekend: 200 sessions per team per 24 hours |
-| Sat evening | We post on Discord when Tacto goes offline for the night |
-| Sun 08:00 | **New market data.** Run `uv run arena data` again; hidden cases may cite it |
-| Sun 09:00 | Pre-flight: one practice case through your final setup |
-| Sun 12:00 | **Code freeze**, submit on ehl.gg. **Live Final**: five waves, 8 minutes each, every team at once |
-| Sun 13:00 | **Top 10 pitch** to the Tacto jury: 5 minutes + 2 minutes of questions |
-| Sun 14:30 | Track winners and the two finalists announced |
-| Sun 15:30 | Grand Final pitches (AudiMax) |
-| Sun 16:30 | Awards |
+- A supplier's first counter barely depends on our first ask; it moves when we move, and when a fact it can
+  verify arrives - once per fact.
+- Equal-cost packages let the supplier pick the lever it values; the clause at the widest deadband, the longest
+  contract and its standard lead time are nearly free for us and worth real money to it.
+- Accepting too early cost more than asking too little: three patient rounds while the supplier still gives
+  were worth +0.03 on the mean.
+- The 60-second clock runs from the supplier's reply; downloading its attachments before reading the offer, or
+  waiting for a rival, lost deals until both happened in the background.
+- Wording, tone and even the choice of writer model did not change scores on these suppliers; data and timing did.
 
-## Rules that matter
-
-- **No human in the loop** during the Live Final. Start your agent before 12:00 and leave it running:
-  `uv run arena run --set final --agent llm --parallel 10` picks up each wave by itself.
-- **Your agent must not read the live feed** during the Live Final: `/v1/events`, `/screen`,
-  `/leaderboard`, `/results` and their JSON. They are for you, not for your agent.
-- **One key per team.** No attacks on the service or on other teams.
-- Everything else counts, including weaknesses you find in our suppliers. Every replay is open to
-  the jury.
-
-All rules: [brief, section 7](brief/brief.md#7-rules).
-
-## What to submit on ehl.gg by Sun 12:00
-
-- **Your repo** with the agent and a README that says how to run it, and the **commit hash** your
-  agent runs in the final. The jury and tum.ai must be able to open it.
-- **A short description** of your approach.
-- **Slides** for the pitch. The top 10 pitch from 13:00.
-
-Details: [brief/submission.md](brief/submission.md).
-
-## Prizes
-
-1st place €1,500 · medals for the top 3 · the best 2 EHL finalist teams in this track go on to the
-Grand Final. ⟦Q2: how the Live Final score and the jury combine for places 1-3⟧
-
-## What is in this repo
-
-| Folder | What |
-|---|---|
-| [`brief/`](brief/) | The brief, the API docs, the submission guide |
-| [`starter-kit/`](starter-kit/) | Python client, a naive and an LLM example agent, the Live Final runner, `arena-sim` (the API on your laptop), an MCP server over the data |
-| [`data/`](data/) | Data package v1: CSV, SQLite, `facts.json`, contracts, letters, notes. The same as `https://arena.tacto.ai/v1/data/package.zip`; start with [`data/README.md`](data/README.md) |
-
-The company, its suppliers and all names are fictional; the market indices are real open series
-([`data/ATTRIBUTION.md`](data/ATTRIBUTION.md)).
-
-## Licence
-
-Code: MIT ([LICENSE](LICENSE)). Data and docs: CC BY 4.0 ([LICENSE-data](LICENSE-data)). Your code
-is yours.
-
-<br>
-<p align="center"><sub>Tacto · AI for industrial procurement · EHL Grand Finale 2026, Garching</sub></p>
+Decisions, measurements and the Sunday checklist: `vault/Team-Knowledge/Decisions/0007 The final build.md`.
