@@ -33,7 +33,7 @@ from ..analysis import analyse, boulware, cost, meso
 from ..client import ArenaError
 from ..cost import must_haves_ok
 from ..docs import standard_terms
-from ..play import ENDED, fetch_documents, latest, moves_left, standing
+from ..play import ENDED, closing_move, fetch_documents, latest, moves_left, standing
 
 log = logging.getLogger("arena")
 ID_RE = re.compile(r"\b(?:idx|quote|offer|sc|qn|po|cost|fc|news|doc|ctr):[\w.:@#/-]*\w")
@@ -154,9 +154,19 @@ class Orchestra:
             if latest(ev).get("status") not in ENDED
         }
         t0 = _now()
-        # who each supplier is (its profile, built offline) sets its tactics: anchor, concession, trades
-        self.tactics = {sid: strategy.tactics(case, strategy.load(sid)) for sid in threads}
-        self.a = analyse(case, opening, self.package, self.tactics)
+        try:
+            # who each supplier is (its profile, built offline) sets its tactics: anchor, concession, trades
+            self.tactics = {sid: strategy.tactics(case, strategy.load(sid)) for sid in threads}
+            self.a = analyse(case, opening, self.package, self.tactics)
+        except Exception as e:  # never leave a session open: try without data and profiles, else close
+            log.exception("analysis failed")
+            event_log.emit("warning", message=f"analysis failed ({type(e).__name__}: {e}) - plain analysis")
+            try:
+                self.tactics = {}
+                self.a = analyse(case, opening, None, None)
+            except Exception:
+                log.exception("plain analysis failed too - closing safely")
+                return self._emergency()
         for sid in threads:
             if sid in self.a["suppliers"]:
                 self._offer_seen(sid)
@@ -167,8 +177,28 @@ class Orchestra:
             return table.result()
         with ThreadPoolExecutor(max_workers=len(live)) as pool:
             for f in [pool.submit(self._worker, sid, ctx) for sid in live]:
-                f.result()
+                try:
+                    f.result()
+                except Exception as e:  # one broken worker: the others go on, the case is closed below
+                    log.exception("worker failed")
+                    event_log.emit("warning", message=f"worker failed ({type(e).__name__}: {e})")
+        with self.lock:
+            if not self.closed:  # e.g. every worker failed: close with the best offer, never abandon
+                try:
+                    self._close(self._closing("a worker failed"))
+                except Exception:
+                    log.exception("closing failed")
+                    return self._emergency()
         return self.result or table.result()
+
+    def _emergency(self):
+        """The last resort: the kit's closing move (best valid offer that beats the alternative, else walk)."""
+        try:
+            move = closing_move(self.case, self.threads)
+            return self.table.close(move["supplier_id"], move["message"])
+        except Exception:
+            log.exception("emergency close failed")
+            return self.table.result()
 
     def _analysis_summary(self):
         a = self.a
@@ -248,17 +278,28 @@ class Orchestra:
         cap = self.deadline() if callable(self.deadline) else self.deadline
         return bool(cap) and _now() > cap - CLOSE_BEFORE_CAP_S
 
-    def _target(self, sid, r):
-        """Our target C for this supplier's next message: hold the aspiration while exploring, then
-        a Boulware curve towards the limit; never above the supplier's own offer or a rival's."""
+    def _curve(self, sid, r):
+        """Where our concession curve stands for this supplier at our r-th message: from the
+        aspiration on a Boulware curve towards its *current* offer (or our limit, if lower) - we meet
+        it only at the last planned round, so it always has a reason to move (practice P11: aiming
+        at its opening price, we asked its current price from round 3 on and it stopped moving)."""
         s = self._sup(sid)
         asp, lim = s.get("aspiration_c"), self._limit()
         if asp is None:
             return None
+        own = self.models[sid].offers[-1]["c"] if self.models.get(sid) and self.models[sid].offers else None
+        if own is not None and math.isfinite(own):
+            lim = min(lim, own) if math.isfinite(lim) else own
         lim = max(lim if math.isfinite(lim) else asp * 1.1, asp)
-        # concede a little every round (a supplier gives nothing without a move from us), on a
-        # Boulware curve: small steps first, larger towards the end
-        t = boulware(r + 1, self.limit_rounds, asp, lim, s.get("e", self.a["e"]))
+        return boulware(r + 1, self.limit_rounds, asp, lim, s.get("e", self.a["e"]))
+
+    def _target(self, sid, r):
+        """Our target C for this supplier's next message: the curve, but never above the supplier's
+        own standing offer or (in an RFQ) the best rival's."""
+        t = self._curve(sid, r)
+        if t is None:
+            return None
+        asp = self._sup(sid)["aspiration_c"]
         rival = self._best(exclude=sid)
         if rival and len(self.threads) > 1:
             t = min(t, rival[0] * 0.995)  # beat the best rival, or there is nothing to talk about
@@ -279,15 +320,19 @@ class Orchestra:
         if not live:
             return self._closing("every thread has ended")
         target = self._target(sid, r)
-        # accept: a standing offer already as good as what we would ask next (AC_next)
-        if best and target is not None and best[0] <= target:
-            return {
-                "kind": "accept",
-                "supplier": best[1],
-                "sheet": best[2],
-                "c": best[0],
-                "why": "offer meets our next target",
-            }
+        # accept (AC_next): the cheapest offer is already where our curve for that supplier would be
+        # next - and never a first offer: we have written to that supplier at least once
+        if best:
+            r_best = sum(m.get("from") == "buyer" for m in self.threads[best[1]])
+            curve = self._curve(best[1], r_best)
+            if r_best >= 1 and curve is not None and best[0] <= curve:
+                return {
+                    "kind": "accept",
+                    "supplier": best[1],
+                    "sheet": best[2],
+                    "c": best[0],
+                    "why": "offer meets our concession curve",
+                }
         if status == "agreed" and best and best[1] == sid and best[0] <= self._limit():
             return {
                 "kind": "accept",

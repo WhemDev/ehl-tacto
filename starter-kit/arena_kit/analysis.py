@@ -15,19 +15,35 @@ their quote PDFs) and the data package, it works out:
 import itertools
 import math
 
-from .cost import RELATIONSHIP_GOALS, complete_offer, must_haves_ok, snap, total_cost
+from .cost import RELATIONSHIP_GOALS, closing_terms, complete_offer, must_haves_ok, snap, total_cost
 
 # Per category goal: how far below the best opening price we anchor, how stubbornly we concede
 # (Boulware exponent: small = hold firm until late), and the minimum margin we leave the supplier
 # over its should-cost (None: the case's sustainable margin, for strategic and bottleneck goals).
+# Practice (2026-10-10): the deal lands near our first ask - suppliers follow our numbers - and the room
+# between opening and best package was 1-23 % (bundles and RFQs the most), so the anchors are bolder
+# than the first guess (leverage 12 %, routine 7 %, quality 6 %, stabilise 6 %, secure 5 %).
 GOALS = {
-    "leverage": {"anchor": 0.12, "e": 0.25, "min_margin": 0.02},
-    "routine": {"anchor": 0.07, "e": 0.6, "min_margin": 0.03},
-    "stabilise": {"anchor": 0.06, "e": 0.4, "min_margin": None},
-    "secure_supply": {"anchor": 0.05, "e": 0.5, "min_margin": None},
-    "quality_first": {"anchor": 0.06, "e": 0.4, "min_margin": 0.03},
+    "leverage": {"anchor": 0.16, "e": 0.25, "min_margin": 0.02},
+    "routine": {"anchor": 0.12, "e": 0.6, "min_margin": 0.03},
+    "stabilise": {"anchor": 0.08, "e": 0.4, "min_margin": None},
+    "secure_supply": {"anchor": 0.06, "e": 0.5, "min_margin": None},
+    "quality_first": {"anchor": 0.10, "e": 0.4, "min_margin": 0.03},
 }
 TARGET_OTD = 95.0  # the quality agreement's on-time delivery target (company.md)
+# should-cost rows not modelled on the supplier's own plant assume a German cost base; company.md's
+# rule of thumb for other countries' full cost relative to Germany
+COUNTRY_COST = {
+    "DE": 1.0,
+    "AT": 1.05,
+    "CH": 1.05,
+    "CZ": 0.82,
+    "PL": 0.82,
+    "HU": 0.82,
+    "SK": 0.82,
+    "TR": 0.75,
+    "CN": 0.7,
+}
 
 
 def fact(case, package, ref):
@@ -164,7 +180,14 @@ def should_cost(case, package, supplier):
         )
         own = [r for r in rows if r.get("supplier_id") == supplier]
         if rows:
-            out[part] = (own or rows)[0] | {"own_plant": bool(own)}
+            row = (own or rows)[0] | {"own_plant": bool(own)}
+            if not own:  # a German cost base (or another plant): scale by the supplier's country
+                country = (_q(package, "SELECT country FROM suppliers WHERE id = ?", (supplier,)) or [{}])[0].get(
+                    "country"
+                )
+                factor = COUNTRY_COST.get(country, 1.0)
+                row |= {"unit_cost": round(row["unit_cost"] * factor, 2), "country_factor": factor}
+            out[part] = row
     return out
 
 
@@ -302,14 +325,29 @@ def analyse(case, opening, package=None, tactics=None):
         floor = round(unit_cost * (1 + margin), 2) if unit_cost else None
         # strategic and bottleneck goals charge for squeezing the supplier: with a should-cost we can
         # price that, and the best package for us is where the charge outweighs any further saving
+        # its standard terms as the margin estimate needs them: a quote PDF may list only some (e.g. ppm),
+        # the rest from its opening offer and our plan
+        full_std = {
+            k: v
+            for k, v in closing_terms(case, {k: v for k, v in terms.items() if k != "unit_price"}, std).items()
+            if k != "unit_price"
+        }
         est = (
-            {"full_cost": unit_cost, "interest_rate": tac.get("interest_rate") or b["interest_rate"], "standard": std}
+            {
+                "full_cost": unit_cost,
+                "interest_rate": tac.get("interest_rate") or b["interest_rate"],
+                "standard": full_std,
+            }
             if unit_cost and b.get("category_goal") in RELATIONSHIP_GOALS
             else None
         )
         p_opt, ideal = None, ideal_levers(case, std, price) if price else {}
         if est and price:
-            ideal, p_opt, _ = best_fit(case, std, est, unit_cost * 0.85, max(price, unit_cost * 1.2))
+            fit = best_fit(case, std, est, unit_cost * 0.85, max(price, unit_cost * 1.2))
+            if fit[0] is None:  # nothing priced: no relationship estimate, the plain levers
+                est = None
+            else:
+                ideal, p_opt, _ = fit
         # the anchor price: below the opening, at most the justified increase, never below the floor
         anchor = price * (1 - tac.get("anchor", goal["anchor"])) if price else None
         if anchor and case.get("type") == "price_increase" and b.get("current_unit_price"):
@@ -319,7 +357,9 @@ def analyse(case, opening, package=None, tactics=None):
             anchor = max(p_opt, min(anchor, price * (1 - 2 * tac.get("anchor", goal["anchor"]))))
         elif anchor and floor:
             anchor = max(anchor, floor * (0.97 if b.get("category_goal") == "leverage" else 1.0))
-        min_price = None if est else (round(floor * 0.97, 2) if floor else None)
+        if anchor:  # always below its own offer: a supplier already under our floor estimate proves it wrong
+            anchor = min(anchor, price * (1 - tac.get("anchor", goal["anchor"]) / 2))
+        min_price = None if est else (round(min(floor * 0.97, anchor), 2) if floor and anchor else None)
         if anchor and not est:
             ideal = ideal_levers(case, std, anchor)
         aspiration = (

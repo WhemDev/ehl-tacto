@@ -207,6 +207,14 @@ def play_all(new_table, case_ids, new_agent, parallel=8):
         if used_up.is_set():
             return case_id, ArenaError(429, "not started: the practice quota is used up")
         try:
+            for wait in (5, 10, 20, 30, 45, 60, 60, 60):  # the key's 10 open sessions are shared: wait for one
+                try:
+                    return case_id, play(new_table(), case_id, new_agent())
+                except ArenaError as e:
+                    if not (e.status == 429 and "open sessions" in str(e.detail)):
+                        raise
+                    log.warning("%s: %s - retrying in %ss", case_id, e.detail, wait)
+                    time.sleep(wait)
             return case_id, play(new_table(), case_id, new_agent())
         except ArenaError as e:
             if quota_used_up(e):
