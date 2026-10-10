@@ -96,7 +96,7 @@ VARIANTS = {
             replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                     bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
                     price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
-                    allocate_facts=True, ask_cap=0.18, pushes=0, holds=0, patient=True, patient_gap=0.015,
+                    allocate_facts=True, ask_cap=0.18, pushes=0, holds=0, patient=True, patient_gap=0.007,
                     facts_later=1)),
     "A9h-paced": ("A9h + one fact per round after the first + quarter-step holds (lost 0.01 on the 20:50 pass)",
                   replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,

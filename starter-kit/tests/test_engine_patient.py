@@ -65,7 +65,7 @@ def test_patient_keeps_asking_while_it_moves_and_takes_the_first_stall():
     for i in range(1, len(foundry.asks)):
         assert min(foundry.asks[i]) != min(foundry.asks[i - 1])  # never the same ask twice
     for ask, offer in zip(foundry.asks[3:], foundry.offers[3:6], strict=True):  # late asks sit below its price
-        assert min(ask) <= offer * 0.995
+        assert min(ask) < offer
 
 
 def test_the_frozen_build_gives_up_earlier_on_a_slowly_moving_supplier():

@@ -856,7 +856,11 @@ class Negotiator:
                 first = state["prev_c"] is None
                 gave = (state["prev_c"] - c) if state["prev_c"] is not None else 0
                 state["prev_c"] = c
-                stalled = not first and gave <= cfg.stall_gave * c
+                # a stall is the best supplier's OWN last two offers (the best across bidders does not move when a
+                # rival replies - judging that as a stall accepted sandbox D02 after three mails)
+                own = [self.C(bt, m["term_sheets"][0]["terms"]) for m in bt.events
+                       if m.get("from") not in ("buyer", "arena") and m.get("term_sheets")]
+                stalled = len(own) >= 2 and own[-2] - own[-1] <= cfg.stall_gave * own[-1]
                 if (state["holds"] < cfg.holds and c <= next_goal and bt.status == "open" and gave > cfg.hold_gave * c
                         and bt.sent() < limit - 2):
                     state["holds"] += 1
