@@ -21,11 +21,15 @@ kanban-plugin: basic
 
 ## Doing
 
-- [ ] Final timing: close before the wave cap with max(90 s, slowest round + 15), rounds from `seconds_left`, final command = orchestra @Arda-Claude
-- [ ] Strategy quick wins from the reviews: profiles only raise anchors, free contract months, claims pool (po/cost/news + case facts), say what is fixed @Arda-Claude
-- [ ] Supplier emulator fitted to our logged practice + sandbox negotiations, to tune rounds / concession / anchors without quota @Arda-Claude
+- [ ] First practice pass of the engine-curve build, one case per type (needs the team's quota OK) - [[0006 Learn from the engine]]
+
 
 ## Done
+
+- [x] Final timing: close by the slowest round, round budget, watchdog, orchestra = default agent (`358a010`)
+- [x] Quick wins: profiles only raise anchors, free contract months, claims pool, fixed terms (`78774e4`)
+- [x] Learn from the teammate engine: floor target, early concession, holds, alternatives, blind refs - sandbox 80.6 vs 58-61 (`b23d10d`, [[0006 Learn from the engine]])
+- [x] What moves suppliers, from our logs (no emulator: their first counter ignores our ask; movement and rivals matter)
 
 - [x] Kit cloned, repo + vault set up
 - [x] Research: negotiation techniques and sources → [[Research - negotiation techniques]] (experiments list inside)

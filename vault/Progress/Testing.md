@@ -14,5 +14,8 @@
 | Practice A/B batch 2: 8 cases × 2 arms (16 sessions) | Claude (Arda) | 2026-10-10 | ✅ | profiles 51.9 vs none 51.0 on these 8; over all 10: 58.0 vs 56.8 - no measurable gain; P02 none-arm 0 (deal above opening, fixed `3d78de2`). [[Report 2026-10-10 - profile hook and practice A-B]] |
 | Sandbox checks after fixes (D01, D02) | Claude (Arda) | 2026-10-10 | ✅ | D01 0.77, D02 0.46 / 0.40 - no walk-aways, RFQ hold logic works |
 | Practice validation of `3d78de2` on P02, P05, P18 (3 sessions) | Claude (Arda) | 2026-10-10 | ✅ | P02 0.16 → 0.18, P05 0.29 → 0.41, P18 0.39 → 0.32 (went final at r3). Board 60.1, #2, 10/10 deals |
+| Final timing: margin by slowest round, round budget, watchdog (unit + sim e2e) | Claude (Arda) | 2026-10-10 | ✅ | `358a010`; a case 30 s from the cap closes at once; watchdog takes the best non-pending offer |
+| Sandbox, 2 plays/case: engine curve + ported messages vs old curve | Claude (Arda) | 2026-10-10 | ✅ | engine2 D01 0.97 / D02 0.64 (80.6) · boulware2 0.83 / 0.52 (67.7) · before 58-61. [[0006 Learn from the engine]] |
+| Sandbox: small-steps concession (my own idea) | Claude (Arda) | 2026-10-10 | ❌ | D01 0.75 (vs 0.77), D02 0.40/0.46 - no gain; replaced by the engine's early concession |
 
 Result: ✅ pass · ❌ fail · ⏳ not yet
