@@ -1,0 +1,11 @@
+{
+  "repeats": 3,
+  "seed": 2026,
+  "strategies": [
+    {
+      "name": "naive",
+      "factory": "arena_kit.agents.naive:NaiveAgent",
+      "kwargs": {}
+    }
+  ]
+}

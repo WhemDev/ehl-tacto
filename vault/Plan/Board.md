@@ -25,6 +25,7 @@ kanban-plugin: basic
 
 ## Done
 
+- [x] Build A/B/C negotiation policies and run a repeated sandbox tournament across D01 and D02
 - [x] Record Sudeep's D01 manual run findings and prepare the chat CLI branch
 - [x] Save completed manual demo chats automatically and backfill existing sandbox runs
 - [x] Add an interactive REST chat command for the local simulator and hosted practice/sandbox sellers

@@ -67,6 +67,10 @@ in your browser: the result on top, then every e-mail of the negotiation.
 
 ## Chat with a supplier over REST
 
+For repeated algorithm comparisons on every demo, see [experiments/README.md](experiments/README.md).
+`uv run arena-experiment --config experiments/demo.json` previews the case/strategy/repetition count;
+add `--execute` to start the sessions and save comparison reports under `../logs/experiments/`.
+
 Put the team key in the repo root `.env` as `ARENA_API_KEY=...` (never commit it), then run:
 
 ```bash
