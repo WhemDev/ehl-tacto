@@ -27,13 +27,25 @@ Generated notes (`Suppliers/`, `Cases/`, `Runs/`) are rewritten by `uv run arena
 ```bash
 uv sync --all-extras
 uv run arena me                                   # key works? practice quota
-uv run arena play case:P01 --agent llm -v         # one practice case → note in vault/Runs
-uv run arena run --set practice --agent llm --parallel 8
+
+# free - use these for development
+uv run arena play case:D01 --agent llm -v         # hosted sandbox: real-style suppliers, no quota
+uv run arena run --set sandbox --agent llm        # both sandbox cases (D01 price increase, D02 RFQ)
+../scripts/sim.sh play case:P05 --agent llm -v    # local arena-sim, any case P01-P19/D01/D02, scripted supplier
+../scripts/sim.sh run --set practice --parallel 10   # every case locally (plumbing, timing)
+../scripts/sim.sh stop
+
+# costs practice sessions (200/24 h for the whole team) - needs --practice
+uv run arena play case:P01 --agent llm -v --practice
+uv run arena run --set practice --agent llm --parallel 8 --practice
+
 uv run arena vault suppliers|cases|runs           # regenerate vault notes
+uv run arena cases --save cases                   # refresh the saved case files arena-sim loads
 uv run arena data                                 # data package (+ Sunday release from Sun 08:00)
 uv run pytest && uv run ruff check .
 ```
-Local simulator (no quota): `uv run arena-sim serve --no-clock --data data/package`.
+The sandbox has 3 demo suppliers, not the practice ones. arena-sim's supplier is a plain script (opens +10 %,
+concedes 2 % per term sheet): good for plumbing and timing, says nothing about real supplier behaviour.
 
 ## Rules
 - Secrets only in the root `.env` (git-ignored): `CLAUDE_API_KEY` (aliased to `ANTHROPIC_API_KEY`), `ARENA_API_KEY`. Never commit or print them.

@@ -709,6 +709,7 @@ def main(argv=None):
     ap.add_argument("--data", help="data package folder: cited IDs are checked against it")
     ap.add_argument("--event-code", default="sim")
     ap.add_argument("--no-clock", action="store_true", help="no 60-second rule: threads wait forever (by hand)")
+    ap.add_argument("--cases", action="append", default=[], help="more case-file folders (arena cases --save)")
     a = ap.parse_args(argv)
     facts = {}
     if a.data:
@@ -721,5 +722,10 @@ def main(argv=None):
         print("arena-sim: --no-clock - no 60-second rule, threads wait forever (the arena keeps the rule)", flush=True)
     else:
         print("arena-sim: the 60-second rule is on, as on the arena (--no-clock switches it off)", flush=True)
-    app = create_app(Sim(load_cases(), facts, a.event_code, no_clock=a.no_clock))
+    cases = load_cases()
+    for folder in a.cases:
+        cases |= {k: {**c, "set": "practice"} for k, c in load_cases(folder).items()}
+    if a.cases:
+        print(f"arena-sim: {len(cases)} cases: {', '.join(sorted(cases))}", flush=True)
+    app = create_app(Sim(cases, facts, a.event_code, no_clock=a.no_clock))
     uvicorn.run(app, host=a.host, port=a.port)

@@ -52,9 +52,36 @@ def commit():
         return None
 
 
+def local():
+    """True when ARENA_URL points at arena-sim on this machine (no quota, no real suppliers)."""
+    from urllib.parse import urlparse
+
+    return urlparse(os.environ.get("ARENA_URL", "")).hostname in ("127.0.0.1", "localhost", "::1")
+
+
+def guard_practice(client, args):
+    """The team shares 200 practice sessions a day: spending them needs --practice."""
+    if local() or getattr(args, "practice", False):
+        return
+    if args.cmd == "run" and args.set == "practice":
+        n = len(hosted(client.cases("practice")))
+    elif args.cmd == "play" and args.case_id in {c["case_id"] for c in client.cases("practice")}:
+        n = 1
+    else:
+        return
+    raise SystemExit(
+        f"refused: this would use {n} of the team's practice sessions "
+        f"({client.me()['practice']['left']} left today). Add --practice to spend them, "
+        "or use the sandbox (case:D01, case:D02, --set sandbox) or arena-sim (scripts/sim.sh)."
+    )
+
+
 def log_runs(client, set_, agent, session_id=None):
-    """Practice and sandbox runs go to the vault (`vault/Runs`); never during the final."""
+    """Practice and sandbox runs go to the vault (`vault/Runs`); never during the final or from arena-sim."""
     from . import vault
+
+    if local():
+        return
 
     try:
         if session_id:
@@ -94,16 +121,20 @@ def main(argv=None):
     sets = {"default": "practice", "help": "practice, final or sandbox"}
     c = sub.add_parser("cases", help="list the cases you can play")
     c.add_argument("--set", **sets)
+    c.add_argument("--save", metavar="DIR", help="also write each case file as JSON into DIR (for arena-sim --cases)")
+    spend = {"action": "store_true", "help": "allow spending practice sessions (200 a day, shared by the team)"}
     p = sub.add_parser("play", help="play one case")
     p.add_argument("case_id")
     p.add_argument("--agent", default="naive", choices=["naive", "llm"])
     p.add_argument("--data", **data)
+    p.add_argument("--practice", **spend)
     a = sub.add_parser("run", help="play every case of a set in parallel")
     a.add_argument("--set", **sets)
     a.add_argument("--agent", default="naive", choices=["naive", "llm"])
     a.add_argument("--data", **data)
     a.add_argument("--parallel", type=int, default=8, help="cases at once (at most 10)")
     a.add_argument("--waves", type=int, default=5, help="final: stop after this many waves have closed")
+    a.add_argument("--practice", **spend)
     d = sub.add_parser("data", help="download and unpack the data (package, Sunday release once public)")
     d.add_argument("--out", default="data", help="folder to unpack into")
     sub.add_parser("me", help="your team: practice quota used and left, best score per case")
@@ -146,6 +177,12 @@ def main(argv=None):
         print("\nA simulator key: put it into .env as ARENA_API_KEY=... while you point ARENA_URL at arena-sim.")
     elif args.cmd == "cases":
         cases = client.cases(args.set)
+        if args.save:
+            Path(args.save).mkdir(parents=True, exist_ok=True)
+            for case in cases:
+                name = case["case_id"].split(":")[-1] + ".json"
+                (Path(args.save) / name).write_text(json.dumps(case, indent=1, ensure_ascii=False), encoding="utf-8")
+            print(f"{len(cases)} case files saved to {args.save}")
         playable = {c["case_id"] for c in hosted(cases)}
         for case in cases:
             mark = "" if case["case_id"] in playable else "  (not hosted: data only)"
@@ -164,7 +201,9 @@ def main(argv=None):
                 print(f"{name}: {Path(args.out) / name}")
             else:
                 print(f"{name}: public from {info.get('at')}")
-    elif args.cmd == "play":
+    if args.cmd in ("play", "run"):
+        guard_practice(client, args)
+    if args.cmd == "play":
         table = RemoteTable(client)
         try:
             result = play(table, args.case_id, agent_factory(args.agent, args.data)())
@@ -175,9 +214,9 @@ def main(argv=None):
         if replay:  # the supplier's reasons, move by move: read it, improve, play again
             print(f"replay: {os.environ['ARENA_URL'].rstrip('/')}{replay}")
         log_runs(client, None, args.agent, table.session_id)
-    elif args.set == "final":  # waits for each wave and plays its cases within the cap
+    elif args.cmd == "run" and args.set == "final":  # waits for each wave and plays its cases within the cap
         out = play_waves(client, agent_factory(args.agent, args.data), args.waves, min(args.parallel, 10))
-    else:
+    elif args.cmd == "run":
         ids = [case["case_id"] for case in hosted(client.cases(args.set))]
         out = play_all(
             lambda: RemoteTable(client),
@@ -199,7 +238,7 @@ def main(argv=None):
             print(f"mean score: {100 * statistics.mean(scores.values()):.1f}")
         if args.set != "final":
             log_runs(client, args.set, args.agent)
-    if args.cmd in ("play", "run") and client.practice_remaining is not None:
+    if args.cmd in ("play", "run") and client.practice_remaining is not None and not local():
         print(f"practice sessions left today: {client.practice_remaining}")
 
 
