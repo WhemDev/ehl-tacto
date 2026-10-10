@@ -32,6 +32,17 @@ source hashes, complete configurations, replay IDs, all attempts, means and medi
 in a new ignored `proto/runs/comparisons/` directory for each batch. Use `--env-file`
 if your local environment file is outside `starter-kit/`.
 
+## A_hybrid development
+
+The next Sudeep candidate is **A_hybrid**, based on the teammate's **A6** with
+one general lesson from B1: use the supplier's quoted package trade-offs. It can
+retain a longer quoted delivery schedule when it meets the buyer's requirements
+and has the same complete cost. It contains no demo/supplier IDs or fixed trade values.
+
+See [the exact algorithm](A_HYBRID.md) and
+[the fresh comparison report](comparisons/2026-10-10-a-hybrid.md).
+This remains an opt-in experiment; A6 and B1 are preserved side by side.
+
 ## Results
 
 | Algorithm | D01 (sandbox) | D02 (sandbox, mean of 3) | Notes |
