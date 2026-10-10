@@ -4,6 +4,12 @@ kanban-plugin: basic
 
 ## Backlog
 
+- [ ] Upgrade 1: raw-material clause from round 1 at a 5 % deadband, 90 days, 36 months (P08, P18) - [[Review 2026-10-10 - worst practice cases and upgrades]]
+- [ ] Upgrade 2: new evidence - rival POs for the same part, recently falling cost drivers (P18, P08, P05, P04, P13)
+- [ ] Upgrade 3: lead time never beyond our need, the supplier's standard within it (P10, P05)
+- [ ] Upgrade 4: RFQ accept fix from A6 into the hybrid's engine (the A5 P05 zero; same guard in A3)
+- [ ] Upgrade 5-6: answer volume / on-time payment / fixed terms; bundle volume framing (P05, P07, P08, P11, P18)
+- [ ] Validate upgrades on practice: P18, P08, P10, P05 (4 sessions, needs the team's OK)
 - [ ] Get the arena key approved at the Tacto desk, put `ARENA_API_KEY=` into the root `.env`
 - [ ] `uv run arena vault cases` once the key works (case notes for all 19 practice cases)
 - [ ] Baseline: `arena play case:P01 --agent llm -v`, read the replay, log learnings
