@@ -94,12 +94,15 @@ def drift(part):
     return total
 
 
-def cash_rate(sid):
-    """What money now is worth to a supplier: weaker credit (higher index) = dearer cash."""
+def cash_rate(sid, good_credit=None):
+    """What money now is worth to a supplier: weaker credit (higher index) = dearer cash. `good_credit` replaces the
+    rate for a credit index below 200 (Config.cash_rate_rel, supplier-health cases only)."""
     r = q("SELECT credit_index, equity_ratio_pct FROM supplier_intel WHERE supplier_id = ?", (sid,))
     if not r or r[0]["credit_index"] is None:
         return 0.10
     ci = r[0]["credit_index"]
+    if good_credit is not None and ci < 200:
+        return good_credit
     # good credit -> cash is cheap for it (below our 8 %), so long payment terms cost it little (P08/P18: 90 days)
     return 0.05 if ci < 200 else 0.10 if ci < 250 else 0.14 if ci < 300 else 0.20
 
@@ -356,7 +359,7 @@ class PracticeNegotiator(Negotiator):
             std = {**t.std, **case.get("fixed_terms", {})}
             std.setdefault("payment_days", b["reference_payment_days"])
             std.setdefault("incoterm", max(b["freight_eur_per_unit"], key=b["freight_eur_per_unit"].get))
-            est = {"standard": std, "interest_rate": cash_rate(s)}
+            est = {"standard": std, "interest_rate": cash_rate(s, self.cfg.cash_rate_rel if self.relationship else None)}
             from proto.engine import BREAKDOWN
             txt = " ".join((m.get("body") or "") + " " + " ".join(a.get("text") or "" for a in m.get("attachments") or [])
                            for m in t.events if m.get("from") != "buyer")

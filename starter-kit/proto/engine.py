@@ -119,6 +119,11 @@ class Config:
     # and every bidder is shown the best rival offer it has not seen yet, only if it beats its own (practice RFQs:
     # 2.1 % mean concession with a rival's offer cited vs 0.3 % without; final 25 % vs 62 %)
     auction_rfq: bool = False
+    # What money is worth to a good-credit supplier (credit index < 200) in cases with a supplier-health charge
+    # (stabilise, secure_supply). The arena's own charges imply 6.6 % (P02, Nordmark, 24 deals) and 6.1 % (P03,
+    # Selvbrunn, 23 deals) with residuals near EUR 0; we assumed 5 %, so our "equal-cost" packages were not equal and the
+    # supplier took the one worst for us (P02: about EUR 7k of a EUR 47k range). None = the old 5 %.
+    cash_rate_rel: float | None = None
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)

@@ -118,6 +118,12 @@ VARIANTS = {
                              price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                              holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0, plan_facts=True,
                              auction_rfq=True)),
+    # 23:30, cost of money of good-credit suppliers in supplier-health cases: 5 % -> 6.4 % (arena-implied 6.6 % / 6.1 %)
+    "A9h-cash": ("A9h + good-credit suppliers' cost of money 6.4 % in supplier-health cases (arena-implied)",
+                 replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                         bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                         price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                         holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0, cash_rate_rel=0.064)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
