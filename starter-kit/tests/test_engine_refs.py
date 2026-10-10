@@ -9,12 +9,14 @@ import pytest
 
 from arena_kit import complete_offer, total_cost
 from proto.engine import Thread
-from proto.practice import PracticeNegotiator, lookup
+from proto.practice import PracticeNegotiator, citable
 from proto.variants import VARIANTS
 
 CASES = Path(__file__).resolve().parents[1] / "cases"
 ID_RE = re.compile(r"\b(?:idx|quote|offer|sc|qn|po|cost|fc|news|doc|ctr):[\w.:@#/-]*\w")
-HOSTED = ["P01", "P02", "P03", "P04", "P05", "P07", "P08", "P10", "P11", "P18"]
+ALL = sorted(p.stem for p in CASES.glob("P*.json"))  # the 10 hosted cases and the 9 never hosted
+ASKS = ["Our offer.", "Our offer. Which volume can you commit to?",
+        "Which figures is that based on? Please send us the data. Which volume can you commit to?"]
 
 
 def negotiator(cid):
@@ -38,14 +40,20 @@ def negotiator(cid):
     return n
 
 
-@pytest.mark.parametrize("cid", HOSTED)
+@pytest.mark.parametrize("cid", ALL)
 def test_every_cited_id_is_in_facts_json(cid):
+    """`lookup` also resolves table-only rows (P05's latest forecast snapshot): the arena answered those
+    "contradicted ... that costs trust", so only facts.json IDs, the session's offers and the case's refs may go out."""
     n = negotiator(cid)
+    own = set(n.case.get("refs") or [])
     goal = n.goal(0)
     for t in n.threads.values():
         sheets = n.meso(t, goal)
-        for rnd in (0, 1):  # the first mail and an answer to "which volume can you commit to?"
+        for rnd, ask in enumerate(ASKS):
+            t.events.append({"from": f"sales@{t.sid}", "status": "open", "body": ask, "attachments": [],
+                             "term_sheets": t.events[-1].get("term_sheets") or t.events[0]["term_sheets"]})
             msg = n.write(t, rnd, sheets, None)
+            t.events.append({"from": "buyer", "body": msg["body"], "refs": msg.get("refs") or []})
             ids = set(msg.get("refs") or []) | set(ID_RE.findall(msg["body"]))
-            unknown = sorted(i for i in ids if not i.startswith("offer:") and not lookup(i))
+            unknown = sorted(i for i in ids if not i.startswith("offer:") and not citable(i) and i not in own)
             assert not unknown, f"{cid} {t.sid} round {rnd}: {unknown}"

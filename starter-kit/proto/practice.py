@@ -44,6 +44,16 @@ def lookup(ref):
         return pkg().lookup(ref)
 
 
+def citable(ref):
+    """An ID the arena can check: in facts.json or the Sunday release. `lookup` also finds table-only rows (225
+    forecast snapshots, goods receipts, invoices); the arena answers those "doesn't exist ... that costs trust"."""
+    with _LOCK:
+        return ref in pkg().facts
+
+
+CITE_RE = re.compile(r"\b(?:idx|quote|offer|sc|qn|po|cost|fc|news|doc|ctr|gr|inv|rfq):[\w.:@#/-]*\w")
+
+
 def index_change(series, months=12):
     """(change %, earlier id, later id) over the latest `months` of a series."""
     rows = q("SELECT id, month, value FROM index_values WHERE series_id = ? ORDER BY month DESC LIMIT ?", (series, months + 1))
@@ -241,16 +251,19 @@ class PracticeNegotiator(Negotiator):
 
     def write(self, t, rnd, sheets, rival=None):
         msg = super().write(t, rnd, sheets, rival)
-        msg["refs"] = [r for r in msg.get("refs") or [] if lookup(r) or r.startswith("offer:")]  # never an unknown ID
+        own = set(self.case.get("refs") or [])
+        ok = lambda r: r.startswith("offer:") or citable(r) or r in own  # noqa: E731
+        msg["refs"] = [r for r in msg.get("refs") or [] if ok(r)]  # never an ID the arena cannot check
         if self.cfg.answer_plus:
             extra = []
             asked = (t.last.get("body") or "") if rnd else ""
             part = self.case["parts"][0]
             if re.search(r"volume", asked, re.I) and not getattr(t, "fc_cited", False):
-                fc = q("SELECT id FROM forecasts WHERE part_id = ? ORDER BY snapshot_month DESC LIMIT 1", (part,))
                 # only an ID the arena can check (facts.json): P05's latest forecast row is not in it, and citing it
                 # came back "doesn't exist ... that costs trust" in every run - the supplier went final a round early
-                if fc and lookup(fc[0]["id"]):  # cited without a figure: the arena takes the data's own value
+                fc = [r for r in q("SELECT id FROM forecasts WHERE part_id = ? ORDER BY snapshot_month DESC", (part,))
+                      if citable(r["id"])][:1]
+                if fc:  # cited without a figure: the arena takes the data's own value
                     extra.append(f"Our current forecast ({fc[0]['id']}) backs this binding volume.")
                     msg.setdefault("refs", []).append(fc[0]["id"])
                     t.fc_cited = True
@@ -287,6 +300,12 @@ class PracticeNegotiator(Negotiator):
                     {"name": "our-data.md", "type": "md", "content_b64": base64.b64encode(doc.encode()).decode()})
                 msg["body"] = msg["body"].replace("\nBest regards", "\nYou asked for the data behind our figures: it is attached.\n\nBest regards", 1)
                 t.proof_sent = True
+        lines = msg["body"].split("\n")
+        kept = [x for x in lines if all(ok(i) for i in CITE_RE.findall(x))]
+        if len(kept) != len(lines):
+            self.note("dropped_ids", supplier=t.sid, ids=sorted({i for x in lines for i in CITE_RE.findall(x) if not ok(i)}))
+            msg["body"] = "\n".join(kept)
+        msg["refs"] = [r for r in msg["refs"] if ok(r)]
         return msg
         msg["body"] = msg["body"].replace(
             "Energy and wage costs have clearly been a strain for a foundry this year",
