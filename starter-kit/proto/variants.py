@@ -80,11 +80,14 @@ VARIANTS = {
     # Patience (19:25, practice, fresh replies): we accepted at round 3-4 of 10 while the supplier was still open and
     # giving 0.3-0.5 % a round (P02, P08). 3 holds at >= 0.3 %: P02 0.425 -> 0.677, P08 0.592 -> 0.607 (a 6-round curve
     # instead: 0.373 / 0.560 - suppliers go final while our asks are still far away).
-    "A9h": ("A9 with A6's RFQ play (no RFQ-only overrides, no breakdown argument), 3 holds while the supplier gives",
+    # RFQ fact allocation (20:12, practice P05, fresh): a shared fact goes only to the leading bidder, never twice -
+    # 0.713 / 0.736 / 0.710 vs 0.665-0.688 without (6 runs). The supplier's-levers package on top: 0.717 / 0.717 / 0.710,
+    # and alone on single-supplier cases it is agreed at our goal instead of conceding (P01 0.91 -> 0.82): off.
+    "A9h": ("A9 with A6's RFQ play (no RFQ-only overrides, no breakdown argument), 3 holds, RFQ fact allocation",
             replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                     bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
                     price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
-                    holds=3, hold_gave=0.003)),
+                    holds=3, hold_gave=0.003, allocate_facts=True)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
