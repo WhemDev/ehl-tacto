@@ -19,7 +19,8 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 | A5 (+ practice fixes 2, generic code path only) | 0.982 | 0.706 (5 runs) | practice: 0.614 over 10 cases, P03 0.923 / P01 0.881 records |
 | A6 (+ fixes for every A5 practice problem) | 0.982 | 0.696 (0.703, 0.703, 0.682) | generic code path (what the final runs) |
 | A8 (+ D02 search: RFQ-only 1 package, 1 fact, anchor −8 %, 3 pushes of 3 %, breakdown argument) | 0.982 | 0.765 (4/4 identical) | generic code path |
-| **A9 (+ team review upgrades as generic rules: insisted/introduced terms in every package at the variant cheapest for us, lead-time cap, new evidence, answers)** | **0.982** | **0.70–0.79** | **main algorithm**; practice mean 0.688 over 10 cases (P01 0.956, P08 0.586, P18 0.485) |
+| A9 (+ team review upgrades as generic rules: insisted/introduced terms in every package at the variant cheapest for us, lead-time cap, new evidence, answers) | 0.982 | 0.70–0.79 | practice mean 0.688 over 10 cases (P01 0.956, P08 0.586, P18 0.485) |
+| **A10 (+ GPT-6.1-sol advice: deadline reserve for alternatives, conditional-agreement repair, push scaled to room, plain proof)** | **0.982** | **0.772** (0.765, 0.765, 0.786) | **main algorithm**; generic code path |
 
 ## Run
 
@@ -28,10 +29,10 @@ directory, so copy or symlink it if needed):
 
 ```bash
 # sandbox (free): A3 once on D01, three times on D02 (D02 is noisy)
-PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A9
+PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A10
 
 # hosted practice (COSTS QUOTA - ask the team first): facts and floors from the data package
-PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A9
+PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A10
 
 # one case, any Config as JSON
 ENGINE_CFG='{"e": 2, "T": 4, "rfq_stagger": true}' PYTHONPATH=. uv run python proto/engine.py case:D02
@@ -68,9 +69,10 @@ PYTHONPATH=. uv run python proto/cleanup.py proto/runs/variants
 | `engine.py` | `Config` (every tactic is a field), `Negotiator` (`goal`, `meso`, `write`, `run`, `run_rfq`, guards), `play()` |
 | `target.py` | target C and price-for-C solver |
 | `practice.py` | practice/final adapter: facts and floors from the data package |
-| `variants.py` | named algorithms (A … **A9**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
+| `variants.py` | named algorithms (A … **A10**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
 | `search.py`, `report.py` | evolutionary tactic search on the sandbox and its report (`--base A6 --cases case:D02 --space rfq` searches RFQ-only settings) |
 | `ask_advisor.py`, `advisor_briefing.md` | send the briefing to an OpenAI model for outside advice (`OPENAI_API_KEY` in `.env`) |
+| `calibrate.py` | offline audit: our target vs the reported C_best on every practice run |
 | `smoke.py` | offline smoke test on all practice case files (no quota) |
 | `inspect_run.py` | every message, decision and claim of a variant's practice sessions |
 | `practice_report.py`, `summarize.py`, `cleanup.py`, `chat.py` | practice report, run summaries, safe cleanup, manual play |

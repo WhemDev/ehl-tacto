@@ -86,6 +86,13 @@ class Config:
     lead_cap: bool = False  # never offer a lead time beyond our need (within it: the supplier's standard)
     evidence_plus: bool = False  # cheaper orders of the same part elsewhere, recently falling drivers, its own history
     answer_plus: bool = False  # forecast ID with volume answers, on-time payment promise, bundle volume framing
+    # GPT-6.1-sol advice (Progress/Advisor/2026-10-10 GPT-6.1-sol advice - assessment)
+    cap_reserve: bool = False  # near a wave cap reserve TWO exchanges when the best offer is an alternative sheet
+    conditional_repair: bool = False  # "we can agree to your price of EUR X if ..." -> send exactly that package
+    objection_map: bool = False  # pick the next fact by the supplier's latest objection, not by list order
+    push_scaled: bool = False  # push size scaled to the case's room (a 3 % push is blunt when the room is 1-2 %)
+    proof_plain: bool = False  # proof attachment with plain labels, no re-cited IDs (they came back "duplicate")
+    lev_room_boost: float = 1.0  # leverage cases with a weak floor estimate: our room x this (audit: median 0.68 of true room)
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -288,6 +295,12 @@ class Negotiator:
         if self.cfg.anchor_mode == "opening" and self.c_open < float("inf"):
             # teammates' rule: the first ask sits a goal-specific % below the opening, never below our target
             start = max(start, self.c_open * (1 - GOAL_ANCHOR.get(self.b.get("category_goal"), 0.10)))
+        if (self.cfg.lev_room_boost != 1.0 and self.b.get("category_goal") == "leverage" and self.c_open < float("inf")
+                and not any("breakdown" in str(t.est.get("basis", "")) or "share" in str(t.est.get("basis", ""))
+                            for t in self.threads.values())):
+            # calibration audit (proto/calibrate.py): without a supplier breakdown our leverage targets captured only
+            # ~0.68 of the true room -> widen the room we aim for
+            start = min(start, self.c_open - self.cfg.lev_room_boost * (self.c_open - start))
         frac = min(1.0, max(rnd, 0) / self.cfg.T) ** (1 / self.cfg.e)
         return start + (ref - start) * frac
 
@@ -332,6 +345,30 @@ class Negotiator:
         ok.sort(key=lambda x: self.C(t, x))
         return ok[:1]
 
+    def conditional_package(self, t):
+        """P18: "We can agree to your proposed price of EUR 5.30 ... we must maintain the index clause". The supplier
+        named a price it accepts under a condition: send exactly that package (its terms, that price), once."""
+        if getattr(t, "repaired", False) or not t.sheets:
+            return []
+        body = t.last.get("body") or ""
+        m = re.search(r"(?:agree to|accept|can do|go with|can offer)[^.€]{0,40}(?:your )?(?:proposed )?(?:price|offer)?[^.€]{0,20}"
+                      r"(?:of )?(?:€|EUR ?)\s?(\d+(?:[.,]\d+)?)", body, re.I)
+        if not m or not re.search(r"\b(if|provided|as long as|on condition|must (maintain|keep|include)|with the|only with)\b", body, re.I):
+            return []
+        before = body[max(0, m.start() - 40):m.start()].lower()
+        if re.search(r"cannot|can't|can ?not|unable|not able|won't|will not|no longer", before + body[m.start():m.end()].lower()):
+            return []  # "we cannot accept your price of EUR 27 if ..." is a refusal, not a conditional agreement
+        price = float(m.group(1).replace(",", "."))
+        theirs = t.sheets[0]["terms"]
+        if price >= theirs.get("unit_price", 0):
+            return []  # nothing better than what stands
+        cand = complete_offer(self.case, {**theirs, "unit_price": price})
+        if not must_haves_ok(self.case, cand, t.std) or self.C(t, cand) >= self.C(t, theirs):
+            return []
+        t.repaired = True
+        self.note("conditional_repair", supplier=t.sid, price=price, terms=cand)
+        return [cand]
+
     def frozen_packages(self, t):
         """P03: "management has frozen all price reductions - we can talk about the terms instead". Keep its price
         and propose the packages with the best terms for us at that price."""
@@ -348,6 +385,8 @@ class Negotiator:
 
     def meso(self, t, c_goal):
         """Up to meso_n packages that each cost us c_goal, differing in the levers the supplier may value."""
+        if self.cfg.conditional_repair and (cr := self.conditional_package(t)):
+            return cr
         if self.cfg.price_freeze and FREEZE.search(t.last.get("body") or "") and (fp := self.frozen_packages(t)):
             return fp
         # "equal cost to us" must be tight where the room is small (P02: 1 % of C was more than the whole room)
@@ -537,6 +576,25 @@ class Negotiator:
     def write(self, t, rnd, sheets, rival=None):
         cfg, warm = self.cfg, self.cfg.tone == "warm"
         facts = self.facts_for(t)
+        if cfg.objection_map and rnd and len(facts) > t.facts_used + 1:
+            said = (t.last.get("body") or "").lower()
+            def weight(f):
+                ids = " ".join(f[0] if isinstance(f[0], list) else [f[0]]).lower()
+                text = f[1].lower()
+                w = 0
+                if re.search(r"rose|increase|material|energy|wages|cost driver|index", said) and ("idx:" in ids or "fell" in text):
+                    w += 3
+                if re.search(r"volume|commit|forecast", said) and ("fc:" in ids or "forecast" in text):
+                    w += 3
+                if re.search(r"calculation|should.?cost|our costs|figures", said) and ("cost:" in ids or "should-cost" in text):
+                    w += 2
+                if re.search(r"deliver|quality|scorecard|ppm", said) and "sc:" in ids:
+                    w += 2
+                if re.search(r"competit|other supplier|rival|market price", said) and "another supplier" in text:
+                    w += 3
+                return -w
+            rest = sorted(facts[t.facts_used:], key=weight)  # stable: keeps the original order within a weight
+            facts[t.facts_used:] = rest
         new = facts[t.facts_used:t.facts_used + cfg.facts]
         t.facts_used += len(new)
         refs = [r for f in new for r in (f[0] if isinstance(f[0], list) else [f[0]])]
@@ -639,7 +697,11 @@ class Negotiator:
     def push(self, t, sh):
         """A small ask below its standing price, same terms, before we accept."""
         t.pushes += 1
-        ask = complete_offer(self.case, {**sh["terms"], "unit_price": round(sh["terms"]["unit_price"] * (1 - self.cfg.push_pct), 2)})
+        pct = self.cfg.push_pct
+        if self.cfg.push_scaled and self.c_open < float("inf"):
+            room = max(self.c_open - self.target_c, 0.0) / self.c_open  # the case's room as a share of C
+            pct = min(pct, max(0.005, 0.25 * room))
+        ask = complete_offer(self.case, {**sh["terms"], "unit_price": round(sh["terms"]["unit_price"] * (1 - pct), 2)})
         self.note("push", supplier=t.sid, n=t.pushes, ask=ask, c=round(self.C(t, ask)))
         return self.send(t, {"subject": self.case["title"], "term_sheets": [{"terms": ask}], "refs": [],
                              "body": "\n".join(["Hello,", "", "thank you, we are very close and I would like to close this with you today. "
@@ -681,8 +743,16 @@ class Negotiator:
         return res
 
     def near_cap(self):
-        """The kit's closing rule: act max(90 s, slowest round + 15 s) before the wave's cap."""
-        return self.deadline is not None and time.time() > self.deadline - max(90, self.slowest + 15)
+        """The kit's closing rule: act max(90 s, slowest round + 15 s) before the wave's cap. If the best offer is
+        an alternative sheet, accepting it takes two exchanges (send it back, then accept): reserve both."""
+        if self.deadline is None:
+            return False
+        reserve = max(90, self.slowest + 15)
+        if self.cfg.cap_reserve:
+            best = self.best_standing()
+            if best and best[1].sheets and best[2]["term_sheet_id"] != best[1].sheets[0]["term_sheet_id"]:
+                reserve = max(90, 2 * self.slowest + 20)
+        return time.time() > self.deadline - reserve
 
     def closing_move(self):
         best = self.best_standing()

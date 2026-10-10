@@ -264,7 +264,11 @@ class PracticeNegotiator(Negotiator):
                 f = lookup(ref) or {}
                 vals = ", ".join(f"{k} {v}" for k, v in f.items() if k in ("unit_price", "unit_cost", "change_pct", "otd_pct",
                                                                               "ppm", "value", "month", "days", "part"))
-                rows.append(f"| {ref} | {vals or 'see the shared data'} |")
+                label = {"po": "Our order", "cost": "Should-cost estimate", "fc": "Our forecast", "sc": "Your scorecard",
+                         "idx": "Index value", "doc": "Your letter", "ctr": "Our contract", "quote": "Quote"}.get(ref.split(":")[0], "Data")
+                # no raw IDs in the attachment: re-cited IDs counted as duplicate claims (P07, GPT-6.1-sol #9)
+                rows.append(f"| {label} | {vals or 'see the shared data'} |") if (self.cfg.objection_map or self.cfg.proof_plain) else \
+                    rows.append(f"| {ref} | {vals or 'see the shared data'} |")
             need = f"{self.b['need_per_year']:,} pieces per year"
             if rows:
                 import base64

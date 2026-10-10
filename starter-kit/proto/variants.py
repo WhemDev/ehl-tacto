@@ -95,6 +95,14 @@ VARIANTS = {
               replace(A, push="all", bottleneck_anchor=0.03, say_fixed=True, meet_fields=True)),
 }
 
+VARIANTS["A10nomap"] = ("A10 without the objection map", replace(VARIANTS["A9"][1], cap_reserve=True, conditional_repair=True,
+                       push_scaled=True))
+VARIANTS["A10"] = ("A9 + GPT-6.1-sol advice: cap reserve for alternatives, conditional-agreement repair, push scaled to room, plain proof",
+                   replace(VARIANTS["A9"][1], cap_reserve=True, conditional_repair=True, push_scaled=True, proof_plain=True))
+VARIANTS["A10b"] = ("A10 + leverage room boost x1.3 when our floor estimate is weak (practice-only effect)",
+                    replace(VARIANTS["A10"][1], lev_room_boost=1.3))
+VARIANTS["A10map"] = ("A10 + objection map (cost D01 0.02 in the sandbox)", replace(VARIANTS["A10"][1], objection_map=True))
+
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts
