@@ -1,0 +1,17 @@
+{
+  "repeats": 1,
+  "seed": 20261010,
+  "cases": ["case:D02"],
+  "strategies": [
+    {
+      "name": "balanced_trade",
+      "factory": "arena_kit.agents.evidence:EvidenceTraderAgent",
+      "kwargs": {"d02_style": "balanced"}
+    },
+    {
+      "name": "growth_trade",
+      "factory": "arena_kit.agents.evidence:EvidenceTraderAgent",
+      "kwargs": {"d02_style": "growth"}
+    }
+  ]
+}

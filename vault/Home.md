@@ -35,6 +35,13 @@ TABLE case, score, deal, supplier, rounds, agent, commit
 FROM "Runs" SORT file.ctime DESC LIMIT 15
 ```
 
+## Sandbox demo runs
+```dataview
+TABLE case, score, deal, supplier, end_reason, rounds
+FROM "Runs" WHERE set = "sandbox"
+SORT file.ctime DESC
+```
+
 ## How the vault works
 - **Lives in git** (`vault/` in [WhemDev/ehl-tacto](https://github.com/WhemDev/ehl-tacto)). Obsidian Git pulls and pushes it; Claude Code and other agents read and write the same files.
 - **Generated notes** (`Suppliers/`, `Cases/`, `Runs/`) are rewritten by `uv run arena vault …`. Everything under `## Team notes` survives regeneration: write there.

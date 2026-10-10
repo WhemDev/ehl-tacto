@@ -65,6 +65,40 @@ ARENA_URL=http://127.0.0.1:8000 ARENA_API_KEY=<the api_key> uv run arena play ca
 It prints the deal, `c_deal` against `c_open` and `c_best`, the score and a replay link - open it
 in your browser: the result on top, then every e-mail of the negotiation.
 
+## Chat with a supplier over REST
+
+For repeated algorithm comparisons on every demo, see [experiments/README.md](experiments/README.md).
+`uv run arena-experiment --config experiments/demo.json` previews the case/strategy/repetition count;
+add `--execute` to start the sessions and save comparison reports under `../logs/experiments/`.
+
+Put the team key in the repo root `.env` as `ARENA_API_KEY=...` (never commit it), then run:
+
+```bash
+cd starter-kit
+uv run arena chat                 # hosted sandbox case:D01; no practice quota
+uv run arena chat case:P01 --set practice  # uses one practice session
+uv run arena chat --resume SESSION_ID      # reconnect to an open session
+```
+
+The chat prints each supplier's e-mail and standing term sheet. Type plain text to ask a
+question, `/offer 15.50 payment_days=60 | Could we agree on these terms?` to send a complete
+term sheet, `/accept` to take the selected supplier's standing offer, or `/walk` to close without
+a deal. `/suppliers` and `/use SUPPLIER_ID` switch among bidders; `/attachment ATTACHMENT_ID`
+reads a quote PDF or spreadsheet; `/help` lists all commands.
+The CLI shows the case before opening its session. After opening, the arena requires a reply
+within 60 seconds of each supplier response, so prepare your first message before pressing Enter.
+`/quit` leaves the session open and prints its resume command. This is for practice and sandbox
+only; the Live Final requires the autonomous runner.
+
+The arena retains session threads and replays. Once a hosted chat ends, `arena chat` also saves its
+result and negotiation trace in `../vault/Runs/` for review in Obsidian. To backfill finished
+sessions from earlier chats (including chats started outside this CLI), run
+`uv run arena vault runs --set sandbox`; use `--set practice` for practice sessions. Open sessions
+remain on the arena and can be resumed, but get a vault note only after they end.
+
+To explore the REST flow without a hosted key or clock, start `arena-sim` as above and use the
+simulator key with `ARENA_URL=http://127.0.0.1:8000 uv run arena chat case:S01 --set practice`.
+
 ## Try it by hand (Postman, curl)
 
 Feel the API before you put a model in front of it. On the real arena (practice and sandbox) the

@@ -1,0 +1,26 @@
+{
+  "repeats": 3,
+  "seed": 20261010,
+  "strategies": [
+    {
+      "name": "naive",
+      "factory": "arena_kit.agents.naive:NaiveAgent",
+      "kwargs": {}
+    },
+    {
+      "name": "controlled_A",
+      "factory": "arena_kit.agents.strategies:ControlledAgent",
+      "kwargs": {}
+    },
+    {
+      "name": "adaptive_B",
+      "factory": "arena_kit.agents.strategies:AdaptiveHybridAgent",
+      "kwargs": {}
+    },
+    {
+      "name": "bandit_C",
+      "factory": "arena_kit.agents.strategies:LearningHybridAgent",
+      "kwargs": {}
+    }
+  ]
+}

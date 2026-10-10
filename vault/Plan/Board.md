@@ -14,6 +14,7 @@ kanban-plugin: basic
 - [ ] RFQ play: keep 2-3 threads alive, cite rival quotes
 - [ ] Timing guard: every message well under 60 s, close before the 8-min wave cap
 - [ ] Local supplier simulator for cheap iteration
+- [ ] Review sandbox replay notes and derive the agent orchestration plan
 - [ ] Rehearse the final: `arena run --set practice --parallel 10` from the final machine
 - [ ] README (setup, env vars without values, command) + approach description
 - [ ] Slides + pick one replay to walk the jury through
@@ -24,6 +25,10 @@ kanban-plugin: basic
 
 ## Done
 
+- [x] Build A/B/C negotiation policies and run a repeated sandbox tournament across D01 and D02
+- [x] Record Sudeep's D01 manual run findings and prepare the chat CLI branch
+- [x] Save completed manual demo chats automatically and backfill existing sandbox runs
+- [x] Add an interactive REST chat command for the local simulator and hosted practice/sandbox sellers
 - [x] Kit cloned, repo + vault set up
 
 

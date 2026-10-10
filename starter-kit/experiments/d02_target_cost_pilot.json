@@ -1,0 +1,17 @@
+{
+  "repeats": 1,
+  "seed": 20261010,
+  "cases": ["case:D02"],
+  "strategies": [
+    {
+      "name": "j1_cost_control",
+      "factory": "arena_kit.agents.evidence:EvidenceTraderAgent",
+      "kwargs": {"d02_style": "j1_cost", "d02_target_cost": 170638.57}
+    },
+    {
+      "name": "target_cost_response",
+      "factory": "arena_kit.agents.target_cost:TargetCostTraderAgent",
+      "kwargs": {"first_target": 174000.0, "next_target": 170638.57}
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "repeats": 3,
+  "seed": 20261014,
+  "cases": ["case:D02"],
+  "strategies": [
+    {
+      "name": "target_cost_adaptive_packages",
+      "factory": "arena_kit.agents.target_cost:TargetCostTraderAgent",
+      "kwargs": {"first_target": 171000.0, "next_target": 170638.57, "closing_probe": false}
+    }
+  ]
+}
