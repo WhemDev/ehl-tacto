@@ -87,7 +87,10 @@ VARIANTS = {
             replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                     bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
                     price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
-                    holds=3, hold_gave=0.003, allocate_facts=True)),
+                    holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18,
+                    # 20:40, from the replay reviews: one new fact every round after the first (suppliers go final after a
+                    # message without one), a hold that still moves a quarter step, no push after a final (0 gain in 5)
+                    facts_later=1, hold_back=0.75, pushes=0)),
     # + the R4 fork's two RFQ ideas (fact allocation, a package on the supplier's own levers): under test
     "A9hr": ("A9h + RFQ fact allocation + supplier's-levers package",
              replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,

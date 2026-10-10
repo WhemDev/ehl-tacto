@@ -23,6 +23,7 @@ from proto.engine import Config, Negotiator, play
 from proto.target import target
 
 _PKG, _LOCK = None, threading.RLock()
+SHOULD_COST_MARKUP = 1.02  # the package's should-cost over the arena's full cost (P01 1.0200, P02 1.0199, P03 1.0199)
 
 
 def pkg():
@@ -208,8 +209,12 @@ class PracticeNegotiator(Negotiator):
                 f = round(mats[0] / (int(share.group(1)) / 100), 2)  # a rival's material cost / its material share
                 est.update(floor=f, full_cost=f, basis=f"material {mats[0]} / {share.group(1)} % share")
             elif sc:
-                est.update(floor=sc[0]["unit_cost"], full_cost=sc[0]["unit_cost"],
-                           basis=f"should-cost {sc[0]['unit_cost']} ({'this supplier' if sc[0]['supplier_id'] == s else 'other supplier'})")
+                own_plant = sc[0]["supplier_id"] == s
+                # calibration (2026-10-10, P01/P02/P03): the arena's own full cost, backed out of its supplier-health
+                # charges on 24 deals, is the package's should-cost / 1.0200 for every supplier with its own row
+                f = round(sc[0]["unit_cost"] / SHOULD_COST_MARKUP, 2) if own_plant else sc[0]["unit_cost"]
+                est.update(floor=f, full_cost=f,
+                           basis=f"should-cost {sc[0]['unit_cost']} ({'this supplier, / 1.02' if own_plant else 'other supplier'})")
             elif b.get("current_unit_price"):
                 m = (b.get("sustainable_margin_pct") or 5) / 100
                 full = b["current_unit_price"] / (1 + m) * (1 + drift(part))
@@ -218,7 +223,9 @@ class PracticeNegotiator(Negotiator):
                 est.update(floor=round(0.85 * lowest_open, 2), full_cost=round(0.85 * lowest_open, 2), basis="85 % of lowest opening")
             # teammates' P02/P05 zeros: should-cost can sit ABOVE the quotes. It is a weak prior: cap it so
             # the supplier's own opening still earns a sustainable margin (else the opening looks like a squeeze)
-            own_open = t.sheets[0]["terms"].get("unit_price") if t.sheets else None
+            # its opening price (the first offer, not a later counter: the cap must not move with the negotiation)
+            first = next((m for m in t.events if m.get("from") != "buyer" and m.get("term_sheets")), None)
+            own_open = first["term_sheets"][0]["terms"].get("unit_price") if first else None
             if est.get("floor") and own_open:
                 cap = round(own_open / (1 + (b.get("sustainable_margin_pct") or 5) / 100), 2)
                 if est["floor"] > cap:
@@ -231,13 +238,16 @@ class PracticeNegotiator(Negotiator):
 
     def write(self, t, rnd, sheets, rival=None):
         msg = super().write(t, rnd, sheets, rival)
+        msg["refs"] = [r for r in msg.get("refs") or [] if lookup(r) or r.startswith("offer:")]  # never an unknown ID
         if self.cfg.answer_plus:
             extra = []
             asked = (t.last.get("body") or "") if rnd else ""
             part = self.case["parts"][0]
             if re.search(r"volume", asked, re.I) and not getattr(t, "fc_cited", False):
                 fc = q("SELECT id FROM forecasts WHERE part_id = ? ORDER BY snapshot_month DESC LIMIT 1", (part,))
-                if fc:  # cited without a figure: the arena takes the data's own value
+                # only an ID the arena can check (facts.json): P05's latest forecast row is not in it, and citing it
+                # came back "doesn't exist ... that costs trust" in every run - the supplier went final a round early
+                if fc and lookup(fc[0]["id"]):  # cited without a figure: the arena takes the data's own value
                     extra.append(f"Our current forecast ({fc[0]['id']}) backs this binding volume.")
                     msg.setdefault("refs", []).append(fc[0]["id"])
                     t.fc_cited = True

@@ -72,7 +72,9 @@ def target(case, suppliers):
             if not must_haves_ok(case, {**terms, "unit_price": p0}, std):
                 continue
             # strategic goals charge for squeezing the supplier: the cheapest price may sit above its floor
-            prices = [round(p0 + 0.05 * i, 2) for i in range(0, 121)] if sup.get("full_cost") else [p0]
+            # (the C-optimum can sit well above the floor: P03's lay EUR 19 above a EUR 395 floor - scan 15 % up)
+            step = max(0.01, round(p0 * 0.15 / 200, 2))
+            prices = [round(p0 + step * i, 2) for i in range(0, 201)] if sup.get("full_cost") else [p0]
             c, p = min((total_cost(case, {**terms, "unit_price": q}, std, sup), q) for q in prices)
             rows.append((c, sid, {**terms, "unit_price": p}))
     alt = case["buyer"].get("alternative") or {}

@@ -92,6 +92,11 @@ class Config:
     allocate_facts: bool = False  # RFQ: a case fact counts once per case - a shared one goes to the best supplier now, never twice
     theirs_sheet: bool = False  # one package on the supplier's own levers (its standing + standard terms, within our must-haves)
     theirs_rfq_only: bool = False  # ... only with rivals: alone, a supplier agrees to it at our goal instead of conceding (P01)
+    ask_cap: float = 0.0  # every goal: the first ask at least the lowest opening price x (1 - this); 0 = off
+    # 2026-10-10 20:30, from 70 practice replays: suppliers go final right after a message with no new fact, and
+    # after a hold that repeats the same ask ("you didn't move")
+    facts_later: int = 0  # facts per message after the first (0 = `facts`): spread them, one new fact every round
+    hold_back: float = 1.0  # a hold rewinds the curve by this many rounds: 1 = the same ask again, 0.75 = a quarter step
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -293,6 +298,11 @@ class Negotiator:
             # practice P07: our data floor gave a first ask above the best possible deal; never be more timid
             # than a typical room for this goal
             start = min(start, self.c_open * (1 - prior))
+        if self.cfg.ask_cap and self.c_open < float("inf"):
+            # every goal, last so that it wins: a floor estimate far under the quotes (the P06 file: a should-cost
+            # 30 % below) must not open 30 % below the market - real suppliers harden at that (P10 at 17 %, P02 at
+            # 6 %); 3-17 % worked
+            start = max(start, self.price_floor_c(self.cfg.ask_cap))
         if self.cfg.anchor_mode == "opening" and self.c_open < float("inf"):
             # teammates' rule: the first ask sits a goal-specific % below the opening, never below our target
             start = max(start, self.c_open * (1 - GOAL_ANCHOR.get(self.b.get("category_goal"), 0.10)))
@@ -300,16 +310,23 @@ class Negotiator:
         return start + (ref - start) * frac
 
     def bottleneck_floor_c(self):
-        if getattr(self, "_bfc", None) is None:
+        return self.price_floor_c(self.cfg.bottleneck_anchor)
+
+    def price_floor_c(self, frac):
+        """C of the cheapest full-coverage package at `frac` below the lowest opening price: the lowest goal a
+        first ask may have, whatever our floor estimate says. Plain C, without the supplier-health term: at a
+        squeezed price that term would inflate the floor above the opening itself (stabilise cases)."""
+        cache = self.__dict__.setdefault("_pfc", {})
+        if frac not in cache:
             prices = [t.sheets[0]["terms"]["unit_price"] for t in self.threads.values() if t.sheets]
             if not prices:
                 return 0.0
-            floor_p = min(prices) * (1 - self.cfg.bottleneck_anchor)
+            floor_p = min(prices) * (1 - frac)
             t0 = next(iter(self.threads.values()))
-            cs = [self.C(t0, {**g, "unit_price": floor_p}) for g in lever_grid(self.case, t0.std)
+            cs = [total_cost(self.case, {**g, "unit_price": floor_p}, t0.std) for g in lever_grid(self.case, t0.std)
                   if must_haves_ok(self.case, {**g, "unit_price": floor_p}, t0.std)]
-            self._bfc = min(cs) if cs else 0.0
-        return self._bfc
+            cache[frac] = min(cs) if cs else 0.0
+        return cache[frac]
 
     def recalled(self, t):
         """P18/P08: its offers got worse after our last move. Propose its best earlier package (it offered it
@@ -594,10 +611,11 @@ class Negotiator:
     def write(self, t, rnd, sheets, rival=None):
         cfg, warm = self.cfg, self.cfg.tone == "warm"
         facts = self.facts_for(t)
+        n_facts = cfg.facts if rnd == 0 or not cfg.facts_later else cfg.facts_later
         if cfg.allocate_facts and len(self.threads) > 1:
-            new = self.pick_facts(t, facts, cfg.facts)
+            new = self.pick_facts(t, facts, n_facts)
         else:
-            new = facts[t.facts_used:t.facts_used + cfg.facts]
+            new = facts[t.facts_used:t.facts_used + n_facts]
             t.facts_used += len(new)
         refs = [r for f in new for r in (f[0] if isinstance(f[0], list) else [f[0]])]
         lines = ["Hello,", ""]
@@ -834,7 +852,7 @@ class Negotiator:
                         and bt.sent() < limit - 2):
                     state["holds"] += 1
                     self.note("hold", c=c, gave=round(gave), goal=round(goal))
-                    t.rounds -= 1
+                    t.rounds -= cfg.hold_back
                     goal = self.goal(t.rounds)
                 elif (cfg.rfq_bar and bt.status == "agreed" and open_rivals and not state.get("bar")
                       and time.time() - bt.replied_at < 40):
@@ -900,7 +918,12 @@ class Negotiator:
         lead = None
         if cfg.rfq_stagger and len(self.threads) > 1:
             # the friend's D02 move: talk to the cheapest quote first; open the others citing its fresh answer
-            lead = min((x for x in self.threads.values() if x.sheets), key=lambda x: x.sheets[0]["terms"]["unit_price"], default=None)
+            # the cheapest quote that keeps our must-haves (P05: the cheapest opened at a 52-day lead against a 42-day
+            # must-have; its price is no bar for the others)
+            lead = min((x for x in self.threads.values() if x.sheets and must_haves_ok(self.case, x.sheets[0]["terms"], x.std)),
+                       key=lambda x: x.sheets[0]["terms"]["unit_price"], default=None)
+            if lead is None:
+                lead = min((x for x in self.threads.values() if x.sheets), key=lambda x: x.sheets[0]["terms"]["unit_price"], default=None)
             for x in self.threads.values():
                 x.staggered = x is not lead
             self.note("stagger", lead=lead.sid if lead else None)
@@ -969,7 +992,7 @@ class Negotiator:
                         and t.sent() < limit - 2):
                     holds += 1  # it is still moving: one more round at our current goal before we take it
                     self.note("hold", c=c, gave=round(gave), goal=round(goal))
-                    rnd -= 1  # the goal stays where it is this round
+                    rnd -= cfg.hold_back  # the goal stays (or moves a fraction of a step) this round
                 elif c <= next_goal or t.status == "agreed":
                     self.note("accept", why="goal" if c <= next_goal else "agreed", c=c, goal=next_goal)
                     return self.close(t, sh)
