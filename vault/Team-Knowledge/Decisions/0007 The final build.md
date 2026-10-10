@@ -44,6 +44,17 @@ Records: P05 0.688, P08 0.607, P18 0.532 (ours), board 73.6 (#3). Details: [[Tes
 on a case feature (goal, type, a term the supplier insists on, a driver that fell), never on an ID. The last code
 change before the final is the RFQ port from the R4 fork, if it passes the sandbox and P05.
 
+**Since 22:15 (2026-10-10)**
+- **One correctness fix joins the build** (`cb9e2cb`): only IDs in `facts.json` (or Sunday's release) are cited. The phantom-ID
+  guard used a lookup that also finds table-only rows, so the frozen build still cited P05's latest forecast snapshot
+  (in the tables, not in facts.json) when asked about volume and drew "contradicted ... that costs trust" (a9h3/a9j
+  passes). A contradicted claim costs about 1 % of price in the reply. Tested on all 19 case files over three
+  question rounds; the frozen build's other mails are unchanged.
+- **Tested and not adopted:** the fact planner + RFQ rival loop ([[Options 2026-10-10 - beyond tuning]] O1/O3,
+  variant `A9h-plan-rfq`): fresh pass 0.715 vs the build's 0.715-0.726. Suppliers stop at the same price whatever
+  facts we send (Werdenfels 5.40, Donautal 5.44); a round concedes about the same with 1, 2 or 3 new facts landing,
+  so facts change the path, not the endpoint. The variant stays in `proto/variants.py`.
+
 **Sunday checklist**
 - 08:00 `cd starter-kit && uv run arena data`, then `ls data/release-sunday/facts.json`: `DataPackage` merges a
   `release-sunday` folder next to the package by itself (rehearsed 2026-10-10 20:00 with a synthetic release:

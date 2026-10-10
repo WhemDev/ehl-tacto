@@ -37,7 +37,8 @@ LOG_DIR = Path(__file__).resolve().parents[2] / "proto" / "runs" / "hybrid"
 # the engine's notes that are decisions: shown on the dashboard as planned moves
 PLAN_NOTES = {"accept", "hold", "push", "mirror_alternative", "cap_close", "bar", "stagger", "meet_field",
               "accept_retry", "theirs_sheet", "required_term", "recalled", "fallback_counter", "patient"}
-STEP_NOTES = ("target", "crash", "error", "close_failed", "close_failed_2", "resync", "attachment_missing")
+STEP_NOTES = ("target", "crash", "error", "close_failed", "close_failed_2", "resync", "attachment_missing",
+              "dropped_ids")
 BREAKDOWN_HINT = re.compile(r"conversion|Material accounts for about", re.I)
 DOCS = ThreadPoolExecutor(max_workers=4, thread_name_prefix="docs")
 
