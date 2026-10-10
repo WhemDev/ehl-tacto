@@ -225,3 +225,44 @@ def test_the_watchdog_accepts_the_best_offer_just_before_the_cap():
     o._watchdog((None, None))
     # 70250 is cheaper but its reply is in flight (its offer is about to change): 70210 is taken
     assert closed == [("sup:70210", {"type": "accept", "term_sheet_id": "offer:sup:70210-1"})] and o.closed
+
+
+# --- what we argue with and what we offer ---------------------------------------------------------
+
+
+def test_claims_never_argue_for_the_supplier(pkg):
+    # practice P03 (renewal, no price letter): copper +47.7 % and electronics +13.5 % are its arguments
+    c = case("P03")
+    opening = {"sup:70530": {"terms": {"unit_price": 438.21, "payment_days": 30}, "standard": {}}}
+    claims = analyse(c, opening, pkg)["suppliers"]["sup:70530"]["claims"]
+    assert claims and not [x for x in claims if x["kind"] == "index" and "+" in x["sentence"].split("changed ")[1][:2]]
+    ids = [i for x in claims for i in x["ids"]]
+    assert len(ids) == len(set(ids))  # each ID once: a repeated one only scores "duplicate"
+
+
+def test_bundles_cite_no_component_prices(pkg):
+    c = case("P07")  # a kit of several parts: a component's order price is not the kit's price
+    opening = {"sup:70610": {"terms": {"unit_price": 5.74, "payment_days": 30, "contract_months": 12}, "standard": {}}}
+    claims = analyse(c, opening, pkg)["suppliers"]["sup:70610"]["claims"]
+    assert not [x for x in claims if x["kind"] in ("orders", "should_cost")]
+
+
+def test_free_levers_go_to_the_supplier(pkg):
+    # a contract beyond the horizon and a lead time up to our need cost us nothing: offer the longest
+    c = case("P07")
+    opening = {"sup:70610": {"terms": {"unit_price": 5.74, "payment_days": 30, "contract_months": 12}, "standard": {}}}
+    ideal = analyse(c, opening, pkg)["suppliers"]["sup:70610"]["ideal_levers"]
+    assert ideal["contract_months"] == max(c["term_options"]["contract_months"])
+
+
+def test_profiles_never_soften_the_goals_anchor():
+    c = case("P10")
+    timid = {
+        "archetype": "near_monopolist",
+        "confidence": 1.0,
+        "protects": ["unit_price is policy"],
+        "situation": {"dependency_on_us": 0.0, "our_dependency": 1.0, "relationship": "strained"},
+    }
+    from arena_kit.analysis import GOALS
+
+    assert strategy.tactics(c, timid)["anchor"] >= GOALS[c["buyer"]["category_goal"]]["anchor"]

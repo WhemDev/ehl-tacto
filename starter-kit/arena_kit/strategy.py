@@ -145,7 +145,9 @@ def tactics(case, profile):
             ordered.append((field, mode))
     points = [ID_RE.sub("", a.get("point", "")).replace("()", "").strip() for a in profile.get("arguments") or []]
     out.update(
-        anchor=round(min(max(anchor, 0.02), 0.25), 4),
+        # a profile may only make us bolder: practice (A/B over 10 cases) showed its softer anchors gained
+        # nothing, and the deal lands near our first ask - the goal's default is the floor
+        anchor=round(min(max(anchor, goal["anchor"]), 0.25), 4),
         e=round(min(max(e, 0.15), 1.5), 3),
         gives=ordered,
         protect=[f for f in protect if f != "unit_price"],

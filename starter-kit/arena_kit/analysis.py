@@ -31,6 +31,8 @@ GOALS = {
     "quality_first": {"anchor": 0.10, "e": 0.4, "min_margin": 0.03},
 }
 TARGET_OTD = 95.0  # the quality agreement's on-time delivery target (company.md)
+# news about a supplier that speaks for us: it needs work, or its costs fell
+NEWS_THAT_HELPS = {"free_capacity", "short_time_work", "new_plant", "energy_contract", "refocus"}
 # should-cost rows not modelled on the supplier's own plant assume a German cost base; company.md's
 # rule of thumb for other countries' full cost relative to Germany
 COUNTRY_COST = {
@@ -82,19 +84,28 @@ def options(case, field, *also):
     return found or [None]
 
 
+# Levers that cost us nothing in one direction are given to the supplier: a contract beyond the horizon is
+# security for it (practice P03, P07: "the 36-month contract ... allows us to improve our offer") and a lead
+# time up to our need is slack for it - neither changes C.
+FREE_FOR_THEM = ("contract_months", "lead_time_days")
+
+
 def ideal_levers(case, std, price):
-    """Our cheapest combination of the non-price levers at a given price (must-haves kept)."""
+    """Our cheapest combination of the non-price levers at a given price (must-haves kept); among equally
+    cheap ones, the one with the longest contract and lead time (free for us, worth something to it)."""
     fields = lever_fields(case)
-    best, best_c = {}, math.inf
+    found = []
     for combo in itertools.product(*(options(case, f) for f in fields)):
         levers = dict(zip(fields, combo, strict=True))
         terms = complete_offer(case, {**levers, "unit_price": price})
         if not must_haves_ok(case, terms, std):
             continue
-        c = cost(case, terms, std)
-        if c < best_c:
-            best, best_c = {f: terms[f] for f in fields}, c
-    return best
+        found.append((cost(case, terms, std), {f: terms[f] for f in fields}))
+    if not found:
+        return {}
+    best_c = min(c for c, _ in found)
+    ties = [lev for c, lev in found if c <= best_c + 0.5]
+    return max(ties, key=lambda lev: tuple(lev.get(f) or 0 for f in FREE_FOR_THEM if f in fields))
 
 
 def lever_table(case, base, std):
@@ -215,14 +226,21 @@ def claims(case, package, supplier, opening_price):
     out, b = [], case["buyer"]
     letter = fact(case, package, case.get("trigger_doc")) if case.get("trigger_doc") else None
     # 1. the cost drivers: index moves that undercut the claimed increase
+    # - only a move that speaks for us: one that fell or stayed flat, or (against a price letter) rose clearly
+    #   less than the supplier asks; a rising index is its argument, not ours (copper +47.7 %)
     asked = (letter or {}).get("asked_pct")
     for m in index_moves(case, package):
-        weak = asked is None or m["change_pct"] < asked
+        if m["change_pct"] <= 1.0:
+            strength = 2 if m["change_pct"] <= 0 else 1
+        elif asked is not None and m["change_pct"] < asked / 2:
+            strength = 1
+        else:
+            continue
         out.append(
             {
                 "kind": "index",
                 "ids": [m["from"], m["to"]],
-                "strength": (2 if m["change_pct"] <= 0 else 1) if weak else 0,
+                "strength": strength,
                 "sentence": f"{m['name']} changed {m['change_pct']:+.1f}% from {m['from_month']} to {m['to_month']} "
                 f"({m['from']}, {m['to']}).",
             }
@@ -281,7 +299,64 @@ def claims(case, package, supplier, opening_price):
                         "sentence": f"Your defect rate over the last 12 months was {sc['ppm']} ppm ({ref}).",
                     }
                 )
-    # 5. growing demand: a carrot, not a stick
+    # 5. what this supplier has been delivering at, our should-cost (only if its price is clearly above it)
+    # and news about it - a bigger pool, so every round can bring one fresh, checked fact ("since you didn't
+    # bring any new data to the table, our price stays", practice P11). Facts of the package, the Sunday
+    # release and the case itself.
+    known = {**(getattr(package, "facts", None) or {}), **(case.get("facts") or {})}
+    parts = set(case.get("parts", []))
+    orders = sorted(
+        (
+            (k, v)
+            for k, v in known.items()
+            if k.startswith("po:") and v.get("supplier") == supplier and v.get("part") in parts and v.get("unit_price")
+        ),
+        key=lambda kv: kv[1].get("date") or "",
+    )[-2:]
+    single = len(parts) == 1  # a bundle's component prices are not the kit's price
+    if single and len(orders) == 2:
+        (a, fa), (z, fz) = orders
+        unit = "unit" if (fz.get("price_unit") or 1) == 1 else f"{fz['price_unit']} units"
+        at = (
+            f"EUR {fz['unit_price']:.2f}"
+            if fa["unit_price"] == fz["unit_price"]
+            else f"EUR {fa['unit_price']:.2f} and EUR {fz['unit_price']:.2f}"
+        )
+        out.append(
+            {
+                "kind": "orders",
+                "ids": [a, z],
+                "strength": 1,
+                "sentence": f"Our two latest orders of this part with you were at {at} per {unit} ({a}, {z}).",
+            }
+        )
+    num = supplier.split(":")[-1]
+    for part in parts:
+        pnum = part.split(":")[-1]
+        own, generic = known.get(f"cost:{pnum}-{num}"), known.get(f"cost:{pnum}")
+        ref = f"cost:{pnum}-{num}" if own else f"cost:{pnum}" if generic else None
+        est = own or generic
+        if single and est and est.get("unit_cost") and opening_price and opening_price >= est["unit_cost"] * 1.10:
+            out.append(
+                {
+                    "kind": "should_cost",
+                    "ids": [ref],
+                    "strength": 2,
+                    "sentence": f"Our bottom-up cost estimate for this part is EUR {est['unit_cost']:.2f} per unit "
+                    f"({ref}).",
+                }
+            )
+    for k, v in known.items():
+        if k.startswith("news:") and v.get("supplier") == supplier and v.get("topic") in NEWS_THAT_HELPS:
+            out.append(
+                {
+                    "kind": "news",
+                    "ids": [k],
+                    "strength": 1,
+                    "sentence": f"We noted the news \u201c{v.get('headline', '').strip()}\u201d ({k}).",
+                }
+            )
+    # 6. growing demand: a carrot, not a stick
     for ref in case.get("refs", []):
         fc = fact(case, package, ref) if ref.startswith("fc:") else None
         if fc and fc.get("change_pct") and fc["change_pct"] > 0:
@@ -293,7 +368,12 @@ def claims(case, package, supplier, opening_price):
                     "sentence": f"Our demand forecast for this part rose {fc['change_pct']:.1f}% ({ref}).",
                 }
             )
-    return sorted(out, key=lambda c: -c["strength"])
+    seen, unique = set(), []  # each ID counts once per case: a repeated one is only a "duplicate"
+    for c in sorted(out, key=lambda c: -c["strength"]):
+        if not seen & set(c["ids"]):
+            seen.update(c["ids"])
+            unique.append(c)
+    return unique
 
 
 # --- the analysis ---------------------------------------------------------------------------
