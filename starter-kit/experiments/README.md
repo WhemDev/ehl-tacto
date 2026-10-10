@@ -112,3 +112,6 @@ batch, and does not resume an interrupted one.
 strategies by scores and costs across repeated runs, not one lucky result or unit price alone.
 Promote conclusions and a few representative replay links into Obsidian; raw trial files stay in
 the ignored output directory. Known secret environment values are redacted from saved artifacts.
+
+The D02 target-cost investigation, including the three-run 0.703 median and unsuccessful variants,
+is recorded in [d02-target-cost-findings.md](d02-target-cost-findings.md).
