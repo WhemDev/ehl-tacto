@@ -90,6 +90,14 @@ VARIANTS = {
                     holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0)),
     # 20:50 validation of the review bundle (10 fresh sessions): with facts 2-then-1 and a quarter-step hold the mean
     # fell to 0.717 (P18 0.443, P07 0.671, P08 0.592) while P05 rose to 0.717 - the pacing changes are kept as options
+    # 21:40, patience with movement (see Config.patient): the frozen A9h plus patient asks 1.5 % below an open
+    # supplier's standing offer until it stalls, one new fact every round, no holds (patience replaces them)
+    "A10": ("A9h + patient: never accept an open offer that still moves; ask 1.5 % below it with a new fact each round",
+            replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                    bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                    price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                    allocate_facts=True, ask_cap=0.18, pushes=0, holds=0, patient=True, patient_gap=0.015,
+                    facts_later=1)),
     "A9h-paced": ("A9h + one fact per round after the first + quarter-step holds (lost 0.01 on the 20:50 pass)",
                   replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                           bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,

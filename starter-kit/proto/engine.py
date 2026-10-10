@@ -97,6 +97,13 @@ class Config:
     # after a hold that repeats the same ask ("you didn't move")
     facts_later: int = 0  # facts per message after the first (0 = `facts`): spread them, one new fact every round
     hold_back: float = 1.0  # a hold rewinds the curve by this many rounds: 1 = the same ask again, 0.75 = a quarter step
+    # patience with movement (21:30, 90 practice replays): after any open reply a supplier conceded again ~1 % of C
+    # about half the time, going final costs nothing (we take the final), and no supplier ever walked without a
+    # push. So: never accept an OPEN offer while rounds remain unless it stalled; keep our ask patient_gap below its
+    # standing offer (suppliers agreed to asks 0.8-2 % below their last offer), never the same ask twice
+    patient: bool = False
+    patient_gap: float = 0.015  # our late ask sits this share of C below the supplier's standing offer
+    stall_gave: float = 0.001  # a reply that moved less than this share of C is a stall: take the offer
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -846,8 +853,10 @@ class Negotiator:
                 #  the threads themselves keep negotiating below)
                 c, bt, sh = best
                 open_rivals = [x for x in live if x is not bt and x.status == "open"]
+                first = state["prev_c"] is None
                 gave = (state["prev_c"] - c) if state["prev_c"] is not None else 0
                 state["prev_c"] = c
+                stalled = not first and gave <= cfg.stall_gave * c
                 if (state["holds"] < cfg.holds and c <= next_goal and bt.status == "open" and gave > cfg.hold_gave * c
                         and bt.sent() < limit - 2):
                     state["holds"] += 1
@@ -858,9 +867,13 @@ class Negotiator:
                       and time.time() - bt.replied_at < 40):
                     state["bar"] = bt.sid  # teammates' P05 lesson: an early agreement is the bar for the rivals
                     self.note("bar", supplier=bt.sid, c=c)
-                elif c <= next_goal or bt.status == "agreed":
+                elif cfg.patient and bt.status == "open" and not stalled and bt.sent() < limit - 2:
+                    goal = min(goal, c * (1 - cfg.patient_gap))  # still moving: ask a little below it, with a new fact
+                    self.note("patient", supplier=bt.sid, c=c, gave=round(gave), goal=round(goal))
+                elif c <= next_goal or bt.status == "agreed" or (cfg.patient and stalled):
                     if not (cfg.rfq_bar and state.get("bar") and open_rivals and time.time() - bt.replied_at < 50):
-                        self.note("accept", why="goal" if c <= next_goal else "agreed", c=c, goal=next_goal)
+                        self.note("accept", why="goal" if c <= next_goal else "agreed" if bt.status == "agreed" else "stalled",
+                                  c=c, goal=next_goal)
                         return ("close", (bt, sh))
                 idle = time.time() - bt.replied_at
                 rival_pending = any(x.in_flight for x in open_rivals)
@@ -986,15 +999,22 @@ class Negotiator:
             if best and best[0] <= self.c_alt:
                 c, t, sh = best
                 open_rivals = [x for x in live if x is not t and x.status == "open"]
+                first = prev_c is None
                 gave = (prev_c - c) if prev_c is not None else 0
                 prev_c = c
+                stalled = not first and gave <= cfg.stall_gave * c
                 if (holds < cfg.holds and c <= next_goal and t.status == "open" and gave > cfg.hold_gave * c
                         and t.sent() < limit - 2):
                     holds += 1  # it is still moving: one more round at our current goal before we take it
                     self.note("hold", c=c, gave=round(gave), goal=round(goal))
                     rnd -= cfg.hold_back  # the goal stays (or moves a fraction of a step) this round
-                elif c <= next_goal or t.status == "agreed":
-                    self.note("accept", why="goal" if c <= next_goal else "agreed", c=c, goal=next_goal)
+                elif cfg.patient and t.status == "open" and not stalled and t.sent() < limit - 2:
+                    # it is open and still moving: ask again, a little below its offer (it may agree), with a new fact
+                    goal = min(goal, c * (1 - cfg.patient_gap))
+                    self.note("patient", c=c, gave=round(gave), goal=round(goal))
+                elif c <= next_goal or t.status == "agreed" or (cfg.patient and stalled):
+                    self.note("accept", why="goal" if c <= next_goal else "agreed" if t.status == "agreed" else "stalled",
+                              c=c, goal=next_goal)
                     return self.close(t, sh)
                 if t.status == "final_offer" and not open_rivals:
                     backup = [x for x in live if x is not t and x.sheets]
