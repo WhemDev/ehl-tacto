@@ -24,7 +24,7 @@ ME_PATH = "/me"
 MAX_RETRY_AFTER_S = 5
 # The network, not the arena (DNS, a dropped connection): keep retrying this long. Practice P02 (2026-10-10 23:26):
 # a DNS outage outlasted the old three quick retries (3.5 s), the case's mails stopped, the arena logged three buyer
-# timeouts and the supplier walked away - a zero. 45 s: a 30 s outage at 00:50 cost two of a teammate's probe mails,
+# timeouts and the supplier walked away - a zero. 45 s: a later ~30 s outage cost two of a teammate's probe mails,
 # and 45 s still lands inside the 60 s clock after a short writer step. Each move carries one X-Move-Id across
 # retries, so a retry after a lost response is answered from the arena's dedup, not played twice.
 NET_RETRY_S = 45.0

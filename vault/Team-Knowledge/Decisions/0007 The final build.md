@@ -55,7 +55,7 @@ change before the final is the RFQ port from the R4 fork, if it passes the sandb
   facts we send (Werdenfels 5.40, Donautal 5.44); a round concedes about the same with 1, 2 or 3 new facts landing,
   so facts change the path, not the endpoint. The variant stays in `proto/variants.py`.
 
-**Since 00:30 (2026-10-11)**
+**Since 23:30 (2026-10-10)**
 - **Clause packages in supplier-health cases** (`14ee055`): a package with an index clause goes out at the payment term
   and price cheapest for us, priced against the supplier's opening payment term and a 6.4 % cost of money (the arena's
   supplier-health charge fits P02's 24 deals exactly that way). P02 fresh: 0.735 x 2 vs 0.628-0.682. Only cases with a
