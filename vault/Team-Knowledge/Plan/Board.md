@@ -21,6 +21,9 @@ kanban-plugin: basic
 
 ## Doing
 
+- [ ] Final timing: close before the wave cap with max(90 s, slowest round + 15), rounds from `seconds_left`, final command = orchestra @Arda-Claude
+- [ ] Strategy quick wins from the reviews: profiles only raise anchors, free contract months, claims pool (po/cost/news + case facts), say what is fixed @Arda-Claude
+- [ ] Supplier emulator fitted to our logged practice + sandbox negotiations, to tune rounds / concession / anchors without quota @Arda-Claude
 
 ## Done
 

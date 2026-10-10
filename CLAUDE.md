@@ -29,15 +29,18 @@ uv sync --all-extras
 uv run arena me                                   # key works? practice quota
 
 # free - use these for development
-uv run arena play case:D01 --agent llm -v         # hosted sandbox: real-style suppliers, no quota
-uv run arena run --set sandbox --agent llm        # both sandbox cases (D01 price increase, D02 RFQ)
-../scripts/sim.sh play case:P05 --agent llm -v    # local arena-sim, any case P01-P19/D01/D02, scripted supplier
+uv run arena play case:D01 --agent orchestra -v         # hosted sandbox: real-style suppliers, no quota
+uv run arena run --set sandbox --agent orchestra        # both sandbox cases (D01 price increase, D02 RFQ)
+../scripts/sim.sh play case:P05 --agent orchestra -v    # local arena-sim, any case P01-P19/D01/D02, scripted supplier
 ../scripts/sim.sh run --set practice --parallel 10   # every case locally (plumbing, timing)
 ../scripts/sim.sh stop
 
 # costs practice sessions (200/24 h for the whole team) - needs --practice
-uv run arena play case:P01 --agent llm -v --practice
-uv run arena run --set practice --agent llm --parallel 8 --practice
+uv run arena play case:P01 --agent orchestra -v --practice
+uv run arena run --set practice --agent orchestra --parallel 8 --practice
+
+# the Live Final (start before 12:00, leave it running; orchestra is also the default agent)
+uv run arena run --set final --agent orchestra --parallel 10 -v > ../logs/final.log 2>&1
 
 uv run arena dashboard                            # live view of every play/run: http://127.0.0.1:8765 (logs/events.jsonl)
 uv run arena vault suppliers|cases|runs           # regenerate vault notes

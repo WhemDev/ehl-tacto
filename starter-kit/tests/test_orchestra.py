@@ -162,3 +162,66 @@ def test_the_orchestras_writer_gives_up_with_it(monkeypatch):
         release.set()
         server.shutdown()
         server.server_close()
+
+
+# --- the Live Final's wave cap -------------------------------------------------------------------
+
+
+def test_close_margin_follows_the_slowest_round():
+    o = orchestra.Orchestra()
+    o.limit_rounds, o.round_times, o.slowest = 5, [], 0.0
+    o.deadline = time.time() + 60
+    assert o._deadline_near()  # 60 s left < the 90 s minimum
+    o.deadline = time.time() + 200
+    assert not o._deadline_near()
+    o.slowest = 190.0  # one round took 190 s: another one no longer fits
+    assert o._deadline_near()
+
+
+def test_rounds_budget_from_the_time_left():
+    o = orchestra.Orchestra()
+    o.limit_rounds, o.slowest, o.round_times = 5, 60.0, [60.0]
+    o.deadline = None
+    assert o._rounds_by_time(0) == 5  # practice: no cap
+    o.deadline = time.time() + 300  # 300 s - 90 s margin = 3 more rounds of 60 s
+    assert o._rounds_by_time(0) == 4
+    o.deadline = time.time() + 100
+    assert o._rounds_by_time(2) == 3  # no room: this is the last message
+
+
+def test_a_case_near_the_cap_closes_at_once(sim, monkeypatch):
+    from test_sim import team
+
+    from arena_kit.play import RemoteTable, play
+
+    client = team(sim[0])
+    t0 = time.monotonic()
+    result = play(RemoteTable(client), "case:S01", orchestra.Orchestra(None), deadline=time.time() + 30)
+    assert result["ended"] and time.monotonic() - t0 < 10  # 30 s left < 90 s: accept or walk, no new round
+
+
+def test_the_watchdog_accepts_the_best_offer_just_before_the_cap():
+    closed = []
+
+    class Table:
+        def close(self, supplier_id, message):
+            closed.append((supplier_id, message["action"]))
+            return {"deal": True, "ended": True}
+
+    def quote(sid, price):
+        return [
+            {
+                "from": f"sales@{sid}",
+                "status": "open",
+                "term_sheets": [{"term_sheet_id": f"offer:{sid}-1", "terms": {"unit_price": price}}],
+            }
+        ]
+
+    o = orchestra.Orchestra()
+    o.case, o.table, o.closed, o.inflight = case("P05"), Table(), False, {"sup:70250"}
+    o.threads = {"sup:70210": quote("sup:70210", 36.0), "sup:70250": quote("sup:70250", 30.0)}
+    o.a = {"c_alt": None, "suppliers": {}}
+    o.deadline = time.time() + orchestra.WATCHDOG_S - 5  # inside the watchdog's window
+    o._watchdog((None, None))
+    # 70250 is cheaper but its reply is in flight (its offer is about to change): 70210 is taken
+    assert closed == [("sup:70210", {"type": "accept", "term_sheet_id": "offer:sup:70210-1"})] and o.closed

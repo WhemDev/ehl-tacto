@@ -12,7 +12,7 @@ tags: [plan]
 - 08:00 Sunday release → `uv run arena data` + `uv run arena vault suppliers`
 - 09:00 pre-flight: one practice case through the final setup (machine, network, LLM keys)
 - 11:30 checklist: `arena me` works, data has the release, runner logs to a file, laptop on power, no sleep
-- **12:00 code freeze** + submit on ehl.gg · Live Final: `uv run arena run --set final --agent llm --parallel 10`
+- **12:00 code freeze** + submit on ehl.gg · Live Final: `uv run arena run --set final --agent orchestra --parallel 10` (orchestra is the default agent)
 - 13:00 top-10 pitch · 14:30 track winners · 15:30 Grand Final · 16:30 awards
 
 ## Practice budget

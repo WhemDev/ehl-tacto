@@ -21,6 +21,7 @@ import logging
 import math
 import os
 import re
+import statistics
 import threading
 import time
 from concurrent.futures import ThreadPoolExecutor
@@ -38,7 +39,10 @@ from ..play import ENDED, closing_move, fetch_documents, latest, moves_left, sta
 log = logging.getLogger("arena")
 ID_RE = re.compile(r"\b(?:idx|quote|offer|sc|qn|po|cost|fc|news|doc|ctr):[\w.:@#/-]*\w")
 OBSERVATIONS = Path(os.environ.get("ARENA_OBSERVATIONS") or Path(event_log.PATH).with_name("observations.jsonl"))
-CLOSE_BEFORE_CAP_S = 75  # final: close this long before the wave's cap
+# final: close when less time is left than one round needs (the kit's rule: the slowest round so far - our
+# decision plus the supplier's reply - plus a margin, at least 90 s); a watchdog accepts the best standing
+# offer this long before the cap if every thread is still waiting for a reply
+CLOSE_BEFORE_CAP_S, ROUND_MARGIN_S, WATCHDOG_S = 90, 15, 20
 NARRATE_S = 25  # the model gets this long to write; then the template writes
 POSTURE = {
     "leverage": "Competitive and firm. Several capable suppliers exist; the lowest total cost wins.",
@@ -145,6 +149,7 @@ class Orchestra:
                 fetch_documents(table, m)
         self.table, self.case, self.threads, self.deadline = table, case, threads, deadline
         self.closed, self.result, self.used, self.inflight = False, None, {}, set()
+        self.slowest, self.round_times = 0.0, []  # seconds per round: our decision + the supplier's reply
         self.models = {sid: SupplierModel(sid) for sid in threads}
         self.limit_rounds = min(case.get("round_limit", 10), self.rounds)
         self.explore = max(1, self.limit_rounds // 2)  # the first half: learn and anchor
@@ -175,6 +180,8 @@ class Orchestra:
         live = [sid for sid in threads if latest(threads[sid]).get("status") not in ENDED]
         if not live:
             return table.result()
+        if self._cap():
+            threading.Thread(target=self._watchdog, args=(ctx,), daemon=True).start()
         with ThreadPoolExecutor(max_workers=len(live)) as pool:
             for f in [pool.submit(self._worker, sid, ctx) for sid in live]:
                 try:
@@ -275,9 +282,61 @@ class Orchestra:
             return {"kind": "accept", "supplier": best[1], "sheet": best[2], "c": best[0], "why": why}
         return {"kind": "walk", "supplier": (self._live() or list(self.threads))[0], "why": why}
 
+    def _cap(self):
+        return self.deadline() if callable(self.deadline) else self.deadline
+
+    def _margin(self):
+        return max(CLOSE_BEFORE_CAP_S, self.slowest + ROUND_MARGIN_S)
+
     def _deadline_near(self):
-        cap = self.deadline() if callable(self.deadline) else self.deadline
-        return bool(cap) and _now() > cap - CLOSE_BEFORE_CAP_S
+        """Not enough time left for another round before the wave's cap."""
+        cap = self._cap()
+        return bool(cap) and _now() > cap - self._margin()
+
+    def _rounds_by_time(self, r):
+        """With a wave cap: our last message index that still fits before the cap (r = messages sent)."""
+        cap = self._cap()
+        if not cap:
+            return self.limit_rounds
+        per_round = max(statistics.mean(self.round_times) if self.round_times else 45.0, 20.0)
+        fit = int(max(0.0, cap - self._margin() - _now()) // per_round)
+        return min(self.limit_rounds, r + 1 + fit)
+
+    def _watchdog(self, ctx):
+        """Final only: shortly before the cap, if no worker got to close, accept the best standing offer
+        of a thread that is not waiting for a reply (an open session at the cap ends without a deal)."""
+        event_log.ctx.case, event_log.ctx.session = ctx
+        while True:
+            time.sleep(0.5)
+            with self.lock:
+                if self.closed:
+                    return
+                cap = self._cap()
+                if not cap or _now() < cap - WATCHDOG_S:
+                    continue
+                best = None
+                for sid in self._live():
+                    if sid in self.inflight:
+                        continue
+                    sheet_id, terms = standing(self.threads[sid])
+                    std = self._sup(sid).get("standard") or standard_terms(self.threads[sid])
+                    if sheet_id and terms.get("unit_price") and must_haves_ok(self.case, terms, std):
+                        c = self._c(sid, terms)
+                        if best is None or c < best[0]:
+                            best = (c, sid, sheet_id)
+                alt = self.a.get("c_alt")
+                if best and (alt is None or best[0] < alt):
+                    log.warning("watchdog: %ss to the cap - accepting %s", round(cap - _now()), best[1])
+                    self._close(
+                        {
+                            "kind": "accept",
+                            "supplier": best[1],
+                            "sheet": best[2],
+                            "c": best[0],
+                            "why": "the wave's cap is seconds away",
+                        }
+                    )
+                return
 
     def _curve(self, sid, r):
         """Where our concession curve stands for this supplier at our r-th message: from the
@@ -292,7 +351,7 @@ class Orchestra:
         if own is not None and math.isfinite(own):
             lim = min(lim, own) if math.isfinite(lim) else own
         lim = max(lim if math.isfinite(lim) else asp * 1.1, asp)
-        return boulware(r + 1, self.limit_rounds, asp, lim, s.get("e", self.a["e"]))
+        return boulware(r + 1, self._rounds_by_time(r), asp, lim, s.get("e", self.a["e"]))
 
     def _target(self, sid, r):
         """Our target C for this supplier's next message: the curve, but never above the supplier's
@@ -461,6 +520,8 @@ class Orchestra:
                         move = {"kind": "wait"}
                     elif self._close(move):
                         return
+                    else:  # the arena refused (the offer just changed): the state is fresh, decide again
+                        move = {"kind": "wait"}
             if move["kind"] == "wait":
                 time.sleep(1.0)
                 continue
@@ -487,6 +548,9 @@ class Orchestra:
                 with self.lock:
                     self.inflight.discard(sid)
             with self.lock:
+                took = _now() - t0
+                self.round_times.append(took)
+                self.slowest = max(self.slowest, took)
                 if "result" in reply:
                     self.closed, self.result = True, reply["result"]
                     return
