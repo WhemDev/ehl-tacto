@@ -20,7 +20,11 @@ from pathlib import Path
 from arena_kit import ArenaClient, ArenaError
 from arena_kit.cli import load_env
 
+import proto.engine as eng
 from proto.engine import Config, play
+from proto.practice import PracticeNegotiator
+
+eng.Negotiator = PracticeNegotiator  # the generic (final) code path: no hand-written sandbox facts
 
 OUT = Path("proto/runs/search")
 CASES = ["case:D01", "case:D02"]
@@ -43,9 +47,26 @@ SPACE = {
     "tone": ["warm", "brief"],
 }
 SEEDS = [Config(), Config(e=2.0)]  # run 9 and run 8: the best so far
+# RFQ-only search space (on top of a base algorithm): cannot change single-supplier play (D01 stays as it is)
+SPACE_RFQ = {
+    "rfq_e": [1.0, 1.5, 2.0, 3.0],
+    "rfq_T": [3, 4, 5, 6],
+    "rfq_anchor": [-0.08, -0.05, -0.03, 0.0],
+    "rfq_holds": [0, 1, 2],
+    "rfq_pushes": [1, 2, 3],
+    "rfq_push_pct": [0.01, 0.02, 0.03],
+    "rfq_meso_n": [1, 2, 3],
+    "breakdown_arg": [False, True],
+    "volume_framing": [False, True],
+    "facts": [1, 2],
+    "hold_gave": [0.005, 0.01],
+}
+BASE = None  # set by --base
 
 
 def random_config(rng):
+    if BASE is not None:
+        return replace(BASE, **{k: rng.choice(v) for k, v in SPACE.items()})
     return Config(**{k: rng.choice(v) for k, v in SPACE.items()})
 
 
@@ -62,7 +83,7 @@ def crossover(a, b, rng):
 
 class Search:
     def __init__(self, workers=10):
-        self.client = ArenaClient()  # thread-safe pacing: one client keeps all sessions under the rate limit
+        self.client = ArenaClient(timeout=25, retries=7)  # under load a reply can stall: re-fetch it (same move id) every 25 s  # thread-safe pacing: one client keeps all sessions under the rate limit
         self.workers = workers
         self.cache = {}  # (config key, case) -> score
         OUT.mkdir(parents=True, exist_ok=True)
@@ -121,12 +142,28 @@ def main():
     ap.add_argument("--patience", type=int, default=2)
     ap.add_argument("--seed", type=int, default=7)
     ap.add_argument("--workers", type=int, default=6, help="parallel sessions; the key's limit of 10 is shared with teammates")
+    ap.add_argument("--base", default=None, help="start from a named algorithm in proto/variants.py (e.g. A6)")
+    ap.add_argument("--cases", nargs="+", default=None, help="cases to play (default D01 D02)")
+    ap.add_argument("--space", default="full", choices=["full", "rfq"], help="rfq: only the RFQ-only settings")
+    ap.add_argument("--out", default=None, help="results folder (default proto/runs/search)")
     a = ap.parse_args()
     load_env()
     rng = random.Random(a.seed)
     s = Search(workers=a.workers)
     seen = {}
+    global OUT, CASES, SPACE, BASE
+    if a.out:
+        OUT = Path(a.out)
+        s.__init__(workers=a.workers)  # re-read results from the new folder
+    if a.cases:
+        CASES = a.cases
+    if a.space == "rfq":
+        SPACE = SPACE_RFQ
     pop = list(SEEDS)
+    if a.base:
+        from proto.variants import VARIANTS
+        BASE = VARIANTS[a.base][1]
+        pop = [BASE]
     while len(pop) < a.pop:
         c = random_config(rng)
         if c.key() not in {p.key() for p in pop}:
