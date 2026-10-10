@@ -88,6 +88,10 @@ class Config:
     evidence_plus: bool = False  # cheaper orders of the same part elsewhere, recently falling drivers, its own history
     answer_plus: bool = False  # forecast ID with volume answers, on-time payment promise, bundle volume framing
 
+    # from the R4 fork (another session, 2026-10-10 evening; sandbox D02 +0.05 each on fresh replies)
+    allocate_facts: bool = False  # RFQ: a case fact counts once per case - a shared one goes to the best supplier now, never twice
+    theirs_sheet: bool = False  # one package on the supplier's own levers (its standing + standard terms, within our must-haves)
+
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
 
@@ -143,6 +147,8 @@ WORDS = {"unit_price": "price", "payment_days": "payment terms", "contract_month
          "volume_per_year": "the annual volume"}
 BREAKDOWN = re.compile(r"\| ([\d.]+) \|[^\n]*\n[^\n]*\| ([\d.]+) \|[^\n]*\n[^\n]*conversion[^|]*\| ([\d.]+)")
 SIGN = ["", "Best regards", "Hollerau Pumpenwerke, Purchasing"]
+# facts the whole case shares (one claim per case, api.md) as opposed to a supplier's own (its scorecard)
+SHARED = ("cost:", "fc:", "po:", "idx:", "news:", "quote:", "doc:", "ctr:")
 
 
 def fmt(terms):
@@ -469,6 +475,30 @@ class Negotiator:
                 break
             if terms not in picks:
                 picks.append(terms)
+        if self.cfg.theirs_sheet and offered and len(priced) > 1:
+            # one package on the supplier's own levers (its standing + standard terms, clamped to our must-haves):
+            # cheap gives for us can be dear to it (D02: 42 instead of 35 days' lead costs us EUR 0.09/unit, while
+            # C1 wrote that the shorter lead time "increases our operational costs")
+            own = {**t.std, **offered}
+
+            def dist(terms):
+                d = 0.0
+                for k, v in terms.items():
+                    if k == "unit_price" or own.get(k) is None or v is None:
+                        continue
+                    if isinstance(v, (int, float)) and isinstance(own[k], (int, float)):
+                        d += abs(v - own[k]) / max(abs(own[k]), 1)
+                    else:
+                        d += v != own[k]
+                return d
+
+            theirs = min((x[2] for x in priced), key=dist)
+            if theirs not in picks:
+                if len(picks) >= self.cfg.meso_n:
+                    picks[-1] = theirs
+                else:
+                    picks.append(theirs)
+                self.note("theirs_sheet", supplier=t.sid, terms=theirs)
         if self.cfg.meet_fields and offered and not self.cfg.meet_cheapest:  # meet_cheapest supersedes this rule
             # practice P08/P18: the supplier insisted on its index clause and we never offered one back
             ours = [s2["terms"] for m in t.events if m.get("from") == "buyer" for s2 in m.get("term_sheets") or []]
@@ -521,6 +551,31 @@ class Negotiator:
         """[(ref or [refs], sentence)] to drip into the e-mails; subclasses build them from data."""
         return FACTS.get(self.case_id, {}).get(t.sid, [])
 
+    def pick_facts(self, t, facts, n):
+        """RFQ: a case fact counts once per case (api.md), so a shared one (should-cost, forecast, orders, an index,
+        news, a quote) goes only to the supplier whose standing offer is best for us now, and never twice; a
+        supplier's own facts (its scorecard) go to it. Practice P05: the index pair cited to the second supplier
+        came back "duplicate"; sandbox D02: the should-cost spent on the staggered lead came back from the winner
+        as "already taken that data into account"."""
+        best = self.best_standing()
+        leader = best[1] if best else None
+        spent = self.__dict__.setdefault("spent", set())
+        used = t.__dict__.setdefault("used_facts", set())
+        out = []
+        for ref, text in facts:
+            ids = ref if isinstance(ref, list) else [ref]
+            shared = any(i.startswith(SHARED) for i in ids)
+            other_sc = any(i.startswith("sc:") and i.split("@")[0] != "sc:" + t.sid.split(":")[-1] for i in ids)
+            if tuple(ids) in used or other_sc or (shared and (t is not leader or any(i in spent for i in ids))):
+                continue
+            out.append((ref, text))
+            used.add(tuple(ids))
+            if shared:
+                spent.update(ids)
+            if len(out) >= n:
+                break
+        return out
+
     # ---------- wording ----------
     def our_calculation(self, t):
         """Our calculation from this supplier's own cost breakdown (never another supplier's figures)."""
@@ -538,8 +593,11 @@ class Negotiator:
     def write(self, t, rnd, sheets, rival=None):
         cfg, warm = self.cfg, self.cfg.tone == "warm"
         facts = self.facts_for(t)
-        new = facts[t.facts_used:t.facts_used + cfg.facts]
-        t.facts_used += len(new)
+        if cfg.allocate_facts and len(self.threads) > 1:
+            new = self.pick_facts(t, facts, cfg.facts)
+        else:
+            new = facts[t.facts_used:t.facts_used + cfg.facts]
+            t.facts_used += len(new)
         refs = [r for f in new for r in (f[0] if isinstance(f[0], list) else [f[0]])]
         lines = ["Hello,", ""]
         if rnd == 0:
