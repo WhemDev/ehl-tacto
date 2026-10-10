@@ -15,7 +15,9 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 | naive kit agent | 0.20 | – | |
 | A (search winner) | 0.979 | 0.640 | practice: mean 0.557 over 10 cases; P02 0.684 and P04 0.874 were case records |
 | A2 (+ fixes from practice) | 0.979 | 0.626 | safe push, bottleneck anchor, say-fixed, meet supplier terms, RFQ in-flight guard |
-| **A3 (+ staggered RFQ opening)** | **0.979** | **0.728** (0.740, 0.740, 0.703) | **main algorithm**; the D02 friend replay scored 0.661 |
+| A3 (+ staggered RFQ opening) | 0.979 | 0.728 (0.740, 0.740, 0.703) | the D02 friend replay scored 0.661 (with hand-written sandbox facts) |
+| A5 (+ practice fixes 2, generic code path only) | 0.982 | 0.706 (5 runs) | practice: 0.614 over 10 cases, P03 0.923 / P01 0.881 records |
+| **A6 (+ fixes for every A5 practice problem)** | **0.982** | **0.696** (0.703, 0.703, 0.682) | **main algorithm**; generic code path (what the final runs) |
 
 ## Side-by-side D01/D02 sandbox comparison (2026-10-10)
 
@@ -99,10 +101,10 @@ directory, so copy or symlink it if needed):
 
 ```bash
 # sandbox (free): A3 once on D01, three times on D02 (D02 is noisy)
-PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A3
+PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A6
 
 # hosted practice (COSTS QUOTA - ask the team first): facts and floors from the data package
-PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A3
+PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A6
 
 # one case, any Config as JSON
 ENGINE_CFG='{"e": 2, "T": 4, "rfq_stagger": true}' PYTHONPATH=. uv run python proto/engine.py case:D02
@@ -139,8 +141,10 @@ PYTHONPATH=. uv run python proto/cleanup.py proto/runs/variants
 | `engine.py` | `Config` (every tactic is a field), `Negotiator` (`goal`, `meso`, `write`, `run`, `run_rfq`, guards), `play()` |
 | `target.py` | target C and price-for-C solver |
 | `practice.py` | practice/final adapter: facts and floors from the data package |
-| `variants.py` | named algorithms (A, A2, **A3**, B–H) and a parallel runner (max 4 sessions: the key's 10 are shared) |
+| `variants.py` | named algorithms (A … **A6**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
 | `search.py`, `report.py` | evolutionary tactic search on the sandbox and its report |
+| `smoke.py` | offline smoke test on all practice case files (no quota) |
+| `inspect_run.py` | every message, decision and claim of a variant's practice sessions |
 | `practice_report.py`, `summarize.py`, `cleanup.py`, `chat.py` | practice report, run summaries, safe cleanup, manual play |
 
 Logs go to `proto/runs/` (git-ignored). `report.py` / `practice_report.py` write notes into `$VAULT_DIR` (default `../vault`).

@@ -41,6 +41,16 @@ VARIANTS = {
     "G": ("A2 + breakdown argument + volume framing", replace(VARIANTS_A2, breakdown_arg=True, volume_framing=True)),
     "H": ("A2 + all three friend ideas", replace(VARIANTS_A2, rfq_stagger=True, breakdown_arg=True, volume_framing=True)),
     "A3": ("Main algorithm: A2 + staggered RFQ opening (= F)", replace(VARIANTS_A2, rfq_stagger=True)),
+    "A4": ("A3 + practice fixes 2: price-based bottleneck anchor, never walk, meet at first insistence, penalty aversion",
+           replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                   bottleneck_anchor=0.10)),
+    "A5": ("A4 + insisted terms kept every round, priced within 3 % of the supplier's price (generic P18 fix)",
+           replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                   bottleneck_anchor=0.10, meet_band=0.03)),
+    "A6": ("A5 + all fixes from the A5 practice run (incl. target prior and price-freeze terms)",
+           replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                   bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                   price_freeze=True)),
     "A2all": ("A2 but pushing after every final offer (to price the safety)",
               replace(A, push="all", bottleneck_anchor=0.03, say_fixed=True, meet_fields=True)),
     # Hybrid experiments: preserve A3's Target C, equal-cost MESOs, staggered RFQ and acceptance;
@@ -69,8 +79,8 @@ VARIANTS = {
 }
 
 
-def run_one(client, name, cfg, case, rep, practice):
-    if practice:
+def run_one(client, name, cfg, case, rep, practice, generic=True):
+    if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts
         from proto.practice import PracticeNegotiator
         eng.Negotiator = PracticeNegotiator
     for attempt in range(6):
@@ -81,7 +91,7 @@ def run_one(client, name, cfg, case, rep, practice):
             time.sleep(10 * (attempt + 1))
     else:
         sid, res = None, {"score": None, "error": "could not open a session"}
-    row = {"variant": name, "case": case, "rep": rep, "session": sid, "cfg": asdict(cfg), "score": res.get("score"),
+    row = {"variant": name + ("-generic" if generic and not practice else ""), "case": case, "rep": rep, "session": sid, "cfg": asdict(cfg), "score": res.get("score"),
            "c_deal": res.get("c_deal"), "c_best": res.get("c_best"), "terms": res.get("terms"), "error": res.get("error")}
     with open(OUT / "results.jsonl", "a") as f:
         f.write(json.dumps(row) + "\n")
@@ -94,10 +104,12 @@ def main():
     ap.add_argument("--variants", nargs="+", default=list(VARIANTS))
     ap.add_argument("--workers", type=int, default=4)
     ap.add_argument("--practice", action="store_true", help="data-package facts/floors (costs practice quota!)")
+    ap.add_argument("--generic", action="store_true", default=True, help="(default) the final's generic code path")
+    ap.add_argument("--handfacts", action="store_true", help="sandbox with the old hand-written D01/D02 facts (not used in the final)")
     a = ap.parse_args()
     load_env()
     OUT.mkdir(parents=True, exist_ok=True)
-    client = ArenaClient()
+    client = ArenaClient(timeout=25, retries=7)  # under load a reply can stall: re-fetch it (same move id) every 25 s
     jobs = []
     for spec in a.cases:
         case, _, n = spec.rpartition(":") if spec.count(":") == 2 else (spec, None, "1")
@@ -107,14 +119,14 @@ def main():
     print(f"{len(jobs)} sessions, {a.workers} at a time", flush=True)
     rows = []
     with ThreadPoolExecutor(a.workers) as ex:
-        futs = [ex.submit(run_one, client, v, cfg, case, rep, a.practice) for v, cfg, case, rep in jobs]
+        futs = [ex.submit(run_one, client, v, cfg, case, rep, a.practice, not a.handfacts) for v, cfg, case, rep in jobs]
         for i, f in enumerate(as_completed(futs), 1):
             r = f.result()
             rows.append(r)
             print(f"  [{i}/{len(jobs)}] {r['variant']} {r['case']} rep{r['rep']} score={r['score']} err={r['error']}", flush=True)
     table = defaultdict(lambda: defaultdict(list))
     for r in rows:
-        table[r["variant"]][r["case"]].append(r["score"] if r["score"] is not None else 0.0)
+        table[r["variant"].replace("-generic", "")][r["case"]].append(r["score"] if r["score"] is not None else 0.0)
     cases = sorted({r["case"] for r in rows})
     print("\nvariant | " + " | ".join(cases))
     for v in a.variants:
