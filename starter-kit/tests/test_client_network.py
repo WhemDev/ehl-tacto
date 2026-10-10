@@ -1,4 +1,4 @@
-"""The network, not the arena: DNS failures and dropped connections are retried for ~30 s with one move ID, then raised.
+"""The network, not the arena: DNS failures and dropped connections are retried for ~45 s with one move ID, then raised.
 Practice P02 (2026-10-10 23:26): a DNS outage outlasted three quick retries; the supplier walked."""
 
 import httpx
@@ -50,4 +50,4 @@ def test_a_long_outage_is_raised_after_the_budget(clock):
     c = ArenaClient("http://arena.test", transport=httpx.MockTransport(handle), rate=1000)
     with pytest.raises(httpx.TransportError):
         c.me()
-    assert 30.0 <= clock.now <= 35.0
+    assert 45.0 <= clock.now <= 50.0
