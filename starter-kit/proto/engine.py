@@ -24,6 +24,7 @@ from arena_kit.cost import supplier_value
 from arena_kit.docs import read_document, standard_terms
 from arena_kit.play import ENDED
 
+from proto.hybrid import revealed_schedule
 from proto.target import lever_grid, price_for_c, target
 
 LOG_DIR = Path("proto/runs")
@@ -67,6 +68,7 @@ class Config:
     d02_target_multiplier: float = 1.0  # D02-only opening ambition multiplier; 0.98 asks 2% harder
     d02_e: float | None = None  # D02-only concession curve exponent (smaller = hold the target longer)
     mirror_supplier_package: bool = False  # price the supplier's preferred latest package at our cost target
+    revealed_schedule: bool = False  # retain supplier-quoted, buyer-cost-neutral delivery flexibility
     # fixes from A3 on practice (E21)
     meet_insist: bool = False  # meet a term at its FIRST explicit insistence ("mandatory", "essential", ...)
     penalty_aversion: float = 0.0  # extra weight on chargebacks when ranking packages for the supplier (P11)
@@ -339,6 +341,7 @@ class Negotiator:
 
     def meso(self, t, c_goal):
         """Up to meso_n packages that each cost us c_goal, differing in the levers the supplier may value."""
+        t.schedule_changes = []
         if self.cfg.price_freeze and FREEZE.search(t.last.get("body") or "") and (fp := self.frozen_packages(t)):
             return fp
         # "equal cost to us" must be tight where the room is small (P02: 1 % of C was more than the whole room)
@@ -475,6 +478,11 @@ class Negotiator:
                         picks.append(best)
                     self.note("meet_field", supplier=t.sid, field=f, value=offered[f], price=best["unit_price"])
                     break
+        if self.cfg.revealed_schedule and t.status == "open":
+            picks, t.schedule_changes = revealed_schedule(
+                self.case, picks, t.sheets, t.std, t.est if self.relationship else None)
+            for change in t.schedule_changes:
+                self.note("revealed_schedule", supplier=t.sid, **change)
         return picks
 
     def facts_for(self, t):
@@ -502,6 +510,13 @@ class Negotiator:
         t.facts_used += len(new)
         refs = [r for f in new for r in (f[0] if isinstance(f[0], list) else [f[0]])]
         lines = ["Hello,", ""]
+        if cfg.revealed_schedule and t.status == "open":
+            for change in getattr(t, "schedule_changes", []):
+                if change["terms"] in sheets:
+                    package = sheets.index(change["terms"]) + 1
+                    lines.append(f"Your quoted alternative includes {change['to_days']}-day delivery. "
+                                 f"We can use that schedule in package {package} while meeting our requirement. "
+                                 "Can you confirm the target price on that schedule?")
         if rnd == 0:
             if self.case.get("type") == "price_increase":
                 lines.append("Thank you for your letter and the quote. Energy and wage costs have clearly been a strain for a foundry "

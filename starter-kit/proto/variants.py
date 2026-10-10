@@ -82,6 +82,8 @@ VARIANTS = {
 # Retain the original identifier so historical logs/configurations remain reproducible.
 VARIANTS["B1"] = ("Sudeep B1: response-aware equal-cost FCA/35-day package trading",
                   VARIANTS["A3fca35"][1])
+VARIANTS["A_hybrid"] = ("A6 + supplier-revealed, buyer-cost-neutral delivery flexibility",
+                        replace(VARIANTS["A6"][1], revealed_schedule=True))
 
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):
