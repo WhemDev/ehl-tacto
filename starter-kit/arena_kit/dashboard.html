@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Negotiation monitor</title>
+<style>
+:root{--bg:#f6f5f1;--panel:#fff;--panel2:#f1efe8;--line:#e2e0d8;--text:#22221f;--muted:#6b6a64;--faint:#9a988f;
+--accent:#534ab7;--accent-bg:#eeedfe;--ok:#3b6d11;--ok-bg:#eaf3de;--warn:#854f0b;--warn-bg:#faeeda;--bad:#a32d2d;--bad-bg:#fcebeb;
+--s1:#534ab7;--s2:#d85a30;--s3:#1d9e75;--buyer:#888780;--mono:ui-monospace,SFMono-Regular,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root{--bg:#1b1b19;--panel:#242422;--panel2:#2c2c2a;--line:#3a3a37;--text:#ecebe6;--muted:#a9a79f;--faint:#7b7972;
+--accent:#afa9ec;--accent-bg:#2e2a55;--ok:#97c459;--ok-bg:#24320f;--warn:#ef9f27;--warn-bg:#3a2a10;--bad:#f09595;--bad-bg:#3d1b1b;--s1:#afa9ec;--s2:#f0997b;--s3:#5dcaa5;--buyer:#b4b2a9}}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+header{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:12px 20px;border-bottom:1px solid var(--line);background:var(--panel);position:sticky;top:0;z-index:5}
+h1{font-size:16px;font-weight:600;margin:0}.dot{width:9px;height:9px;border-radius:50%;background:var(--faint);display:inline-block}.dot.on{background:var(--ok)}
+.stats{display:flex;gap:18px;margin-left:auto;flex-wrap:wrap}.stat{font-size:12px;color:var(--muted)}.stat b{display:block;font-size:17px;color:var(--text);font-weight:600}
+select,label{font:inherit;color:var(--muted)}select{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:6px;padding:3px 6px}
+main{display:grid;grid-template-columns:320px 1fr;min-height:calc(100vh - 58px)}
+aside{border-right:1px solid var(--line);padding:12px;overflow:auto;max-height:calc(100vh - 58px);position:sticky;top:58px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin-bottom:8px;cursor:pointer}
+.card.sel{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent)}.card .t{font-weight:600}.sub{font-size:12px;color:var(--muted)}
+.pill{display:inline-block;font-size:11px;padding:1px 8px;border-radius:10px;background:var(--panel2);color:var(--muted);white-space:nowrap}
+.pill.live{background:var(--accent-bg);color:var(--accent)}.pill.ok{background:var(--ok-bg);color:var(--ok)}.pill.warn{background:var(--warn-bg);color:var(--warn)}.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.bar{height:4px;background:var(--panel2);border-radius:2px;overflow:hidden;margin-top:6px}.bar i{display:block;height:100%;background:var(--accent)}
+section{padding:16px 22px;min-width:0}.empty{color:var(--muted);padding:40px;text-align:center}
+.top{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}.top h2{margin:0;font-size:19px}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px;margin:12px 0}
+.kv{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:6px 10px}.kv span{display:block;font-size:11px;color:var(--muted)}.kv b{font-weight:600}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin:12px 0}
+.panel h3{margin:0 0 8px;font-size:13px;color:var(--muted);font-weight:600}
+svg text{fill:var(--muted);font-size:11px}
+.ev{display:grid;grid-template-columns:52px 1fr;gap:10px;margin:8px 0}.ts{font:11px var(--mono);color:var(--faint);padding-top:10px;text-align:right}
+.msg{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 12px;border-left:4px solid var(--line)}
+.msg.buyer{border-left-color:var(--buyer)}.msg h4{margin:0 0 4px;font-size:13px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.body{white-space:pre-wrap;color:var(--text);font-size:13px;max-height:7.5em;overflow:hidden;position:relative;cursor:pointer;margin-top:6px}
+.body.open{max-height:none}.body:not(.open)::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2em;background:linear-gradient(transparent,var(--panel))}
+table{border-collapse:collapse;font-size:12px;margin-top:6px}td,th{padding:2px 10px 2px 0;text-align:left;vertical-align:top}th{color:var(--muted);font-weight:500}
+td.ch{color:var(--accent);font-weight:600}.c{font:600 13px var(--mono)}.delta.down{color:var(--ok)}.delta.up{color:var(--bad)}
+.line{font-size:12px;color:var(--muted);padding:6px 0}.line.warn{color:var(--warn)}.line.bad{color:var(--bad)}
+details summary{cursor:pointer;color:var(--muted);font-size:12px}pre{font:11px/1.45 var(--mono);white-space:pre-wrap;background:var(--panel2);padding:8px;border-radius:6px;margin:6px 0 0;max-height:360px;overflow:auto}
+.result{display:flex;gap:24px;align-items:center;flex-wrap:wrap}.score{font-size:40px;font-weight:700}
+.chips span{margin-right:4px}a{color:var(--accent)}
+@media (max-width:820px){main{grid-template-columns:1fr}aside{position:static;max-height:none;border-right:0;border-bottom:1px solid var(--line)}}
+</style>
+</head>
+<body>
+<header>
+  <span class="dot" id="conn" title="connection"></span><h1>Negotiation monitor</h1>
+  <select id="run"></select><label><input type="checkbox" id="follow" checked> follow latest run</label>
+  <div class="stats" id="stats"></div>
+</header>
+<main><aside id="list"></aside><section id="detail"><div class="empty">Waiting for a run… start <code>arena play</code> or <code>arena run</code>.</div></section></main>
+<script>
+const S={runs:new Map(),run:null,sel:null,open:new Set()};
+const tog=(k,el)=>{S.open.has(k)?S.open.delete(k):S.open.add(k);el&&el.classList.toggle("open")};
+const op=k=>S.open.has(k)?"open":"";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const eur=v=>v==null?"–":"€"+Math.round(v).toLocaleString("en-US");
+const pct=v=>v==null?"–":(v*100).toFixed(0)+"%";
+const short=s=>String(s||"").replace(/^(case|sup):/,"");
+const COLORS=["var(--s1)","var(--s2)","var(--s3)"];
+const FIELDS=["unit_price","payment_days","effective_date","contract_months","volume_per_year","lead_time_days","incoterm","index_clause","tooling_eur","ppm_commitment","chargeback_eur_per_complaint"];
+const LABEL={unit_price:"price",payment_days:"payment days",effective_date:"effective",contract_months:"months",volume_per_year:"volume/yr",lead_time_days:"lead time",incoterm:"incoterm",index_clause:"index clause",tooling_eur:"tooling",ppm_commitment:"ppm",chargeback_eur_per_complaint:"chargeback"};
+const fmtv=v=>v==null?"–":typeof v==="object"?esc(JSON.stringify(v)):esc(v);
+
+function runOf(id,ts){if(!S.runs.has(id))S.runs.set(id,{id,start:ts,sessions:new Map(),last:ts});return S.runs.get(id)}
+function ingest(e){
+  const r=runOf(e.run,e.ts);r.last=e.ts;
+  if(!e.case)return;
+  const k=e.case;
+  if(!r.sessions.has(k))r.sessions.set(k,{case:e.case,start:e.ts,events:[],suppliers:{},state:"opening",buyerMsgs:0,colors:{}});
+  const s=r.sessions.get(k);s.events.push(e);s.last=e.ts;if(e.session)s.session=e.session;
+  const sup=id=>{if(!s.suppliers[id]){s.suppliers[id]={offers:[],status:null};s.colors[id]=COLORS[Object.keys(s.colors).length%3]}return s.suppliers[id]};
+  switch(e.kind){
+    case"case":Object.assign(s,{info:e,title:e.title,state:"negotiating"});(e.suppliers||[]).forEach(sup);break;
+    case"supplier":{const p=sup(e.supplier);p.status=e.status;p.offers.push({x:p.offers.length,c:e.c,terms:e.terms,status:e.status});s.state="agent's turn";s.waiting=null;break}
+    case"thinking":s.state="thinking";s.thinking=e.ts;break;
+    case"decided":s.thinking=null;s.lastDecision=e;if(e.decision==="send"){s.state="supplier replying";s.waiting=e.ts}else s.state=e.decision;break;
+    case"buyer":{const p=sup(e.supplier);s.buyerMsgs++;p.asks=p.asks||[];p.asks.push({x:p.offers.length-0.5,sheets:e.sheets||[]});break}
+    case"result":s.result=e;s.state=e.deal?"deal":"no deal";s.thinking=s.waiting=null;break;
+  }
+}
+function render(){
+  const runs=[...S.runs.values()].sort((a,b)=>b.start-a.start);
+  if($("follow").checked&&runs.length)S.run=runs[0].id;
+  $("run").innerHTML=runs.map(r=>`<option value="${r.id}" ${r.id===S.run?"selected":""}>run ${r.id} · ${new Date(r.start*1000).toLocaleTimeString()} · ${r.sessions.size} case${r.sessions.size===1?"":"s"}</option>`).join("");
+  const run=S.runs.get(S.run);if(!run)return;
+  const ss=[...run.sessions.values()].sort((a,b)=>a.start-b.start);
+  if(!S.sel||!run.sessions.has(S.sel))S.sel=ss[0]?.case;
+  const done=ss.filter(s=>s.result),deals=done.filter(s=>s.result.deal),scores=done.map(s=>s.result.score).filter(v=>v!=null);
+  const saved=done.reduce((a,s)=>a+((s.result.c_open??0)-(s.result.c_deal??s.result.c_alt??s.result.c_open??0)),0);
+  $("stats").innerHTML=[["cases",ss.length],["live",ss.length-done.length],["deals",`${deals.length}/${done.length}`],["mean score",scores.length?(100*scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(1):"–"],["€ saved vs opening",eur(saved)]].map(([l,v])=>`<div class="stat"><b>${v}</b>${l}</div>`).join("");
+  $("list").innerHTML=ss.map(card).join("")||'<div class="empty">no cases yet</div>';
+  const s=run.sessions.get(S.sel);if(s)detail(s);
+}
+function statePill(s){const m={"deal":"ok","no deal":"bad","thinking":"live","supplier replying":"warn","agent's turn":"live","opening":"","negotiating":"live","accept":"ok","walk_away":"bad"};return`<span class="pill ${m[s.state]??""}">${esc(s.state)}</span>`}
+function timer(s){const now=Date.now()/1000;if(s.thinking)return` · thinking <b data-since="${s.thinking}"></b>`;if(s.waiting)return` · reply <b data-since="${s.waiting}"></b>`;return""}
+function card(s){
+  const lim=s.info?.round_limit||10,n=Object.keys(s.suppliers).length||1,used=s.buyerMsgs/(lim*n);
+  const offers=Object.entries(s.suppliers).map(([id,p])=>{const o=p.offers.at(-1);return`<span style="color:${s.colors[id]}">${esc(short(id))}</span> ${eur(o?.c)}`}).join(" · ");
+  return`<div class="card ${s.case===S.sel?"sel":""}" onclick="S.sel='${s.case}';render()">
+  <div style="display:flex;justify-content:space-between;gap:8px"><span class="t">${esc(short(s.case))}</span>${statePill(s)}</div>
+  <div class="sub">${esc(s.title||"")}</div><div class="sub">${esc(s.info?.type||"")} · ${esc(s.info?.goal||"")}${timer(s)}</div>
+  <div class="sub">${offers||"&nbsp;"}</div>
+  ${s.result?`<div class="sub">score <b>${pct(s.result.score)}</b> · deal ${eur(s.result.c_deal)}</div>`:""}
+  <div class="bar"><i style="width:${Math.min(100,used*100)}%"></i></div></div>`}
+function chart(s){
+  const W=760,H=240,L=70,R=110,T=14,B=26;const pts=[],refs=[];
+  for(const[id,p]of Object.entries(s.suppliers)){p.offers.forEach(o=>o.c!=null&&pts.push(o.c));(p.asks||[]).forEach(a=>a.sheets.forEach(t=>t.c!=null&&pts.push(t.c)))}
+  if(s.info?.c_alt!=null)refs.push(["no-deal alternative",s.info.c_alt,"var(--warn)"]);
+  if(s.result?.c_open!=null)refs.push(["C open",s.result.c_open,"var(--faint)"]);
+  if(s.result?.c_best!=null)refs.push(["C best",s.result.c_best,"var(--ok)"]);
+  refs.forEach(r=>pts.push(r[1]));if(!pts.length)return'<div class="line">no priced offers yet</div>';
+  let lo=Math.min(...pts),hi=Math.max(...pts);const pad=(hi-lo||hi*0.02||1)*0.12;lo-=pad;hi+=pad;
+  const maxX=Math.max(1,...Object.values(s.suppliers).map(p=>p.offers.length-1));
+  const X=x=>L+(W-L-R)*(x/maxX),Y=v=>T+(H-T-B)*(1-(v-lo)/(hi-lo));
+  let g="";for(let i=0;i<=4;i++){const v=lo+(hi-lo)*i/4;g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="var(--line)"/><text x="${L-6}" y="${Y(v)+4}" text-anchor="end">${eur(v)}</text>`}
+  for(let x=0;x<=maxX;x++)g+=`<text x="${X(x)}" y="${H-8}" text-anchor="middle">${x===0?"quote":"r"+x}</text>`;
+  refs.forEach(([l,v,c])=>g+=`<line x1="${L}" x2="${W-R}" y1="${Y(v)}" y2="${Y(v)}" stroke="${c}" stroke-dasharray="5 4"/><text x="${W-R+6}" y="${Y(v)+4}" style="fill:${c}">${l}</text>`);
+  for(const[id,p]of Object.entries(s.suppliers)){const c=s.colors[id];const o=p.offers.filter(o=>o.c!=null);
+    if(o.length>1)g+=`<polyline fill="none" stroke="${c}" stroke-width="2" points="${o.map(o=>X(o.x)+","+Y(o.c)).join(" ")}"/>`;
+    o.forEach(o=>g+=`<circle cx="${X(o.x)}" cy="${Y(o.c)}" r="4" fill="${c}"><title>${esc(short(id))} ${eur(o.c)} ${esc(o.status)}</title></circle>`);
+    (p.asks||[]).forEach(a=>a.sheets.forEach(t=>t.c!=null&&(g+=`<circle cx="${X(Math.max(0,a.x))}" cy="${Y(t.c)}" r="4" fill="var(--panel)" stroke="${c}" stroke-width="1.5"><title>our term sheet ${eur(t.c)}</title></circle>`)));
+    const last=o.at(-1);if(last)g+=`<text x="${X(last.x)+8}" y="${Y(last.c)-8}" style="fill:${c}">${esc(short(id))}</text>`}
+  return`<svg viewBox="0 0 ${W} ${H}" width="100%" role="img" aria-label="Total cost of offers per round">${g}</svg>
+  <div class="line">Filled = supplier's standing offer, hollow = our term sheets. C excludes the relationship charge (stabilise / secure_supply).</div>`}
+function termsTable(terms,prev){const f=FIELDS.filter(k=>terms&&k in terms);if(!f.length)return"";
+  return`<table><tr>${f.map(k=>`<th>${LABEL[k]}</th>`).join("")}</tr><tr>${f.map(k=>`<td class="${prev&&JSON.stringify(prev[k])!==JSON.stringify(terms[k])?"ch":""}">${fmtv(terms[k])}</td>`).join("")}</tr></table>`}
+function claims(c){return(c||[]).length?`<div class="chips" style="margin-top:6px">${c.map(x=>`<span class="pill ${x.result==="verified"?"ok":x.result==="contradicted"?"bad":""}">claim ${x.index}: ${esc(x.result)}</span>`).join("")}</div>`:""}
+function detail(s){
+  const i=s.info||{},t0=s.start;const rel=ts=>{const d=Math.max(0,Math.round(ts-t0));return Math.floor(d/60)+":"+String(d%60).padStart(2,"0")};
+  const musts=(i.must_haves||[]).map(m=>`${LABEL[m.field]||m.field} ${m.op} ${m.value}`).join(", ")||"none";
+  let h=`<div class="top"><h2>${esc(short(s.case))} · ${esc(s.title||"")}</h2>${statePill(s)}<span class="sub">${esc(s.session||"")}</span></div>
+  <div class="grid">${[["type · goal",`${i.type||"–"} · ${i.goal||"–"}`],["need",i.need?`${(+i.need).toLocaleString("en-US")}/yr × ${i.horizon} yr`:"–"],["current / fallback price",`${fmtv(i.current_price)} / ${fmtv(i.fallback_price)}`],["no-deal alternative",i.c_alt!=null?eur(i.c_alt):(i.alternative?.kind||"none")],["must-haves",esc(musts)],["negotiable",(i.negotiable||[]).map(k=>LABEL[k]||k).join(", ")]].map(([k,v])=>`<div class="kv"><span>${k}</span><b>${v}</b></div>`).join("")}</div>`;
+  if(s.result){const r=s.result;const bd=Object.entries(r.breakdown||{}).filter(([,v])=>Math.abs(v)>0.5);
+    h+=`<div class="panel"><h3>Result</h3><div class="result"><div><div class="score">${pct(r.score)}</div><div class="sub">${r.deal?"deal with "+esc(short(r.supplier)):"no deal"} · ${esc(r.end_reason||"")}</div></div>
+    <table>${[["C open",r.c_open],["C deal",r.c_deal],["C alternative",r.c_alt],["C best",r.c_best]].map(([k,v])=>`<tr><th>${k}</th><td class="c">${eur(v)}</td></tr>`).join("")}</table>
+    ${bd.length?`<table>${bd.map(([k,v])=>`<tr><th>${esc(k)}</th><td class="c">${eur(v)}</td></tr>`).join("")}</table>`:""}
+    ${r.replay?`<a href="${esc(r.replay)}" target="_blank">open replay ↗</a>`:""}</div>${r.terms?termsTable(r.terms):""}</div>`}
+  h+=`<div class="panel"><h3>Total cost C per round</h3>${chart(s)}</div><div class="panel"><h3>Timeline</h3>`;
+  const prev={};
+  for(const[n,e]of s.events.entries()){let b="";const k=s.case+":"+n;
+    if(e.kind==="opening")b=`<div class="line">opening the case…</div>`;
+    else if(e.kind==="case")b=`<details class="line" ${op(k)} ontoggle="this.open?S.open.add('${k}'):S.open.delete('${k}')"><summary>case file: briefing</summary><div class="body open">${esc(e.briefing)}</div></details>`;
+    else if(e.kind==="supplier"){const c=s.colors[e.supplier]||"var(--line)";const p=prev[e.supplier];const d=p?.c!=null&&e.c!=null?e.c-p.c:null;
+      b=`<div class="msg" style="border-left-color:${c}"><h4><span style="color:${c}">${esc(e.sender||short(e.supplier))}</span><span class="pill ${e.status==="agreed"?"ok":e.status==="final_offer"?"warn":["walked_away","no_bid"].includes(e.status)?"bad":""}">${esc(e.status)}</span>
+      <span class="c">${eur(e.c)}</span>${d!=null?`<span class="delta ${d<0?"down":"up"}">${d<0?"−":"+"}${eur(Math.abs(d))}</span>`:""}${e.took?`<span class="sub">replied in ${e.took}s</span>`:""}</h4>
+      <div class="sub">${esc(e.subject||"")}</div>${termsTable(e.terms,p?.terms)}${claims(e.claims)}
+      ${e.missing?.length?`<div class="sub">left out (closes on standard terms): ${e.missing.map(esc).join(", ")}</div>`:""}
+      ${e.signals?`<div class="sub">signals: ${Object.entries(e.signals).map(([k,v])=>`${esc(k)} ${esc(v)}`).join(" · ")}</div>`:""}
+      ${e.attachments?.length?`<div class="sub">attachments: ${e.attachments.map(a=>esc(a.name)).join(", ")}</div>`:""}
+      <div class="body ${op(k)}" onclick="tog('${k}',this)">${esc(e.body)}</div></div>`;prev[e.supplier]={c:e.c,terms:e.terms}}
+    else if(e.kind==="buyer")b=`<div class="msg buyer"><h4>us → ${esc(short(e.supplier))}<span class="sub">${esc(e.subject||"")}</span></h4>
+      ${(e.sheets||[]).map((t,k)=>`<div class="sub" style="margin-top:6px">term sheet ${k+1} · <span class="c">${eur(t.c)}</span></div>${termsTable(t.terms,prev[e.supplier]?.terms)}`).join("")}
+      ${e.refs?.length?`<div class="sub">refs: ${e.refs.map(esc).join(", ")}</div>`:""}<div class="body ${op(k)}" onclick="tog('${k}',this)">${esc(e.body)}</div></div>`;
+    else if(e.kind==="analysis"){const rows=Object.entries(e.suppliers||{}).map(([id,x])=>`<tr><th>${esc(short(id))}</th><td>open ${fmtv(x.price)} → anchor ${fmtv(x.anchor_price)}</td><td class="c">${eur(x.c_open)} → ${eur(x.aspiration_c)}</td><td>${x.floor_price!=null?"floor "+fmtv(x.floor_price):""}${x.relationship_optimum!=null?" · rel. optimum "+fmtv(x.relationship_optimum):""}</td></tr>`).join("");
+      const cl=Object.entries(e.suppliers||{}).flatMap(([id,x])=>(x.claims||[]).map(c=>`<li>${esc(short(id))}: ${esc(c)}</li>`)).join("");
+      b=`<div class="msg" style="border-left-color:var(--accent)"><h4>price analysis <span class="sub">${e.took}s · ${esc(e.goal)} · ${e.rounds} rounds, first ${e.explore} explore</span></h4>
+      <div class="sub">reserve ${eur(e.reserve)} · best opening ${eur(e.best_open)} · alternative ${eur(e.c_alt)}${e.justified_pct!=null?` · cost drivers justify ${e.justified_pct>0?"+":""}${e.justified_pct}%`:""}${e.letter?.asked_pct!=null?` (asked +${e.letter.asked_pct}%)`:""}</div>
+      <table>${rows}</table>${cl?`<details class="line" ${op(k)} ontoggle="this.open?S.open.add('${k}'):S.open.delete('${k}')"><summary>citable arguments</summary><ul>${cl}</ul></details>`:""}</div>`}
+    else if(e.kind==="plan"){
+      if(e.move==="send")b=`<div class="line"><span class="pill ${e.phase==="explore"?"live":"warn"}">${esc(e.phase)}</span> → ${esc(short(e.supplier))} · round ${e.round+1} · target <b class="c">${eur(e.target)}</b> · ${e.sheets?.length||0} package${e.sheets?.length===1?"":"s"} · ${e.arguments?.length||0} argument${e.arguments?.length===1?"":"s"} · planned in ${e.took}s</div>`;
+      else if(e.move==="hold")b=`<div class="line"><span class="pill">hold</span> → ${esc(short(e.supplier))}: keeping its offer alive while the others move</div>`;
+      else b=`<div class="line"><span class="pill ${e.move==="accept"?"ok":"bad"}">${esc(e.move)}</span> ${esc(short(e.supplier))}${e.c!=null?" at "+eur(e.c):""} · ${esc(e.why||"")}</div>`}
+    else if(e.kind==="thinking")continue;
+    else if(e.kind==="decided")b=`<div class="line">agent decided <b>${esc(e.decision)}</b>${e.supplier?" → "+esc(short(e.supplier)):""} in ${e.took}s ${e.took>45?'<span class="pill bad">near the 60 s limit</span>':e.took>30?'<span class="pill warn">slow</span>':""}</div>`;
+    else if(e.kind==="llm"){let out=e.output||e.error||"";try{out=JSON.stringify(JSON.parse(out.match(/\{[\s\S]*\}/)[0]),null,1)}catch{}
+      b=`<details class="line" ${op(k)} ontoggle="this.open?S.open.add('${k}'):S.open.delete('${k}')"><summary>model ${e.ok?"answered":"failed"} in ${e.took}s · prompt ${(e.prompt_chars/1000).toFixed(1)}k chars</summary><pre>${esc(out)}</pre></details>`}
+    else if(e.kind==="action")b=`<div class="line"><b>${esc(e.action?.type)}</b> ${esc(e.action?.term_sheet_id||"")} → ${esc(short(e.supplier))}</div>`;
+    else if(e.kind==="warning")b=`<div class="line warn">⚠ ${esc(e.message)}</div>`;
+    else if(e.kind==="missed")b=`<div class="line bad">⏱ ${esc(short(e.supplier))}: ${esc(e.detail)}</div>`;
+    else if(e.kind==="result")b=`<div class="line"><b>case ended</b> · score ${pct(e.score)}</div>`;
+    else continue;
+    h+=`<div class="ev"><div class="ts">${rel(e.ts)}</div><div>${b}</div></div>`}
+  if(s.thinking)h+=`<div class="ev"><div class="ts">now</div><div class="line">agent thinking <b data-since="${s.thinking}"></b> of 60 s</div></div>`;
+  if(s.waiting)h+=`<div class="ev"><div class="ts">now</div><div class="line">waiting for the supplier <b data-since="${s.waiting}"></b></div></div>`;
+  h+="</div>";
+  const atBottom=innerHeight+scrollY>=document.body.scrollHeight-40;
+  $("detail").innerHTML=h;if(atBottom&&!s.result)scrollTo(0,document.body.scrollHeight)}
+setInterval(()=>document.querySelectorAll("[data-since]").forEach(el=>el.textContent=Math.round(Date.now()/1000-el.dataset.since)+"s"),500);
+$("run").onchange=e=>{$("follow").checked=false;S.run=e.target.value;S.sel=null;render()};
+$("follow").onchange=render;
+let pending=false;const later=()=>{if(!pending){pending=true;setTimeout(()=>{pending=false;render()},150)}};
+function connect(){const es=new EventSource("/stream");
+  es.onopen=()=>$("conn").classList.add("on");es.onerror=()=>$("conn").classList.remove("on");
+  es.addEventListener("reset",()=>{S.runs.clear();later()});
+  es.onmessage=m=>{try{ingest(JSON.parse(m.data));later()}catch(err){console.error(err)}}}
+connect();
+</script>
+</body>
+</html>
