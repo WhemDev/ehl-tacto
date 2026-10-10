@@ -29,11 +29,10 @@ kanban-plugin: basic
 
 ## Doing
 
-- [ ] **Fact planner + RFQ rival loop** ([[Options 2026-10-10 - beyond tuning]] O1/O3, variant `A9h-plan-rfq`, `26601fa`): sandbox D02 head-to-head, then a fresh practice pass against 0.715-0.726; adopt only at ≥ +0.03 with no case collapsing
-
 
 ## Done
 
+- [x] Fact planner + RFQ rival loop ([[Options 2026-10-10 - beyond tuning]] O1/O3, `A9h-plan-rfq`): probe P18 0.401 (facts front-loaded), fresh pass **0.715** = baseline; suppliers stop at the same price whatever facts we send. Kept as a variant; the final build stays A9h (+ the phantom-ID fix)
 - [x] Phantom IDs: the frozen build still cited a forecast that is only in the tables (P05, "contradicted ... costs trust"); now only facts.json IDs go out, tested on all 19 case files (`cb9e2cb`)
 - [x] A10 (patience with movement): practice 0.719, sandbox 81.7 / 84.3 = no gain, stays a variant
 - [x] **Decided (Arda, 19:00): the final runs `arena run --set final --agent hybrid` (A9h, our runner), not `proto/final.py`**

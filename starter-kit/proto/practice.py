@@ -326,6 +326,11 @@ class PracticeNegotiator(Negotiator):
             if kind(f) not in seen:
                 seen.add(kind(f))
                 firsts.append(f)
+        # never a scorecard and quality notifications in one mail: speaking of quality, the arena checks the mean ppm
+        # over every sc and qn row cited, so our qn-only mean came back "contradicted ... costs trust" (P07, P04)
+        quality = [f for f in firsts if f["type"] in ("quality_record", "delivery_record")]
+        if len(quality) == 2:
+            firsts.remove(min(quality, key=lambda f: f["p"]))
         if any(f["p"] >= 0.1 for f in firsts):  # a type it waved off only when nothing likelier is left
             firsts = [f for f in firsts if f["p"] >= 0.1]
         return firsts

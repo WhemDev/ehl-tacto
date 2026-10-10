@@ -125,3 +125,22 @@ def test_first_mail_has_at_most_three_claims_one_per_type(cid):
     queue = n.fact_queue(t)
     kinds = [f["ids"][0].split("@")[0] if f["type"] == "index_change" else f["type"] for f in queue]
     assert len(kinds) == len(set(kinds))
+
+
+@pytest.mark.parametrize("cid", ALL)
+def test_never_a_scorecard_and_quality_notifications_in_one_mail(cid):
+    """Speaking of quality, the arena checks the mean ppm of every sc and qn row in a mail (P07, P04)."""
+    c = case(cid)
+    n = PracticeNegotiator.__new__(PracticeNegotiator)
+    n.cfg, n.case, n.b, n.quiet, n.log, n.case_id = PLAN, c, c["buyer"], True, [], f"case:{cid}"
+    n.threads = {}
+    for sup in c["suppliers"]:
+        t = type("T", (), {})()
+        t.sid, t.sheets, t.events = sup, [{"terms": {"unit_price": 999.0}}], []
+        for _ in range(6):  # every mail the planner could send
+            queue = n.fact_queue(t)
+            if not queue:
+                break
+            types = {f["type"] for f in queue}
+            assert not {"quality_record", "delivery_record"} <= types, (cid, [f["ids"] for f in queue])
+            t.sent_ids = getattr(t, "sent_ids", set()) | {i for f in queue for i in f["ids"]}
