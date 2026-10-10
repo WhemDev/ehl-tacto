@@ -55,7 +55,8 @@ development screen on two demos, not a final-case result or statistical proof.
 closing with J1 at €14.10 / 14-day payment / 35-day lead / FCA. Total buyer cost: **€176,257.60**.
 It first secured a valid €15.50 alternative from C1, then cited that quote and `news:N-0412` to J1.
 J1 moved to €14.60. A follow-up citing `cost:part:SH-220` and `sc:DEMO-J1@2026Q3` moved J1 to
-€14.10. A further direct-cost argument made J1 mark €14.10 final, and the policy accepted it.
+€14.10. A further lower-price ask without new evidence made J1 mark €14.10 final, and the policy
+accepted it.
 The full sequence, verified claims, cost breakdown and [replay](https://arena.tacto.ai/replay/6fe86ce06c0af781)
 are in the shared Obsidian vault note
 [`App/D02-J1-Evidence-Trading-0.661.md`](https://github.com/RxV00/EHL-Hackathon/blob/sudeep/manual-negotiation-findings/App/D02-J1-Evidence-Trading-0.661.md).
