@@ -25,6 +25,7 @@ build-backend = "hatchling.build"
 [tool.ruff]
 line-length = 120
 target-version = "py312"
+extend-exclude = ["proto"]  # Tugra's engine (branch tugra) keeps its own style
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP"]

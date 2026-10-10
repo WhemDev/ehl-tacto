@@ -17,5 +17,7 @@
 | Final timing: margin by slowest round, round budget, watchdog (unit + sim e2e) | Claude (Arda) | 2026-10-10 | ✅ | `358a010`; a case 30 s from the cap closes at once; watchdog takes the best non-pending offer |
 | Sandbox, 2 plays/case: engine curve + ported messages vs old curve | Claude (Arda) | 2026-10-10 | ✅ | engine2 D01 0.97 / D02 0.64 (80.6) · boulware2 0.83 / 0.52 (67.7) · before 58-61. [[0006 Learn from the engine]] |
 | Sandbox: small-steps concession (my own idea) | Claude (Arda) | 2026-10-10 | ❌ | D01 0.75 (vs 0.77), D02 0.40/0.46 - no gain; replaced by the engine's early concession |
+| `--agent hybrid` on arena-sim (P01 P05 P07 P08 P10 D02) + `tests/test_hybrid.py` | Claude (Arda) | 2026-10-10 | ✅ | routes by case type, one session per case; found the engine's RFQ wait when every final is dearer than the alternative (now capped at 8 min) |
+| Sandbox head to head, 3 runs/case: Tugra's A3 via `--agent hybrid` vs orchestra | Claude (Arda) | 2026-10-10 | ✅ | hybrid D01 0.979, D02 0.740 (85.9, identical replies each run) · orchestra D01 0.964, D02 0.650 (80.7). [[Report 2026-10-10 - hybrid head to head on D01 D02]] |
 
 Result: ✅ pass · ❌ fail · ⏳ not yet

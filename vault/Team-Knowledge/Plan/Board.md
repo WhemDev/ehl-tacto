@@ -21,11 +21,14 @@ kanban-plugin: basic
 
 ## Doing
 
-- [ ] First practice pass of the engine-curve build, one case per type (needs the team's quota OK) - [[0006 Learn from the engine]]
+- [ ] Decide the final agent with Tugra: `--agent hybrid` or his `proto/final.py` - [[Report 2026-10-10 - hybrid head to head on D01 D02]]
+- [ ] First practice pass of the chosen final build, one case per type (~7 sessions, needs the team's quota OK)
+- [ ] Final runner: retry `429 at most 10 open sessions` until the cap (`play_waves` and `proto/final.py`)
 
 
 ## Done
 
+- [x] `--agent hybrid`: Tugra's engine (merged from `tugra`) for price/renewal/RFQ/bundle, orchestra for the rest - sandbox 85.9 vs orchestra 80.7 ([[Report 2026-10-10 - hybrid head to head on D01 D02]])
 - [x] Final timing: close by the slowest round, round budget, watchdog, orchestra = default agent (`358a010`)
 - [x] Quick wins: profiles only raise anchors, free contract months, claims pool, fixed terms (`78774e4`)
 - [x] Learn from the teammate engine: floor target, early concession, holds, alternatives, blind refs - sandbox 80.6 vs 58-61 (`b23d10d`, [[0006 Learn from the engine]])

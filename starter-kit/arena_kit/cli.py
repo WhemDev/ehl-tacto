@@ -39,7 +39,7 @@ def agent_factory(name, data):
         package.lookup("")  # build the ID index once, before agents share it
     from .events import recording_complete
 
-    if name == "orchestra":
+    if name in ("orchestra", "hybrid"):
         from .agents.orchestra import NARRATE_S, Orchestra
 
         try:  # ARENA_NARRATOR=template, or no LLM configured: the template writes the e-mails
@@ -48,6 +48,10 @@ def agent_factory(name, data):
             complete = None if template else recording_complete(llm_from_env(timeout=NARRATE_S, max_retries=0))
         except KeyError:
             complete = None
+        if name == "hybrid":  # Tugra's engine for the types it won in practice, the orchestra for the rest
+            from .agents.hybrid import Hybrid
+
+            return lambda: Hybrid(lambda: Orchestra(complete, package))
         return lambda: Orchestra(complete, package)
     complete = recording_complete(llm_from_env())
     return lambda: LLMAgent(complete, package)
@@ -150,12 +154,12 @@ def main(argv=None):
     spend = {"action": "store_true", "help": "allow spending practice sessions (200 a day, shared by the team)"}
     p = sub.add_parser("play", help="play one case")
     p.add_argument("case_id")
-    p.add_argument("--agent", default="orchestra", choices=["naive", "llm", "orchestra"])
+    p.add_argument("--agent", default="orchestra", choices=["naive", "llm", "orchestra", "hybrid"])
     p.add_argument("--data", **data)
     p.add_argument("--practice", **spend)
     a = sub.add_parser("run", help="play every case of a set in parallel")
     a.add_argument("--set", **sets)
-    a.add_argument("--agent", default="orchestra", choices=["naive", "llm", "orchestra"])
+    a.add_argument("--agent", default="orchestra", choices=["naive", "llm", "orchestra", "hybrid"])
     a.add_argument("--data", **data)
     a.add_argument("--parallel", type=int, default=8, help="cases at once (at most 10)")
     a.add_argument("--waves", type=int, default=5, help="final: stop after this many waves have closed")
