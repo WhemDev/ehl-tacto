@@ -1,0 +1,5 @@
+Order Ref,Qty,Unit Price,Notes
+CSV-001,10,4.25,plain csv row
+CSV-002,3,19.99,"has, a comma"
+CSV-003,7,1.05,"has ""quotes"" inside"
+CSV-004,,8.40,missing qty

@@ -1,0 +1,272 @@
+{
+  "version": "1.0",
+  "title": "Monthly customer rebate calculation",
+  "summary": "Each month the sales extract is converted into euros, totalled per customer, and matched to a rebate tier to work out what each customer has earned. The finance lead then reviews the list, enters any adjustment, and signs off the ones they are happy with.",
+  "sources": [
+    {
+      "id": "src_sales",
+      "fileName": "rebate_sales.xlsx",
+      "sheet": "Sales",
+      "role": "input"
+    },
+    {
+      "id": "src_fx",
+      "fileName": "rebate_sales.xlsx",
+      "sheet": "FX",
+      "role": "reference"
+    },
+    {
+      "id": "src_tiers",
+      "fileName": "rebate_tiers.xlsx",
+      "sheet": "Tiers",
+      "role": "reference"
+    },
+    {
+      "id": "src_out",
+      "fileName": "rebate_output.xlsx",
+      "sheet": "Rebate Calc",
+      "role": "output"
+    }
+  ],
+  "steps": [
+    {
+      "id": "step_1",
+      "order": 1,
+      "title": "Open the sales extract",
+      "explanation": "Start from the monthly sales extract, which lists every customer's sales in their own currency.",
+      "operation": "read",
+      "reads": [
+        {
+          "sourceId": "src_sales",
+          "range": "A3:F27",
+          "label": "Monthly sales by customer",
+          "why": "It is the only record of what each customer bought."
+        }
+      ],
+      "writes": [],
+      "params": {},
+      "assumptions": [
+        "The extract is refreshed before the rebate run."
+      ],
+      "unknowns": [],
+      "confidence": 0.94
+    },
+    {
+      "id": "step_2",
+      "order": 2,
+      "title": "Convert every sale to euros",
+      "explanation": "Convert each sale into euros using the exchange rate for that customer's currency.",
+      "operation": "compute",
+      "reads": [
+        {
+          "sourceId": "src_sales",
+          "range": "D4:E27",
+          "label": "Sales value and currency",
+          "why": "The amount to convert and which rate applies."
+        },
+        {
+          "sourceId": "src_fx",
+          "range": "A2:B4",
+          "label": "Exchange rates",
+          "why": "Holds the rate to euros for each currency."
+        }
+      ],
+      "writes": [
+        {
+          "sourceId": "src_sales",
+          "range": "F4:F27",
+          "label": "Sales in euros"
+        }
+      ],
+      "params": {
+        "formula": "=D{r}*VLOOKUP(E{r},FX!$A:$B,2,FALSE)"
+      },
+      "assumptions": [
+        "One rate per currency for the whole month, not a daily rate."
+      ],
+      "unknowns": [],
+      "confidence": 0.93
+    },
+    {
+      "id": "step_3",
+      "order": 3,
+      "title": "Total the euro sales per customer",
+      "explanation": "Add up all the euro sales belonging to each customer.",
+      "operation": "aggregate",
+      "reads": [
+        {
+          "sourceId": "src_sales",
+          "range": "A4:A27",
+          "label": "Customer name",
+          "why": "The key the totals are grouped by."
+        },
+        {
+          "sourceId": "src_sales",
+          "range": "F4:F27",
+          "label": "Sales in euros",
+          "why": "The values being added up."
+        }
+      ],
+      "writes": [
+        {
+          "sourceId": "src_out",
+          "range": "B2:B7",
+          "label": "Total euro sales"
+        }
+      ],
+      "params": {
+        "groupBy": "Customer",
+        "aggregate": "sum"
+      },
+      "assumptions": [],
+      "unknowns": [],
+      "confidence": 0.92
+    },
+    {
+      "id": "step_4",
+      "order": 4,
+      "title": "Find each customer's rebate tier",
+      "explanation": "Look up which rebate band each customer's total falls into, and take the rate for that band.",
+      "operation": "lookup",
+      "reads": [
+        {
+          "sourceId": "src_out",
+          "range": "B2:B7",
+          "label": "Total euro sales",
+          "why": "The value being matched against the bands."
+        },
+        {
+          "sourceId": "src_tiers",
+          "range": "A2:B5",
+          "label": "Rebate bands and rates",
+          "why": "Holds the threshold and rate for each band."
+        }
+      ],
+      "writes": [
+        {
+          "sourceId": "src_out",
+          "range": "C2:C7",
+          "label": "Rebate rate"
+        }
+      ],
+      "params": {
+        "matchType": "nearest-below"
+      },
+      "assumptions": [
+        "Bands are cumulative for the period, as the notes sheet says."
+      ],
+      "unknowns": [],
+      "confidence": 0.88
+    },
+    {
+      "id": "step_5",
+      "order": 5,
+      "title": "Work out the rebate earned",
+      "explanation": "Multiply each customer's total by their rebate rate.",
+      "operation": "compute",
+      "reads": [
+        {
+          "sourceId": "src_out",
+          "range": "B2:B7",
+          "label": "Total euro sales",
+          "why": "One half of the calculation."
+        },
+        {
+          "sourceId": "src_out",
+          "range": "C2:C7",
+          "label": "Rebate rate",
+          "why": "The other half of the calculation."
+        }
+      ],
+      "writes": [
+        {
+          "sourceId": "src_out",
+          "range": "D2:D7",
+          "label": "Rebate earned"
+        }
+      ],
+      "params": {
+        "formula": "=B{r}*C{r}"
+      },
+      "assumptions": [],
+      "unknowns": [],
+      "confidence": 0.95
+    },
+    {
+      "id": "step_6",
+      "order": 6,
+      "title": "Review, adjust and sign off",
+      "explanation": "You go through the list yourself, put in an adjustment where something needs correcting, and sign off the ones you are happy with.",
+      "operation": "manual_judgment",
+      "reads": [
+        {
+          "sourceId": "src_out",
+          "range": "D2:D7",
+          "label": "Rebate earned",
+          "why": "The figure being reviewed."
+        }
+      ],
+      "writes": [
+        {
+          "sourceId": "src_out",
+          "range": "E2:E7",
+          "label": "Who approved it"
+        },
+        {
+          "sourceId": "src_out",
+          "range": "F2:F7",
+          "label": "Manual adjustment"
+        }
+      ],
+      "params": {},
+      "assumptions": [
+        "Both fields are typed in by hand; neither has a formula, and both are only partly filled."
+      ],
+      "unknowns": [
+        "What makes you decide an adjustment is needed — is it always a credit or dispute, or are there other reasons?",
+        "Does a rebate still get paid if nobody has signed it off?",
+        "Some rows have no approver and no adjustment. Are those still outstanding, or deliberately left blank?"
+      ],
+      "confidence": 0.28
+    },
+    {
+      "id": "step_7",
+      "order": 7,
+      "title": "Add the adjustment to get the final figure",
+      "explanation": "Add whatever adjustment you entered to the calculated rebate to get the amount actually paid.",
+      "operation": "compute",
+      "reads": [
+        {
+          "sourceId": "src_out",
+          "range": "D2:D7",
+          "label": "Rebate earned",
+          "why": "The starting figure."
+        },
+        {
+          "sourceId": "src_out",
+          "range": "F2:F7",
+          "label": "Manual adjustment",
+          "why": "Added on where one was entered; treated as nothing when blank."
+        }
+      ],
+      "writes": [
+        {
+          "sourceId": "src_out",
+          "range": "G2:G7",
+          "label": "Final rebate"
+        }
+      ],
+      "params": {
+        "formula": "=D{r}+IF(F{r}=\"\",0,F{r})"
+      },
+      "assumptions": [],
+      "unknowns": [],
+      "confidence": 0.91
+    }
+  ],
+  "openQuestions": [
+    "What makes you decide a rebate needs an adjustment?",
+    "Does an unsigned rebate still get paid?",
+    "Are the rebate bands cumulative for the quarter, or per month?"
+  ]
+}

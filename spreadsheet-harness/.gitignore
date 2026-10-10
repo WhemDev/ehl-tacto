@@ -1,0 +1,16 @@
+node_modules/
+*.tsbuildinfo
+.env.local
+.env*.local
+.DS_Store
+._*
+__pycache__/
+*.pyc
+
+# SpreadsheetBench 2: the downloaded dataset and run results stay local
+/data/
+/bench-results*/
+/benchResults*/
+
+# Private customer workbook used by some optional tests — never commit
+/Excaliba.xlsx
