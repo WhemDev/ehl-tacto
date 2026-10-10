@@ -72,6 +72,7 @@ PYTHONPATH=. uv run python proto/cleanup.py proto/runs/variants
 | `variants.py` | named algorithms (A … **A10**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
 | `search.py`, `report.py` | evolutionary tactic search on the sandbox and its report (`--base A6 --cases case:D02 --space rfq` searches RFQ-only settings) |
 | `ask_advisor.py`, `advisor_briefing.md` | send the briefing to an OpenAI model for outside advice (`OPENAI_API_KEY` in `.env`) |
+| `astra/orchestrate.py` | Astra (gpt-6-astra) plans from `astra/review.md` + the source; GPT-6.1-sol sub-agents code each task as exact edits; applied only after review |
 | `calibrate.py` | offline audit: our target vs the reported C_best on every practice run |
 | `smoke.py` | offline smoke test on all practice case files (no quota) |
 | `inspect_run.py` | every message, decision and claim of a variant's practice sessions |
