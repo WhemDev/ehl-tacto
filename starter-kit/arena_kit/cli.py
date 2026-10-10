@@ -130,6 +130,10 @@ def main(argv=None):
     p.add_argument("--agent", default="naive", choices=["naive", "llm"])
     p.add_argument("--data", **data)
     p.add_argument("--practice", **spend)
+    ch = sub.add_parser("chat", help="chat with one sandbox or practice case over the REST API")
+    ch.add_argument("case_id", nargs="?", default="case:D01", help="default: sandbox case:D01")
+    ch.add_argument("--set", choices=["sandbox", "practice"], default="sandbox")
+    ch.add_argument("--resume", metavar="SESSION_ID", help="resume an open session")
     a = sub.add_parser("run", help="play every case of a set in parallel")
     a.add_argument("--set", **sets)
     a.add_argument("--agent", default="naive", choices=["naive", "llm"])
@@ -226,6 +230,17 @@ def main(argv=None):
         if replay:  # the supplier's reasons, move by move: read it, improve, play again
             print(f"replay: {os.environ['ARENA_URL'].rstrip('/')}{replay}")
         log_runs(client, None, args.agent, table.session_id)
+    elif args.cmd == "chat":
+        from .chat import chat
+
+        if not os.environ.get("ARENA_API_KEY"):
+            raise SystemExit("Set ARENA_API_KEY in the repo root .env before chatting with sellers.")
+        try:
+            session_id = chat(client, args.case_id, args.set, args.resume)
+        except ArenaError as e:
+            raise SystemExit(str(e)) from None
+        if session_id:
+            log_runs(client, None, "manual", session_id)
     elif args.cmd == "run" and args.set == "final":  # waits for each wave and plays its cases within the cap
         out = play_waves(client, agent_factory(args.agent, args.data), args.waves, min(args.parallel, 10))
     elif args.cmd == "run":
