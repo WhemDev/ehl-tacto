@@ -103,6 +103,65 @@ VARIANTS["A10b"] = ("A10 + leverage room boost x1.3 when our floor estimate is w
                     replace(VARIANTS["A10"][1], lev_room_boost=1.3))
 VARIANTS["A10map"] = ("A10 + objection map (cost D01 0.02 in the sandbox)", replace(VARIANTS["A10"][1], objection_map=True))
 
+# Candidate only: proto.test_a11_integration must pass before release.
+VARIANTS["A11"] = ("A10 + guarded closing, clocks, claims, single-supplier safety, clauses and calibrated discovery",
+                   replace(VARIANTS["A10"][1], resilient_rfq=True, safe_close=True, arena_clock_guard=True,
+                           safe_claims=True, safe_single=True, clause_explore=True, calibrated_anchor=True,
+                           anchor_probe=True))
+VARIANTS["A10w"] = ("A10 + Claude Sonnet 5.5 writes every body in the supplier's register (template fallback)",
+                    replace(VARIANTS["A10"][1], llm_writer=True))
+VARIANTS["A11nc"] = ("A11 without T7 (calibrated anchor + cost-split probe)",
+                     replace(VARIANTS["A11"][1], calibrated_anchor=False, anchor_probe=False))
+VARIANTS["A11w"] = ("A11 + Claude Sonnet 5.5 writer", replace(VARIANTS["A11"][1], llm_writer=True))
+
+
+# A11 ablation: each Sol task alone on top of A10
+for _n, _flags in {"A10+T1": dict(resilient_rfq=True), "A10+T2": dict(safe_close=True), "A10+T3": dict(arena_clock_guard=True),
+                   "A10+T4": dict(safe_claims=True), "A10+T5": dict(safe_single=True), "A10+T6": dict(clause_explore=True),
+                   "A10+T7": dict(calibrated_anchor=True, anchor_probe=True)}.items():
+    VARIANTS[_n] = (f"A10 + {_flags}", replace(VARIANTS["A10"][1], **_flags))
+
+VARIANTS["A11b"] = ("A10 + the A11 tasks the ablation supports: T2 safe close, T4 claim provenance, T5 safe single, T6 clause",
+                    replace(VARIANTS["A10"][1], safe_close=True, safe_claims=True, safe_single=True, clause_explore=True))
+VARIANTS["A11b-T4"] = ("A11b without T4", replace(VARIANTS["A11b"][1], safe_claims=False))
+VARIANTS["A11c"] = ("A10 + T2 safe close + T5 safe single + T6 clause exploration (= A11b without T4; sandbox D02 equal to A10)",
+                    replace(VARIANTS["A10"][1], safe_close=True, safe_single=True, clause_explore=True))
+VARIANTS["A11bw"] = ("A11b + Claude Sonnet 5.5 writer", replace(VARIANTS["A11b"][1], llm_writer=True))
+
+VARIANTS["A12"] = ("A10 + Astra round 2: U1 package frontier, U2 bounded RFQ race, U3 claim provenance, U4 close recovery, + T6 clause",
+                   replace(VARIANTS["A10"][1], package_frontier_v2=True, bounded_rfq_race=True, claim_provenance_only=True,
+                           close_recovery_v2=True, clause_explore=True))
+VARIANTS["A12b"] = ("A12 without U2 (U2 opens the second RFQ supplier late: D02 0.660 x2)",
+                    replace(VARIANTS["A12"][1], bounded_rfq_race=False))
+VARIANTS["A12c"] = ("A10 + U1 package frontier + U4 close recovery + T6 clause (U2 opens late, U3 weakens evidence on RFQ)",
+                    replace(VARIANTS["A12"][1], bounded_rfq_race=False, claim_provenance_only=False))
+VARIANTS["A12d"] = ("A12c with U1 only in single-supplier cases (RFQs keep A10's packages)",
+                    replace(VARIANTS["A12c"][1], frontier_single_only=True))
+for _n, _flags in {"A10+U1": dict(package_frontier_v2=True, clause_explore=True), "A10+U2": dict(bounded_rfq_race=True),
+                   "A10+U3": dict(claim_provenance_only=True), "A10+U4": dict(close_recovery_v2=True)}.items():
+    VARIANTS[_n] = (f"A10 + {_flags}", replace(VARIANTS["A10"][1], **_flags))
+
+# D02 evolution (proto/astra/d02/gen*.json): every idea becomes a variant on top of A10 (or its "base" variant)
+import glob as _glob
+import json as _json
+from dataclasses import fields as _fields
+
+_known = {f.name for f in _fields(Config)}
+for _g in sorted(_glob.glob(str(Path(__file__).parent / "astra" / "d02" / "gen*.json"))):
+    for _idea in _json.load(open(_g)).get("ideas", []):
+        _params = _idea.get("params") or {}
+        if not set(_params) <= _known:
+            continue  # a code idea whose flag is not implemented yet
+        _base = VARIANTS.get(_idea.get("base", "A10"), VARIANTS["A10"])[1]
+        try:
+            VARIANTS[_idea["id"]] = (_idea["title"], replace(_base, **_params))
+        except TypeError:
+            pass
+
+VARIANTS["G5-1"] = ("G3-4 (retain freight + stable incoterm + no hold rewinds) + G4-2 Nash package bargaining",
+                    replace(VARIANTS["A10"][1], retain_freight_concession=True, stable_incoterm_basis=True, rfq_holds=0,
+                            nash_package_bargain=True))
+VARIANTS["G5-2"] = ("G5-1 + G4-1 reservation-band goal", replace(VARIANTS["G5-1"][1], reservation_band_goal=True))
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts

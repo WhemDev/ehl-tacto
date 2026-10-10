@@ -1,0 +1,120 @@
+{
+ "tasks": [
+  {
+   "id": "G2-7",
+   "title": "Turn a supplier's material-share statement into a conditional cost bridge",
+   "type": "code",
+   "flag": "material_share_bridge",
+   "params": {
+    "material_share_bridge": true
+   },
+   "files": [
+    "proto/engine.py",
+    "proto/practice.py"
+   ],
+   "functions": [
+    "PracticeNegotiator._material_share_bridge (new)",
+    "PracticeNegotiator.write"
+   ],
+   "spec": "Add Config.material_share_bridge: bool = False. In the normal PracticeNegotiator.write path, call a new helper after super().write and before returning the completed message. Activate only in multi-supplier, non-relationship RFQs, with a priced sheet, a positive material-share statement from this supplier, and a documented material-per-unit input for the same part and compatible units/currency. Prefer this supplier's material input; if using another supplier's document, explicitly label it a same-part reference assumption, never this supplier's verified cost, and do not disclose confidential material. Derive F=material/share, then show the attached proposal's unit price and price-minus-F as an indicative remainder before omitted costs, not profit. Ask the supplier to identify which material basis or omitted cost explains the difference. Attach a short calculation with the actual source scope, quoted share, arithmetic and proposed terms. Send once per thread, without changing targets, sheets, fact selection or rival disclosure. Do not invent a reference ID or recite an unrelated document as verified evidence. Skip ambiguous scope, conflicting inputs, invalid shares and safe_claims/claim_provenance_only paths rather than bypassing their rules. Read only supplier-authored source documents when extracting inputs.\n\nREVIEWER NOTES (team lead): Your Config flag ALREADY EXISTS (end of Config) - do NOT edit Config. Base variant is VARIANTS['A10']; A10 runs RFQs in the legacy run_rfq branch (resilient_rfq=False). Generation-1 code (G1-8..G1-14 flags, MESO_HOOKS dispatcher in Negotiator.meso) is already in the source. You own PracticeNegotiator.write (plus your new helper). Keep every 'old' snippet short and unique; 6 coders work in parallel on the same files - touch only what your idea needs. No private keys on arena messages; never deepcopy threads; log exceptions.",
+   "hypothesis": "The engine currently uses a material-share inference internally but never gives that supplier the corresponding concrete argument. A transparent, conditional calculation may move the otherwise expensive challenger more than another generic should-cost sentence.",
+   "risk": "The material basis may differ across suppliers, and the share may refer to a different cost definition. Overstating the inference could damage credibility; the wording and provenance guards are essential."
+  },
+  {
+   "id": "G2-8",
+   "title": "Stable incoterm bargaining: honour a named alternative and retain earned delivery",
+   "type": "code",
+   "flag": "stable_incoterm_basis",
+   "params": {
+    "stable_incoterm_basis": true
+   },
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator._preferred_incoterm (new)",
+    "Negotiator._stable_incoterm_packages (new)"
+   ],
+   "spec": "Add Config.stable_incoterm_basis: bool = False and register a new MESO_HOOKS helper; do not change meso or _meso_core. RFQ-only. First detect an unambiguous, affirmative incoterm preference or requirement in supplier-authored text, matching allowed option tokens to the relevant clause rather than taking the primary sheet's incoterm. Require that the supplier has actually quoted that incoterm, including on an alternative sheet. Ignore negated, ambiguous or subsequently withdrawn preferences. If there is no such preference, preserve the lowest buyer-freight incoterm that this supplier has already offered. This retains an earned delivered concession without forcing it onto a supplier explicitly defending collection terms. Change only incoterm in the existing primary proposal and solve its price with price_for_c at min(c_goal, C(original_primary)); cap at the current supplier unit price. Validate allowed terms, existing required fields, must-haves, coverage and actual rounded C. Keep only a valid proposal no dearer than the original proposal and cheaper than the supplier's current valid offer; otherwise return the original picks. Do not mark a textual preference as an immutable t.required constraint. Historical quotes establish a negotiation basis, never an executable acceptance. Log whether the basis came from explicit text, an alternative sheet or earned freight.\n\nREVIEWER NOTES (team lead): Your Config flag ALREADY EXISTS (end of Config) - do NOT edit Config. Base variant is VARIANTS['A10']; A10 runs RFQs in the legacy run_rfq branch (resilient_rfq=False). Generation-1 code (G1-8..G1-14 flags, MESO_HOOKS dispatcher in Negotiator.meso) is already in the source. Implement ONLY new methods: Negotiator._stable_incoterm_packages(self, t, c_goal, picks) -> list of term dicts or None (ALREADY called from Negotiator.meso via MESO_HOOKS) and Negotiator._preferred_incoterm. Do NOT edit meso, _meso_core or MESO_HOOKS. Keep every 'old' snippet short and unique; 6 coders work in parallel on the same files - touch only what your idea needs. No private keys on arena messages; never deepcopy threads; log exceptions.",
+   "hypothesis": "Refines G1-12 in both directions: preserve valuable delivery when earned, but stop spending the challenger's rounds requesting logistics terms it explicitly resists. Price comparisons remain on C, so an EXW price reduction must compensate for freight.",
+   "risk": "An old preference can become obsolete, and repricing onto a retained incoterm can ask for more supplier concession than the original package. Misreading negation or treating historical terms as still executable would be serious errors."
+  },
+  {
+   "id": "G2-9",
+   "title": "Use the incumbent's final quote for one funded challenger rebid",
+   "type": "code",
+   "flag": "challenger_rebid",
+   "params": {
+    "challenger_rebid": true
+   },
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator._challenger_rebid (new)",
+    "Negotiator.run_rfq.decide"
+   ],
+   "spec": "Add Config.challenger_rebid: bool = False. Insert one helper call in the legacy run_rfq.decide immediately after mandatory cap/terminal handling and before ordinary goal acceptance. Keep opening order, worker structure and HTTP dispatch unchanged. The helper receives the existing shared state and returns either no override or an existing decision tuple. Trigger once per RFQ when the cheapest valid, non-in-flight primary is final_offer, another supplier has completed discovery, and that challenger has not yet received this incumbent quote ID. Permit an open or final_offer challenger, never an agreed or ended one. Require a finite supplier-specific evidence target below the incumbent C, excluding an opening-price prior alone, plus message and time reserves for the challenge and closing. Treat weak material-share estimates only as proposal hypotheses. Rank eligible challengers by lowest evidence target, then current C. Derive a request halfway between incumbent C and the challenger's evidence target, no softer than its latest buyer request where feasible, and never below that evidence target. Generate one normal sheet at that C and call the normal writer with the incumbent's exact quote. Store a shared, bounded rebid ticket: the challenger's own worker sends it; other workers defer discretionary closure only while that ticket is live. No keepalive email and no incumbent counteroffer. Use conservative existing clock information, charging observed latency; do not perform network reads under the case lock. Bound waiting by both suppliers' closing reserves, the wave reserve and one response opportunity. If a prior challenger reply is already in flight, it may finish within the same bounded window before dispatch; never create a second outstanding request. Reserve at least two remaining message slots, or three when alternative promotion may be needed. On response, timeout or invalidation, recompute the cheapest valid available offer; never award the challenger merely because it answered. No repeated auction and no changes to emergency closing.\n\nREVIEWER NOTES (team lead): Your Config flag ALREADY EXISTS (end of Config) - do NOT edit Config. Base variant is VARIANTS['A10']; A10 runs RFQs in the legacy run_rfq branch (resilient_rfq=False). Generation-1 code (G1-8..G1-14 flags, MESO_HOOKS dispatcher in Negotiator.meso) is already in the source. You own the legacy run_rfq decide logic (localized edits) plus your new helper; G1-8's owned_final_probe code is already there - keep it working. Keep every 'old' snippet short and unique; 6 coders work in parallel on the same files - touch only what your idea needs. No private keys on arena messages; never deepcopy threads; log exceptions.",
+   "hypothesis": "A10 typically sends the challenger an intermediate rival quote and closes before it can react to the much better final. This buys one precisely targeted reverse-auction exchange while leaving the incumbent package untouched, rather than repeatedly probing the incumbent's apparent floor.",
+   "risk": "The challenger may not move, may withdraw after final_offer, or may respond too slowly. This deliberately addresses a different mechanism from the earlier bounded-race experiment: the A10 stagger is unchanged, and the opportunity starts only after a genuinely new final quote exists."
+  },
+  {
+   "id": "G2-10",
+   "title": "Cross-supplier payment lanes from the opening, one sheet per message",
+   "type": "code",
+   "flag": "payment_lanes",
+   "params": {
+    "payment_lanes": true
+   },
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator._payment_lane_supplier (new)",
+    "Negotiator._payment_lane_package (new)"
+   ],
+   "spec": "Add Config.payment_lanes: bool = False and register a new MESO_HOOKS helper. RFQ-only, non-relationship categories, with multiple allowed numeric payment terms and at least two suppliers. Before the first priced dispatch, select one exploration supplier using the lowest data-derived estimated cash rate; break ties by opening total C, then stable case order. Keep the other suppliers on A10. Freeze this assignment for the session. For the exploration supplier's first three priced proposals at most, replace only payment_days in the normal primary package with the allowed longer term giving the largest buyer-C reduction at unchanged price. Do not increase the proposed unit price to finance the experiment, add another sheet, delay opening or suppress normal facts/rivals. Respect explicit payment requirements, fixed terms and all ordinary validity/coverage guards. If the supplier explicitly refuses the term, or the bounded exploration ends without any longer-payment quote, revert to A10 and do not retry. If it actually quotes the longer term, retain that observed term for subsequent normal proposals unless explicitly withdrawn; do not freeze its quoted price. Log the buyer break-even price for every returned payment variant using price_for_c against a comparable observed shorter-payment offer, but accept only using full actual C. Register this hook before stable_incoterm_basis when both are enabled.\n\nREVIEWER NOTES (team lead): Your Config flag ALREADY EXISTS (end of Config) - do NOT edit Config. Base variant is VARIANTS['A10']; A10 runs RFQs in the legacy run_rfq branch (resilient_rfq=False). Generation-1 code (G1-8..G1-14 flags, MESO_HOOKS dispatcher in Negotiator.meso) is already in the source. Implement ONLY new methods: Negotiator._payment_lane_package(self, t, c_goal, picks) -> list of term dicts or None (ALREADY called from Negotiator.meso via MESO_HOOKS) and Negotiator._payment_lane_supplier. Do NOT edit meso, _meso_core or MESO_HOOKS. Keep every 'old' snippet short and unique; 6 coders work in parallel on the same files - touch only what your idea needs. No private keys on arena messages; never deepcopy threads; log exceptions.",
+   "hypothesis": "The failed G1 payment probe changed one package late and could pay away the benefit through equal-C repricing. A persistent early lane tests whether another supplier will price longer payment competitively while the remaining suppliers preserve the quick-payment route.",
+   "risk": "If supplier funding costs exceed ours, longer payment is genuinely expensive. The lane may weaken the first rival quote or consume useful bargaining rounds; the experiment must not be promoted merely because payment days increase."
+  },
+  {
+   "id": "G2-11",
+   "title": "Actionable landed-cost rival challenge without suppressing citations",
+   "type": "code",
+   "flag": "actionable_rival",
+   "params": {
+    "actionable_rival": true
+   },
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator._actionable_rival_line (new)",
+    "Negotiator.write"
+   ],
+   "spec": "Add Config.actionable_rival: bool = False. In Negotiator.write, replace only the rival paragraph/attachment explanation when this flag is on and there are multiple suppliers. Preserve the exact supplied rival ID, quoted terms and ordinary fact budget; do not filter away dearer or previously cited rivals. Resolve the cited sheet to its actual supplier and compute its C with that supplier's standards. When it beats the recipient's current valid quote, solve the recipient's break-even price on the attached proposed non-price terms with price_for_c, including freight, payment, quality and other published cost components. State that this is our calculated comparison threshold, not a rival unit-price quote, and that the attached lower proposal is our request. When the rival is dearer, still attach it but replace the unconditional preference sentence with a statement that this quote is not our target and that the attached proposal also reflects the cost evidence. Label alternative sheets as quoted alternatives requiring confirmation; do not claim they are executable primaries. Label previously sent evidence as already shared rather than fresh. Preserve all numbers in the original rival quote and add no new fact IDs. Skip safe_claims mode unless its existing builder is used unchanged.\n\nREVIEWER NOTES (team lead): Your Config flag ALREADY EXISTS (end of Config) - do NOT edit Config. Base variant is VARIANTS['A10']; A10 runs RFQs in the legacy run_rfq branch (resilient_rfq=False). Generation-1 code (G1-8..G1-14 flags, MESO_HOOKS dispatcher in Negotiator.meso) is already in the source. You own Negotiator.write (plus your new helper). Keep every 'old' snippet short and unique; 6 coders work in parallel on the same files - touch only what your idea needs. No private keys on arena messages; never deepcopy threads; log exceptions.",
+   "hypothesis": "Keeps the large demonstrated benefit of rival citation while making the cheaper rival actionable for the challenger. Unlike G1-9, it does not remove disclosure to the incumbent just because the competing quote is weaker.",
+   "risk": "An explicit comparison threshold can become a new supplier anchor, especially if it is above our request. The conversion must use each supplier's own completed terms, not compare nominal prices or reuse the recipient's quality assumptions for the rival."
+  },
+  {
+   "id": "G2-12",
+   "title": "Give the stagger leader the strongest cost fact before its first counter",
+   "type": "code",
+   "flag": "leader_cost_first",
+   "params": {
+    "leader_cost_first": true
+   },
+   "files": [
+    "proto/engine.py",
+    "proto/practice.py"
+   ],
+   "functions": [
+    "PracticeNegotiator._lead_cost_first (new)",
+    "PracticeNegotiator.facts_for"
+   ],
+   "spec": "Add Config.leader_cost_first: bool = False. In the normal PracticeNegotiator.facts_for builder, immediately before caching the completed fact list, optionally reorder it once. Trigger only for a multi-supplier RFQ using rfq_stagger, before this thread's first buyer message, when it is the non-staggered opening leader and therefore has no fresh negotiated rival quote. Move the strongest existing same-part cost-estimate fact to the front; prefer a supported numeric supplier-specific estimate, then a supported same-part estimate, then the existing case-scoped cost-reference sentence unchanged. Keep the remaining facts in their original order. Do not add facts, invent values, change the fact budget, mutate another thread's cache or recite another supplier's scorecard. If no eligible cost fact exists, do nothing. Leave the other suppliers' fact order, the stagger timing and all safe/provenance-specific builders unchanged.\n\nREVIEWER NOTES (team lead): Your Config flag ALREADY EXISTS (end of Config) - do NOT edit Config. Base variant is VARIANTS['A10']; A10 runs RFQs in the legacy run_rfq branch (resilient_rfq=False). Generation-1 code (G1-8..G1-14 flags, MESO_HOOKS dispatcher in Negotiator.meso) is already in the source. You own PracticeNegotiator.facts_for (plus your new helper). Keep every 'old' snippet short and unique; 6 coders work in parallel on the same files - touch only what your idea needs. No private keys on arena messages; never deepcopy threads; log exceptions.",
+   "hypothesis": "The first supplier currently gets a scorecard while the second gets a scorecard plus fresh competition. Moving the leader's cost evidence forward may improve its very first counter, strengthening the rival quote that drives the entire staggered negotiation.",
+   "risk": "Cost evidence may be more effective after discovery, and the scorecard may be the better first concession trigger. A citation that verifies but does not change the first counter is not a successful mechanism."
+  }
+ ]
+}

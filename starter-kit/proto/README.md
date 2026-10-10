@@ -20,7 +20,10 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 | A6 (+ fixes for every A5 practice problem) | 0.982 | 0.696 (0.703, 0.703, 0.682) | generic code path (what the final runs) |
 | A8 (+ D02 search: RFQ-only 1 package, 1 fact, anchor −8 %, 3 pushes of 3 %, breakdown argument) | 0.982 | 0.765 (4/4 identical) | generic code path |
 | A9 (+ team review upgrades as generic rules: insisted/introduced terms in every package at the variant cheapest for us, lead-time cap, new evidence, answers) | 0.982 | 0.70–0.79 | practice mean 0.688 over 10 cases (P01 0.956, P08 0.586, P18 0.485) |
-| **A10 (+ GPT-6.1-sol advice: deadline reserve for alternatives, conditional-agreement repair, push scaled to room, plain proof)** | **0.982** | **0.772** (0.765, 0.765, 0.786) | **main algorithm**; generic code path |
+| A10 (+ GPT-6.1-sol advice: deadline reserve for alternatives, conditional-agreement repair, push scaled to room, plain proof) | 0.982 | 0.744 over 6 recent runs (0.682–0.786) | practice 0.693 over 10 cases |
+| A10w (A10 + Claude Sonnet 5.5 writes every e-mail in the supplier's register, template fallback) | 0.982 | – | practice 0.682 (writer used for 90 % of mails, median 2.5 s) - kept as an option |
+| A11c / A12d (Astra + GPT-6.1-sol rounds: safe close, clause exploration, package frontier, close recovery …) | 0.957–0.995 | 0.765–0.772 | practice 0.657 / 0.664 → not adopted (Experiment-Log E38–E39) |
+| **G5-1 (A10 + keep a delivered incoterm + stable incoterm basis + no RFQ hold rewinds + Nash package bargaining; from a 5-generation D02 evolution with Astra)** | **0.982** | **0.772** (0.765, 0.765, 0.786; never below 0.765) | **main algorithm**; practice **0.694** (P05 0.665); generic code path |
 
 ## Run
 
@@ -29,10 +32,10 @@ directory, so copy or symlink it if needed):
 
 ```bash
 # sandbox (free): A3 once on D01, three times on D02 (D02 is noisy)
-PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants A10
+PYTHONPATH=. uv run python proto/variants.py --cases case:D01:1 case:D02:3 --variants G5-1
 
 # hosted practice (COSTS QUOTA - ask the team first): facts and floors from the data package
-PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants A10
+PYTHONPATH=. uv run python proto/variants.py --practice --cases case:P05:1 --variants G5-1
 
 # one case, any Config as JSON
 ENGINE_CFG='{"e": 2, "T": 4, "rfq_stagger": true}' PYTHONPATH=. uv run python proto/engine.py case:D02
@@ -69,7 +72,9 @@ PYTHONPATH=. uv run python proto/cleanup.py proto/runs/variants
 | `engine.py` | `Config` (every tactic is a field), `Negotiator` (`goal`, `meso`, `write`, `run`, `run_rfq`, guards), `play()` |
 | `target.py` | target C and price-for-C solver |
 | `practice.py` | practice/final adapter: facts and floors from the data package |
-| `variants.py` | named algorithms (A … **A10**) and a parallel runner (max 4 sessions: the key's 10 are shared) |
+| `variants.py` | named algorithms (A … A12d, G1-x … G5-x from the D02 evolution; **G5-1** is the main one) and a parallel runner |
+| `writer.py`, `writer_dry.py` | optional LLM e-mail writer (Claude Sonnet 5.5, `ANTHROPIC_API_KEY`), deterministic validator, template fallback; offline replay |
+| `astra/d02/` | the D02 evolution: brief, every generation's ideas (`gen*.json/md`) and results (`history.md`); `orchestrate.py d02 <gen> <n>` asks Astra, `code` dispatches Sol coders |
 | `search.py`, `report.py` | evolutionary tactic search on the sandbox and its report (`--base A6 --cases case:D02 --space rfq` searches RFQ-only settings) |
 | `ask_advisor.py`, `advisor_briefing.md` | send the briefing to an OpenAI model for outside advice (`OPENAI_API_KEY` in `.env`) |
 | `astra/orchestrate.py` | Astra (gpt-6-astra) plans from `astra/review.md` + the source; GPT-6.1-sol sub-agents code each task as exact edits; applied only after review |

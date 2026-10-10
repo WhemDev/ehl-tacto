@@ -1,0 +1,132 @@
+{
+ "tasks": [
+  {
+   "id": "U1",
+   "title": "Bounded clause frontier and relationship-safe MESO packages",
+   "priority": 1,
+   "expected_gain": "Hypothesis: +0.005 to +0.025 ten-case mean, mainly P02/P08/P18, with P01 downside protection. Historical P02 recovery is an opportunity, not a forecast.",
+   "risk": "Medium: exploratory clauses may displace useful payment/duration packages; conservative MESO screening may remove useful choices.",
+   "files": [
+    "proto/engine.py",
+    "proto/test_a12_packages.py"
+   ],
+   "functions": [
+    "Config declarations",
+    "Negotiator.meso",
+    "Negotiator.clause_candidate",
+    "Negotiator.write",
+    "Negotiator._package_v2_scenarios (new)",
+    "Negotiator._package_v2_earned_date (new)",
+    "Negotiator._package_v2_clause_families (new)"
+   ],
+   "flag": "package_frontier_v2",
+   "spec": "One coder owns these functions and all Config additions. First add package_frontier_v2, bounded_rfq_race, claim_provenance_only and close_recovery_v2 as booleans defaulting to False. Do not use an rfq_ prefix, change Config.key, clean unrelated declarations, or change existing signatures. With package_frontier_v2 off, preserve existing package and wording behavior. With it on: (1) for price-increase cases with negotiable effective_date and known current price, identify an explicitly supplier-confirmed later date from existing sheets; preserve it when proposed new prices are increases and the delayed date remains beneficial under the evaluated economics. Do not preserve a delay mechanically for a price decrease. Permit surrender only with a logged compensating trade that passes the conservative cost screen. (2) For ordinary relationship-sensitive second packages, compare completed terms using cash-only C, nominal C, and an internal documented sensitivity grid using full_cost/floor multipliers 0.95, 1.0 and 1.05 and interest-rate multipliers 0.5, 1.0 and 1.5. These are uncertainty tests, not hidden-economics estimates. Keep an alternative only if it is no worse than the primary within one-cent total-cost rounding tolerance throughout the screen, or find a valid repriced candidate that is; otherwise return one package. Do not apply this screen globally to non-relationship cases or remove known-neutral duration alternatives. (3) Extend clause_candidate under the new flag to support leverage cases, mappings including mappingproxy, and one existing primary with an available second slot. Ground clause families in exact supplier evidence or structured part cost-driver data and allowed options; require a known buyer index path. A capped supplier-specific should-cost estimate is uncertain. Retain the normal primary, preserve required clause families and full coverage, and never add a third sheet or an RFQ second sheet. Evaluate all compatible deadbands by published cash/index/risk C. A deliberate clause probe may bypass ordinary equal-C screening only if cash C improves over the normal primary, nominal C remains below the valid standing primary and outside option, and any positive nominal regret is bounded by min(0.005*C_open, 0.25*max(C_open-target_c, 0)). For a positive-regret exception require an uncertain estimate and improvement under the existing lower-cost sensitivity rationale; log the full sensitivity comparison. Preserve the never-above-standing-price cap. Do not silently relax guards when no candidate qualifies. Call this exploration when either the new flag or existing clause_explore enables it, retaining legacy behavior when only the old flag is used. (4) In Negotiator.write, describe new-flag multi-package offers as price/term trade-offs, not as equally good for the buyer. Log candidate inclusion/exclusion, family provenance, date preservation, cash/nominal/sensitivity C and whether an exploratory sheet was actually sent. No hidden C_best, stored practice winners or case-specific rules.\n\nREVIEWER NOTES (team lead): Config fields: ONLY U1 adds Config fields, all four at the end of the Config dataclass: package_frontier_v2, bounded_rfq_race, claim_provenance_only, close_recovery_v2 (bool, default False). U2/U3/U4 must NOT edit Config; just read self.cfg.<your flag> (getattr(self.cfg, '<flag>', False) is fine). Base variant is VARIANTS['A10'] (proto/variants.py), not Config(). The RFQ run in A10 is the legacy run_rfq branch (resilient_rfq=False) - U2 changes only that branch. Keep every 'old' snippet short and unique; edits are applied in the order U1, U2, U3, U4 onto the same files.",
+   "test": "Offline all 19 cases with real nested option structures, including mappingproxy and no valid second slot. Prove unchanged output when new flags are off. Test ordinary MESO screening separately from deliberate bounded-regret clause exploration. Verify all outgoing terms, price caps, full coverage and sheet counts. Generic D01/D02 paired tests, then P01/P02/P08/P18 three paired runs each versus A10. P02 must show an actual clause sheet or be reported as a non-trigger, not a successful clause experiment. P03/P07/P10 are required full-suite regression sentinels."
+  },
+  {
+   "id": "U2",
+   "title": "Clock-bounded rival opportunity on the existing A10 RFQ scheduler",
+   "priority": 2,
+   "expected_gain": "Hypothesis: +0.003 to +0.025 ten-case mean, concentrated in P05 and RFQ lower-tail protection; zero-prevention gain remains unquantified.",
+   "risk": "Medium: waiting on a stale winner clock can lose an otherwise good offer; scheduler changes must not reproduce T1 serialization.",
+   "files": [
+    "proto/engine.py",
+    "proto/test_a12_rfq.py"
+   ],
+   "functions": [
+    "Negotiator.run_rfq",
+    "Negotiator._race_v2_window (new)",
+    "Negotiator._race_v2_clock (new)",
+    "Negotiator._race_v2_terminal (new)"
+   ],
+   "flag": "bounded_rfq_race",
+   "spec": "One coder owns run_rfq and its nested functions. Preserve the entire legacy path when the flag is off. Do not enable or rewrite resilient_rfq. Extend the A10 worker path, retaining staggered opening, one sheet per RFQ message and its numerical concession settings. Before a discretionary close to an agreed, final or goal-reaching offer, permit at most one opportunity window per case when another live supplier has a meaningful first priced response pending or can make one new response to the current competitive bar. Do not wait merely for all suppliers to finish or for a rival with no plausible remaining negotiation opportunity. The window is bounded by 12 seconds, by the winner's authoritative turn deadline minus a 15-second action margin, and by the existing wave closing reserve. Read clocks outside the case lock using supported bounded client operations; an unavailable, stale or mismatched sample disallows optional waiting. Charge clock-read latency conservatively and associate samples with the observed offer state. Preserve normal lead-first opening, but never extend the existing release wait when other threads are becoming urgent. Replace the 90-second final-offer idle behavior only on the new path with an explicit safe closing boundary. Reserve close/push ownership under the lock, execute all network operations outside it, then reconcile. Do not deepcopy threads or introduce a snapshot coordinator. Only one closing operation may be reserved at a time. A close returning None or raising a recoverable error is not a terminal result: clear the reservation, refresh/re-evaluate as necessary and keep viable workers running with bounded retries. Accept terminal results only through validated arena result structure. Do not fabricate deal=False/score=0 while the arena remains live. Observe futures and log exceptions. After confirmed terminal completion, do not block result return on unrelated outstanding supplier requests. Use event waits rather than a busy loop. New behavior must work both with legacy close and close_recovery_v2.\n\nREVIEWER NOTES (team lead): Config fields: ONLY U1 adds Config fields, all four at the end of the Config dataclass: package_frontier_v2, bounded_rfq_race, claim_provenance_only, close_recovery_v2 (bool, default False). U2/U3/U4 must NOT edit Config; just read self.cfg.<your flag> (getattr(self.cfg, '<flag>', False) is fine). Base variant is VARIANTS['A10'] (proto/variants.py), not Config(). The RFQ run in A10 is the legacy run_rfq branch (resilient_rfq=False) - U2 changes only that branch. Keep every 'old' snippet short and unique; edits are applied in the order U1, U2, U3, U4 onto the same files.",
+   "test": "Stateful RFQ tests with a fast final offer and a slow rival, one early agreement, a rival that beats the bar, unavailable clock data, expiry during an opportunity window, failed acceptance, worker exception and all threads ended. Assert no network call occurs under the case lock and no all-reply barrier is introduced. Generic D02 at least ten paired baseline/candidate blocks across ordinary and elevated latency. P05 four paired hosted runs initially, followed by the lower-tail phase. Log first-dispatch times, opportunity-window reasons, chosen quote and terminal latency."
+  },
+  {
+   "id": "U3",
+   "title": "Canonical citation provenance without case-wide evidence suppression",
+   "priority": 3,
+   "expected_gain": "Hypothesis: 0 to +0.010 ten-case mean, with reduced trust and hidden-case correctness risk.",
+   "risk": "Low to medium: changing evidence availability or order can affect RFQ concessions even when claims become cleaner.",
+   "files": [
+    "proto/practice.py",
+    "proto/test_a12_provenance.py"
+   ],
+   "functions": [
+    "PracticeNegotiator.facts_for",
+    "PracticeNegotiator.write",
+    "canonical_record_v2 (new)",
+    "PracticeNegotiator._provenance_v2_facts (new)",
+    "PracticeNegotiator._provenance_v2_forecast (new)",
+    "PracticeNegotiator._provenance_v2_proof (new)"
+   ],
+   "flag": "claim_provenance_only",
+   "spec": "One coder owns these practice-path functions. Implement the flag on the generic data-package path used for sandbox, hosted practice and final. Do not activate safe_claims or edit engine write/send. Preserve the old functions' behavior when the flag is off. Add a separate canonical-record loader that reads and caches actual facts.json records, keyed by package path; do not assume canonical_fact's whitelist followed by lookup necessarily proves that returned values are canonical. Support the actual package record formats, fail closed for unknown formats and handle null refs. Build validated facts in A10's existing order and retain the original wording when supported. Validate part/supplier scope, currency, piece-based price units, index endpoints/months and numerical calculations. SQL may discover candidates but SQL existence alone cannot authorize a checked fact. Case-only refs may support only assertions actually grounded in case data, without invented numerical values. In PracticeNegotiator.write, preserve the parent message and U1 package explanation. Add answer_plus forecast proof only when the selected forecast is canonical, supports the stated commitment, is not already in this message or already used as the same thread's forecast proof, and a checked-claim slot remains. Otherwise omit the entire unsupported or redundant forecast sentence. Do not mark fc_cited for a rejected candidate. Maintain a maximum of three logical checked-claim groups across the message and attachments, treating an index pair, notice pair or order-history group as an indivisible assertion rather than treating each raw ID as a separate assertion. Derive bookkeeping locally or in internal state, never in wire keys. Deduplicate refs within a message. Do not introduce a global used-ID ledger or remove useful cross-supplier RFQ information. Validate passed rival IDs and terms against real session offers; distinguish a quoted alternative from an executable standing primary rather than inventing availability. Generate proof attachments only from validated records and avoid reintroducing unsupported IDs or figures. Preserve accurate uncited SQL context only as such; do not relabel it as verified evidence. No broad objection-based reordering or all-index suppression.\n\nREVIEWER NOTES (team lead): Config fields: ONLY U1 adds Config fields, all four at the end of the Config dataclass: package_frontier_v2, bounded_rfq_race, claim_provenance_only, close_recovery_v2 (bool, default False). U2/U3/U4 must NOT edit Config; just read self.cfg.<your flag> (getattr(self.cfg, '<flag>', False) is fine). Base variant is VARIANTS['A10'] (proto/variants.py), not Config(). The RFQ run in A10 is the legacy run_rfq branch (resilient_rfq=False) - U2 changes only that branch. Keep every 'old' snippet short and unique; edits are applied in the order U1, U2, U3, U4 onto the same files.",
+   "test": "Offline fixtures for SQL-only forecast IDs, facts/SQL value conflicts, null alternative refs, kg/lot price units, multi-ID index/notice/history assertions, forecast already in the current fact slice, repeated same-thread volume proof and real rival alternatives. Wire schema must contain no private metadata. Generic D01/D02 paired comparisons must show no T4-style deterministic RFQ loss. Hosted P01/P02/P03/P04/P05/P11 two paired runs each. Require removal of P05's nonexistent forecast contradiction, preservation of P01 notice/should-cost evidence and no new checked-claim overflow."
+  },
+  {
+   "id": "U4",
+   "title": "Minimal transactional close and authoritative timeout recovery",
+   "priority": 4,
+   "expected_gain": "Hypothesis: 0 to +0.010 ten-case mean in normal conditions, potentially more under transport failures. P10 and P08 recovery versus A11c is not counted as gain over A10.",
+   "risk": "Medium implementation risk; intended healthy-path strategy change is minimal.",
+   "files": [
+    "proto/engine.py",
+    "proto/test_a12_close.py"
+   ],
+   "functions": [
+    "Negotiator.close",
+    "Negotiator.resync",
+    "play",
+    "Negotiator._close_v2 (new)",
+    "Negotiator._close_v2_validate (new)",
+    "Negotiator._close_v2_refresh (new)",
+    "Negotiator._close_v2_cleanup (new)"
+   ],
+   "flag": "close_recovery_v2",
+   "spec": "One coder owns close, resync, play and new helpers. Do not edit run, run_rfq, send, near_cap, the existing _safe_close helpers or _run_safe_single. Preserve all legacy behavior when the new flag is off. With the flag on, execute an already-approved economic close without adding a concession or urgency policy. A fresh valid current primary can be accepted directly. For a selected current alternative, mirror the exact legal terms, require agreed plus a new primary matching the selected completed terms, and accept only that primary ID. Identify alternatives by current sheet position/identity, never by parsing an '-a' suffix. Do not snap invalid returned terms into acceptable ones. A changed confirmation requires a new economic decision, not automatic acceptance. Use per-thread closing ownership without holding the RFQ case lock. After an ambiguous acceptance, query authoritative terminal state before another action; never blindly resend a rejected unchanged offer. Bound attempts per offer/revision and log every guard that declines promotion or acceptance. Refresh authoritative messages and reconstruct timeout-generated current offers from thread offer_id and timeouts, preserving opaque IDs and verifying actual terms. A changed ID without known terms is not permission to relabel an old sheet. Use seconds_left only for genuinely timing-sensitive closing/recovery, with sample latency charged conservatively; never compare a fresh turn to slowest_response+15 or treat request start as supplier reply time. Preserve the existing wave reserve policy rather than importing T3 urgency. Return None for recoverable failure so U2 can continue; in the single-supplier play cleanup path, perform bounded authoritative recovery and explicitly re-evaluate valid fresh candidates before any fallback decision. Never walk merely because an alternative confirmation or accept failed, especially when no useful outside option exists. Only record confirmed terminal results as closed; unresolved sessions remain explicitly unresolved and owned for cleanup. Log full result fields including c_open, c_deal, c_best, terms and cost_breakdown. Do not claim that a nonterminal HTTP response is a result.\n\nREVIEWER NOTES (team lead): Config fields: ONLY U1 adds Config fields, all four at the end of the Config dataclass: package_frontier_v2, bounded_rfq_race, claim_provenance_only, close_recovery_v2 (bool, default False). U2/U3/U4 must NOT edit Config; just read self.cfg.<your flag> (getattr(self.cfg, '<flag>', False) is fine). Base variant is VARIANTS['A10'] (proto/variants.py), not Config(). The RFQ run in A10 is the legacy run_rfq branch (resilient_rfq=False) - U2 changes only that branch. Keep every 'old' snippet short and unique; edits are applied in the order U1, U2, U3, U4 onto the same files.",
+   "test": "Stateful protocol tests for P10-style exact alternative promotion, confirmation with changed terms, primary expiry, timeout replacement IDs, acceptance committed with response lost, rejected unchanged offer, no outside option and cleanup after exception. Assert bounded attempts and no direct alternative accept. A fresh response after a 54- or 95-second supplier delay must not itself trigger an early close. Generic D01/D02 and paired P08/P10 hosted tests. Verify healthy P10 retains the A10 0.671 path and that failed RFQ closes remain recoverable when combined with U2."
+  },
+  {
+   "id": "U5",
+   "title": "Register the exact A12 candidate manifest",
+   "priority": 5,
+   "expected_gain": "No independent gain; defines the tested composition and prevents accidental enable-all integration.",
+   "risk": "Low if manifest-only. Release remains blocked unless isolated, combined and wave-level tests pass.",
+   "files": [
+    "proto/variants.py"
+   ],
+   "functions": [],
+   "flag": null,
+   "spec": "Integration task only, performed after feature branches are merged and evaluated. Add one module-level VARIANTS['A12'] entry using replace(VARIANTS['A10'][1], package_frontier_v2=True, bounded_rfq_race=True, claim_provenance_only=True, close_recovery_v2=True, clause_explore=True). Change nothing else: no engine edits, Config changes, cleanup, tuning, helper changes, test-harness changes, or activation of other A11 flags. The integration task needs no Config flag because it introduces no runtime behavior. The A12 configuration must inherit llm_writer=False, resilient_rfq=False, safe_close=False, arena_clock_guard=False, safe_claims=False, safe_single=False, calibrated_anchor=False and anchor_probe=False from A10. If any approved feature fails its gate, do not silently alter this recipe or promote it; retain A10 and request a revised reviewed manifest.\n\nREVIEWER NOTES (team lead): Config fields: ONLY U1 adds Config fields, all four at the end of the Config dataclass: package_frontier_v2, bounded_rfq_race, claim_provenance_only, close_recovery_v2 (bool, default False). U2/U3/U4 must NOT edit Config; just read self.cfg.<your flag> (getattr(self.cfg, '<flag>', False) is fine). Base variant is VARIANTS['A10'] (proto/variants.py), not Config(). The RFQ run in A10 is the legacy run_rfq branch (resilient_rfq=False) - U2 changes only that branch. Keep every 'old' snippet short and unique; edits are applied in the order U1, U2, U3, U4 onto the same files.",
+   "test": "Compare asdict(A12) against asdict(A10): the only changed fields must be the five true flags listed in the manifest. Confirm all four new Config defaults are False. Register A12 as a candidate, then require the whole-suite, lower-tail and ten-case wave protocol before production promotion."
+  }
+ ],
+ "variant": {
+  "name": "A12",
+  "base": "A10",
+  "flags": {
+   "package_frontier_v2": true,
+   "bounded_rfq_race": true,
+   "claim_provenance_only": true,
+   "close_recovery_v2": true,
+   "clause_explore": true
+  }
+ },
+ "not_doing": [
+  "Enabling all A11 flags or treating sandbox-only ablation as sufficient release evidence",
+  "Enabling the existing resilient_rfq, safe_close, arena_clock_guard, safe_claims, safe_single, calibrated_anchor or anchor_probe paths",
+  "Changing the concession curve, replacing target anchors with opening percentages, or applying another blanket leverage-room boost",
+  "Removing the standing-price cap, adding a third sheet, or globally removing useful payment/duration MESOs",
+  "Pushing single-supplier final offers or assuming withdrawn historical alternatives remain executable",
+  "Promising faster payment, excess volume or other commitments outside the case's allowed terms",
+  "Reintroducing a case-wide claim-consumption ledger or treating three raw IDs as the arena's three-claim limit",
+  "Reordering all evidence by supplier objections or suppressing every index after one covered series is rejected",
+  "Tuning writer prompts or enabling the LLM writer in A12",
+  "Claiming P02's A11c gain proves a clause was sent, or claiming A11c bug recovery is incremental gain over A10",
+  "Using hidden C_best, practice case IDs, supplier IDs or stored winning prices in runtime triggers",
+  "Editing the same function from two parallel tasks, copying live locks, adding private wire keys or doing network I/O under the RFQ case lock",
+  "Unrelated code cleanup or silent strategy changes during final integration"
+ ]
+}

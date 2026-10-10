@@ -4,8 +4,8 @@ opening quotes - targets, packages, must-haves, facts. Catches crashes and silly
     ALL=1 V=A6 CLAUSE=1 PYTHONPATH=. uv run python proto/smoke.py     # all 19 case files, incl. never-played ones
 """
 import json, sys, os, traceback
-sys.path.insert(0, os.path.expanduser("~/Documents/EHL-Hackathon-code/starter-kit"))
-os.chdir(os.path.expanduser("~/Documents/EHL-Hackathon-code/starter-kit"))
+sys.path.insert(0, os.environ.get("ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+os.chdir(os.environ.get("ROOT") or os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from arena_kit.cli import load_env; load_env()
 from arena_kit import ArenaClient, complete_offer, total_cost, must_haves_ok
 from proto.engine import Thread
