@@ -1,0 +1,3 @@
+yes save the decisions. Create yourself a testing folder to test new ideas on sandbox.
+
+Btw can we try evolutionary algorithms for AI models? Where we start multiple agents for same tasks, select the top 20%, kill rest, and make the survivors evolve so they can continue the cycle until we reach very optimized agents?
