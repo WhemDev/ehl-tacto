@@ -243,6 +243,14 @@ VARIANTS["G8w"] = ("G8u + R3-2 shared-index skip (RFQ)", replace(VARIANTS["G8u"]
 
 VARIANTS["G8x"] = ("G8u + S5-6 clause buy-out (2nd package without a supplier-introduced clause, inside the win-win window)",
                    replace(VARIANTS["G8u"][1], clause_buyout=True))
+# E65 long game (single supplier only; RFQ pinned to G8u's T=4 / no holds): P01-P03 never went final, we accepted
+# at its 3rd reply while it was still moving (P08 5.46 -> 5.44 -> 5.41)
+VARIANTS["L1"] = ("G8u + slower single-supplier curve (T 4 -> 8; RFQ unchanged)",
+                  replace(VARIANTS["G8u"][1], T=8, rfq_T=4))
+VARIANTS["L2"] = ("G8u + keep countering while the single supplier still moves (4 holds at >= 0.1 % of C; RFQ unchanged)",
+                  replace(VARIANTS["G8u"][1], holds=4, hold_gave=0.001, rfq_holds=0))
+VARIANTS["L3"] = ("G8u + long game: L1 + L2 (single supplier only)",
+                  replace(VARIANTS["G8u"][1], T=8, rfq_T=4, holds=4, hold_gave=0.001, rfq_holds=0))
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     cls = None
