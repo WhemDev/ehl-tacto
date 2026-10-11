@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>b6l13cmnk</task-id>
+<summary>Monitor event: "Watch the knob passes' means"</summary>
+<event>mean score: 72.6
+=== knob-holds6 start 20:01:53 variant=A9h cfg={"holds": 6, "hold_gave": 0.002}</event>
+If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+</task-notification>
