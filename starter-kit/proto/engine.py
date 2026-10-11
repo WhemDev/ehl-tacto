@@ -155,6 +155,11 @@ class Config:
     # So: never accept on such a reply, ask once more just below its offer; in an RFQ, never close while a bidder owes it.
     collect_owed: bool = False
     owed_gap: float = 0.012  # the collecting ask sits this share of C below its offer
+    # RFQ: on a collecting ask, concede only this share of the curve's step from our last ask (None: the curve's ask).
+    # P05 (03:30): after the rival half step to 30.50 Dralveck agreed to our next ask of 28.68 six times of six - the
+    # announced rest reached at least that far (from 31.00-31.50 it stopped at 29.00-29.50), so the curve's step gave
+    # it away; the record is 26.67
+    owed_concede: float | None = None
     owed_final: bool = False  # also when the cue comes with a final offer (untested: we accepted all 23 of those)
     # RFQ rival trigger (02:55, D02/P05 back offices): a verified rival price at least ~5 % below a supplier's own makes
     # it give half a step at once and the rest on its next reply (J1 100 % at 5-20 % below, 0 % under 2 %; Dralveck
@@ -1148,6 +1153,9 @@ class Negotiator:
                 own = [self.C(t, s2["terms"]) for s2 in t.sheets if must_haves_ok(self.case, s2["terms"], t.std)]
                 if own:
                     goal = min(goal, min(own) * (1 - cfg.owed_gap))  # below its offer (deeper if our curve already is)
+                last = self.asked_c(t)
+                if cfg.owed_concede is not None and last < goal:
+                    goal = last + cfg.owed_concede * (goal - last)  # its announced rest comes anyway: give little for it
                 t.collected = 1
                 self.note("collect", supplier=t.sid, goal=round(goal), status=t.status)
             sheets = (None if collecting else self.recalled(t)) or self.meso(t, goal)

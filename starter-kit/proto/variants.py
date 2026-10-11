@@ -217,6 +217,9 @@ for name, overrides in {
 # dearer one, never twice), and its announced rest collected (A9h-owed)
 VARIANTS["A9h-rival"] = ("A9h-owed + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
                          replace(VARIANTS["A9h-owed"][1], rival_gap=0.05))
+# 03:40: collect the announced rest without paying for it: a collecting ask concedes a quarter of the curve's step
+VARIANTS["A9h-owedask"] = ("A9h + collect an announced step, conceding a quarter of the curve's step for it (RFQ)",
+                           replace(VARIANTS["A9h"][1], collect_owed=True, owed_concede=0.25))
 # 03:20: the rival trigger alone (no owed hold) - joined A9h at 03:30, so the same as A9h now
 VARIANTS["A9h-gap"] = ("A9h + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
                        replace(VARIANTS["A9h"][1], rival_gap=0.05))
