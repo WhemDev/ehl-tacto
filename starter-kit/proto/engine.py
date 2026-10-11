@@ -213,7 +213,10 @@ GOAL_ANCHOR = {"routine": 0.12, "leverage": 0.16, "quality_first": 0.10, "stabil
 # 15-27 %, P11 quality 12 %); only used to make a too-timid first ask bolder, never softer
 ROOM_PRIOR = {"leverage": 0.15, "routine": 0.08, "quality_first": 0.08}
 FREEZE = re.compile(r"frozen|freeze|no (further )?price reduction|cannot (reduce|lower|move on) (the |our )?price|"
-                    r"talk about the terms|price (is|remains|stays) (fixed|firm)", re.I)
+                    r"talk about the terms|price (is|remains|stays) (fixed|firm)"
+                    # Sunday release letters (Nordmark, Mairhofer/Strelvo): prices set centrally; 0 of 14,072 stored mails
+                    r"|(no longer|cannot|can ?not|unable to) grant (any )?(individual )?price reductions"
+                    r"|ruled out (any )?(individual )?price reductions|price list[^.]{0,40}applies to all customers", re.I)
 INSIST = (r"\bmandatory\b|\bessential\b|\brequires?\b|\brequired\b|\bwe (must|need to|have to) (include|have|add|keep|insist)"
           r"|\bnot possible without\b|\bonly (with|if)\b|\bcannot (offer|accept|do)\b[^.]*\bwithout\b|\binsist|non-negotiable")
 TERM_WORDS = {"index_clause": r"index|clause|Preisgleitklausel|surcharge", "payment_days": r"payment|Zahlungsziel",
