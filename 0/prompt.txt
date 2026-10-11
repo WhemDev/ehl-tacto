@@ -1,0 +1,1 @@
+can you create an alternative data set with unseen types, so we can maybe measure if the model overfits a lot or not? I think this is the best thing to do right now since most of the teams will fall in the leaderboard due to this
