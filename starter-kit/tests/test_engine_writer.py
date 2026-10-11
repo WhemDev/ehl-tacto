@@ -102,3 +102,34 @@ def test_vary_tags_the_subject_only_and_off_changes_nothing(monkeypatch):
     assert engine_writer.prepare(answer(good_body()), MSG, CASE, "") is MSG
     monkeypatch.delenv("ENGINE_WRITER")
     assert engine_writer.mode() == "llm"  # the default since the practice A/B (0.726 vs 0.721)
+
+
+def test_dossier_mode_adds_supplier_notes_and_keeps_every_rule(monkeypatch):
+    monkeypatch.setenv("ENGINE_WRITER", "dossier")
+    monkeypatch.setattr(engine_writer, "notes", lambda sid: "Acme GmbH (DE): a small family-owned company.")
+    seen = {}
+
+    def model(system, user):
+        seen["system"], seen["user"] = system, user
+        body = DRAFT.replace("Thank you for the quick answer.", "Thank you, we value the partnership.")
+        return json.dumps({"body": body})
+
+    out = engine_writer.prepare(model, MSG, CASE, "Our offer stands.", supplier="sup:1")
+    assert "SUPPLIER NOTES" in seen["user"] and "Acme GmbH" in seen["user"]
+    assert "never mention credit ratings" in seen["system"]
+    assert "value the partnership" in out["body"]
+    bad = engine_writer.prepare(lambda s, u: json.dumps({"body": DRAFT.replace("today", "within 10 days")}), MSG, CASE,
+                                "", supplier="sup:1")
+    assert bad["body"] == DRAFT  # a figure from the notes is still a new figure: the template goes
+
+
+def test_llm_mode_sends_no_notes(monkeypatch):
+    monkeypatch.setenv("ENGINE_WRITER", "llm")
+    seen = {}
+
+    def model(system, user):
+        seen["user"] = user
+        return json.dumps({"body": DRAFT})
+
+    engine_writer.prepare(model, MSG, CASE, "", supplier="sup:1")
+    assert "SUPPLIER NOTES" not in seen["user"]

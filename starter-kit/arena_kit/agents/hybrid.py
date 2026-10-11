@@ -162,7 +162,7 @@ def _negotiator(case_id):
         def send(self, t, msg):
             if msg.pop("_draft", False):
                 self.c._ctx()  # a pool thread in the single-supplier loop: log the model's call with this case
-                msg = engine_writer.prepare(self.writer, msg, self.case, t.last.get("body"))
+                msg = engine_writer.prepare(self.writer, msg, self.case, t.last.get("body"), supplier=t.sid)
             return super().send(t, msg)
 
         def near_cap(self):  # the wave's cap may move (the host can extend a wave): ask each time
