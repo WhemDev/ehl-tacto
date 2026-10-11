@@ -30,6 +30,9 @@ from proto.target import lever_grid, price_for_c, target
 
 LOG_DIR = Path("proto/runs")
 FINAL_GRACE_S = 15  # how long a best final offer may wait for a rival's reply that is already in flight
+# Config.collect_owed: an agreed or final best waits for an owing bidder only while our ask to that bidder costs at
+# least this share less - the best's 60-second clock runs meanwhile
+OWED_EDGE = 0.005
 
 
 @dataclass(frozen=True)
@@ -954,6 +957,20 @@ class Negotiator:
         self.note("result", **{k: res.get(k) for k in ("deal", "c_open", "c_deal", "c_best", "score")})
         return res
 
+    def owed_hold(self, best, live, owing):
+        """Config.collect_owed: hold the close for a bidder that promised a further step on its next reply (approval /
+        rival rest). An agreed or final best waits only while such a bidder's ask still beats it: its 60 s clock runs,
+        and a rival's reply can hold the arena for 40 s (P05 523a5c20: Dralveck agreed at our ask, we waited for
+        Fuchsreiter's rest asked at the same goal - it could not win - and the accept came too late)."""
+        due = owing + [x for x in live if getattr(x, "collected", 0) and x.in_flight and x not in owing]
+        return bool(due and best and (best[1].status == "open"
+                                      or any(self.asked_c(x) < best[0] * (1 - OWED_EDGE) for x in due)))
+
+    def asked_c(self, t):
+        """C of the cheapest package in our last mail to t that carried term sheets (inf before the first)."""
+        m = next((m for m in reversed(t.events) if m.get("from") == "buyer" and m.get("term_sheets")), None)
+        return min((self.C(t, s["terms"]) for s in m["term_sheets"] if s.get("terms")), default=float("inf")) if m else float("inf")
+
     def owes_step(self, t):
         """Config.collect_owed: its last reply announced a further step for its next reply (an approval from its
         management, or the rest of a rival half step). Collected once per thread."""
@@ -986,7 +1003,27 @@ class Negotiator:
         t.events = list(msgs)
         if th.get("closed"):
             t.events.append({"from": "arena", "status": "walked_away", "term_sheets": []})
+        else:
+            self._timeout_answer(t, th)
         self.note("resync", supplier=t.sid, closed=th.get("closed"), status=t.status)
+
+    def _timeout_answer(self, t, th):
+        """A late move of ours counts as a timeout: the arena repeats our last offer and the supplier's answer, with a
+        NEW standing sheet, sits in the thread's `timeouts`, not in `messages` (practice P05 523a5c20: Dralveck agreed
+        at 28.68 as offer:70210-2; our accept came late, it re-agreed at 28.68 as offer:70210-3, and four accepts of
+        the stale -2 failed - the case went to a rival at 29.00). The thread's `offer_id` names the standing sheet."""
+        standing = th.get("offer_id")
+        if not standing or (t.sheets and t.sheets[0].get("term_sheet_id") == standing):
+            return
+        for a in reversed(th.get("timeouts") or []):
+            if a.get("offer_id") == standing and a.get("terms"):
+                t.events.append({"from": f"timeout@{t.sid}", "status": a.get("status"), "body": a.get("text") or "",
+                                 "attachments": [], "claim_results": a.get("claim_results") or [],
+                                 "term_sheets": [{"term_sheet_id": standing, "terms": a["terms"]}]})
+                t.replied_at = time.time()
+                self.note("timeout_answer", supplier=t.sid, offer=standing, status=a.get("status"),
+                          price=a["terms"].get("unit_price"))
+                return
 
     def run_rfq(self):
         """Several suppliers: one worker per thread, each answering its supplier at once (the
@@ -1046,9 +1083,8 @@ class Negotiator:
             hold_close = bool(best) and best[1].status == "open" and (untouched or best[1].in_flight or (  # its offer may change,
                 any(x.in_flight for x in live if x is not best[1]) and time.time() - best[1].replied_at < 20))  # or a rival's beat it
             owing = [x for x in live if self.owes_step(x) and x.sent() < limit - 1]
-            if owing or any(getattr(x, "collected", 0) and x.in_flight for x in live):
+            if self.owed_hold(best, live, owing):
                 hold_close = True  # a bidder promised a further step on its next reply (approval / rival rest): collect it first
-            # (an agreed or final offer is never held: under load its 60 s may already be running out - P05)
             if best and best[0] <= self.c_alt and not hold_close:
                 # (closing waits while another supplier's reply is on its way - it may be better: sandbox D02 0.269;
                 #  the threads themselves keep negotiating below)
