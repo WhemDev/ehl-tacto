@@ -63,6 +63,20 @@ change before the final is the RFQ port from the R4 fork, if it passes the sandb
 - **Network outages** (`764deef`): the client retries DNS and connection failures for 30 s, and the engine survives a
   failed send. A 23:26 DNS outage had killed a P02 session (three buyer timeouts, walk-away, 0.0).
 
+**Since 03:00 (2026-10-11)**
+- **RFQ rival trigger** (`f979f4f`, from the research session's analysis of 1,572 sessions): from the first mail each
+  bidder sees the cheapest rival price at least 5 % below its own (any package - a supplier checks only the cited
+  offer's price), never a dearer one, never the same offer twice. Owner-type suppliers give half a step at once and the
+  rest on their next reply (P05 back office: "The buyer shows a much lower rival quote. I give half the step now and
+  check the rest."). Since 21:05 the stagger lead got no rival in its first mail. P05 0.739-0.743 in 5 of 6 sessions vs
+  0.607-0.665; sandbox D02 0.724 x 2 vs 0.661-0.710. Only multi-supplier cases change. The build before it: `A9h-0300`.
+- **Late accepts** (`c6abd0f`): a move the arena processes more than 60 s after the supplier's reply counts as a
+  timeout and leaves a new standing sheet in the thread's `timeouts`; after a failed accept the engine now accepts that
+  sheet instead of retrying the stale one (one-supplier case: the old path walked away).
+- **Not adopted:** the owed hold (`A9h-owed`: collect an announced step before closing) - no gain measured in practice
+  (P02, P05), and it caused the late accept above; it now waits on an agreed or final best only while the owing
+  bidder can still beat it. Waiting for the research session's D02 numbers.
+
 **Sunday checklist**
 - 08:00 `cd starter-kit && uv run arena data`, then `ls data/release-sunday/facts.json`: `DataPackage` merges a
   `release-sunday` folder next to the package by itself (rehearsed 2026-10-10 20:00 with a synthetic release:
