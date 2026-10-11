@@ -28,10 +28,10 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 ## The Live Final (start before wave 1, leave it running)
 
 ```bash
-PYTHONPATH=. uv run python proto/final.py                 # G8s on every case of every wave, real wave cap as deadline
+PYTHONPATH=. uv run python proto/final.py                 # G8v (= G8s + safe exception paths) on every case of every wave, real wave cap as deadline
 PYTHONPATH=. uv run python proto/final.py --rehearse 10   # same code path on sandbox cases, one 8-minute wave (free)
 ```
-`FINAL_VARIANT` picks another named algorithm (default **G8s**). A "one session per case" 409 resumes the running
+`FINAL_VARIANT` picks another named algorithm (default **G8v** = G8s + safe exception paths; plays exactly like G8s). Rehearsal 11 Oct: 10 parallel sandbox cases in one 8-minute wave, 10/10 deals, 0 errors, 0 late, 0 sessions left open. A "one session per case" 409 resumes the running
 session (e.g. after a crash/restart). `proto/runs/final/manifest.json` records the exact config and code hash.
 
 | **G8s** (G5-1 + slow tough ask for single-supplier stabilise cases with a generosity guard + spread arguments (single supplier) + clause package for stabilise + evidence fixes + quality packages) | **1.000** | 0.73–0.77 | **current main algorithm**; practice **0.731** (P01 0.956 and P02 0.733 above the board records) |

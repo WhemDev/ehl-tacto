@@ -230,6 +230,15 @@ VARIANTS["G10a"] = ("G8s + R3-2 shared-index skip (RFQ: no index ID already give
 VARIANTS["G10b"] = ("G8s + R3-3 adopted lane (keep the payment/contract lane the supplier took from our 2nd package)",
                     replace(VARIANTS["G8s"][1], adopted_lane=True))
 
+VARIANTS["G8t"] = ("G8s + audit text fixes (real contract months, supplier type only when evidenced, no duplicate IDs)",
+                   replace(VARIANTS["G8s"][1], text_fixes=True))
+
+VARIANTS["G8u"] = ("G8t + safe exception paths (no walk after a failed promotion / read / crash while an acceptable offer stands)",
+                   replace(VARIANTS["G8t"][1], safe_exceptions=True))
+
+VARIANTS["G8v"] = ("G8s + safe exception paths only (plays exactly like G8s; no walk after a failed promotion / read / crash) - final default",
+                   replace(VARIANTS["G8s"][1], safe_exceptions=True))
+
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     cls = None
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts

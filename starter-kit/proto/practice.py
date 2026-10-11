@@ -1194,10 +1194,8 @@ class PracticeNegotiator(Negotiator):
         if self.cfg.material_share_bridge:
             msg = self._material_share_bridge(t, msg)
         msg = self._no_dup_claims(t, msg)
-        return msg
-        msg["body"] = msg["body"].replace(
-            "Energy and wage costs have clearly been a strain for a foundry this year",
-            "Cost pressure has clearly been real for you this year")
+        if self.cfg.text_fixes and msg.get("refs"):
+            msg["refs"] = list(dict.fromkeys(msg["refs"]))  # audit: P03 cited the same forecast ID twice in one message
         return msg
 
 

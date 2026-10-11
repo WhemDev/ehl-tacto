@@ -189,6 +189,8 @@ class Config:
     exclusive_volume: bool = False  # volume answer as 100 % exclusive / undivided award (true), without 'we cannot promise more'
     shared_index_skip: bool = False  # RFQ: index facts whose IDs another supplier already got are skipped (each ID counts once per case)
     adopted_lane: bool = False  # single supplier, not stabilise: keep the payment/contract lane the supplier adopted from our 2nd package
+    text_fixes: bool = False  # audit fixes: real contract months, supplier type only when evidenced, no duplicate IDs per message
+    safe_exceptions: bool = False  # exception paths only: no walk after a failed promotion/read/crash while an acceptable offer stands
     spread_args: bool = False  # stage the strong arguments (breakdown components -> total/margin, volume cap) over rounds
     cs_tension: float = 0.60  # cluster_safezone: stop pushing a supplier once its tension (P(stop next)) crosses this
     writer_positive: bool = False  # LLM writer: maximise positive sentiment (warm, appreciative opening), same content
@@ -4572,13 +4574,24 @@ class Negotiator:
         refs = [r for f in new for r in (f[0] if isinstance(f[0], list) else [f[0]])]
         lines = ["Hello,", ""]
         if rnd == 0:
+            months_txt = "24"
+            supplier_kind = "a foundry"
+            if cfg.text_fixes:
+                # audit: P11 was told "the full 24 months" with a 12-month horizon; P02's supplier was called a foundry
+                m = self.case.get("fixed_terms", {}).get("contract_months") or 12 * (self.b.get("horizon_years") or 2)
+                months_txt = f"{m:.0f}"
+                seen = " ".join([self.case.get("title", ""), json.dumps(self.case.get("parts", []))]
+                                + [(e.get("body") or "") + " " + (e.get("from_name") or "") for e in t.events])
+                if not re.search(r"foundr|gie(ss|ß)erei|casting", seen, re.I):
+                    supplier_kind = None
             if self.case.get("type") == "price_increase":
-                lines.append("Thank you for your letter and the quote. Energy and wage costs have clearly been a strain for a foundry "
-                             "this year, and after many years together we want you healthy and on our side." if warm
-                             else "Thank you for your letter and the quote.")
+                pressure = (f"Energy and wage costs have clearly been a strain for {supplier_kind} this year" if supplier_kind
+                            else "Cost pressure has clearly been real for you this year")
+                lines.append(f"Thank you for your letter and the quote. {pressure}, and after many years together we want you "
+                             "healthy and on our side." if warm else "Thank you for your letter and the quote.")
             else:
-                lines.append("Thank you for your quote. We'd like to award this part to a partner for the full 24 months." if warm
-                             else "Thank you for your quote.")
+                lines.append(f"Thank you for your quote. We'd like to award this part to a partner for the full {months_txt} months."
+                             if warm else "Thank you for your quote.")
         elif warm:
             moved = t.moves[-1] if t.moves else {}
             lines.append("Thank you for moving on " + " and ".join(sorted({WORDS.get(k, k) for k in moved})) + ". That helps."
@@ -8320,6 +8333,28 @@ class Negotiator:
         self.note("cleanup_unresolved", session=self.sid, owner=self.sid)
         return {"error": "unresolved cleanup failure", "unresolved": True, "session_id": self.sid} if final else None
 
+    def _best_primary(self):
+        """(C, thread, primary sheet) of the cheapest standing PRIMARY offer that keeps the must-haves and beats our
+        alternative - the only kind of sheet the arena lets us accept directly."""
+        rows = []
+        for x in self.threads.values():
+            if x.status in ENDED or not x.sheets:
+                continue
+            sh = x.sheets[0]
+            try:
+                if must_haves_ok(self.case, sh["terms"], x.std) and (c := self.C(x, sh["terms"])) <= self.c_alt:
+                    rows.append((c, x, sh))
+            except Exception:
+                continue
+        return min(rows, key=lambda r: r[0], default=None)
+
+    def _accept_primary(self, t, sheet, why):
+        self.note("safe_exception_accept", supplier=t.sid, why=why, sheet=sheet.get("term_sheet_id"))
+        r = self.c.send_message(self.sid, t.sid, {"action": {"type": "accept", "term_sheet_id": sheet["term_sheet_id"]}})
+        res = r.get("result", r)
+        self.note("result", **{k: res.get(k) for k in ("deal", "supplier_id", "terms", "c_open", "c_deal", "c_best", "score", "cost_breakdown")})
+        return res
+
     def close(self, t, sheet, revision=None):
         if getattr(self.cfg, "close_recovery_v2", False):
             return self._close_v2_unlocked(self._close_v2, t, sheet, revision)
@@ -8334,7 +8369,20 @@ class Negotiator:
                               "body": "\n".join(["Hello,", "", "thank you, we take your alternative exactly as offered: "
                                                  f"{fmt(sheet['terms'])}. Please confirm and we sign today."] + SIGN)})
             if not r or not t.sheets:
+                if self.cfg.safe_exceptions:
+                    # the promotion reply was lost or empty: re-read, then take the best acceptable standing primary
+                    self.resync(t)
+                    if (best := self._best_primary()) is not None:
+                        return self._accept_primary(best[1], best[2], "promotion_failed")
                 return self.walk()
+            if self.cfg.safe_exceptions:
+                new = t.sheets[0]
+                ok = must_haves_ok(self.case, new["terms"], t.std) and self.C(t, new["terms"]) <= self.c_alt
+                if not ok:  # the "promoted" primary is not what we asked for and not acceptable: take the best one
+                    self.note("promotion_mismatch", supplier=t.sid, wanted=sheet.get("terms"), got=new.get("terms"))
+                    if (best := self._best_primary()) is not None:
+                        return self._accept_primary(best[1], best[2], "promotion_mismatch")
+                    return self.walk()
             sheet = t.sheets[0]
         try:
             r = self.c.send_message(self.sid, t.sid, {"action": {"type": "accept", "term_sheet_id": sheet["term_sheet_id"]}})
@@ -8476,7 +8524,10 @@ class Negotiator:
             return True
         try:
             th = self.c.thread(self.sid, t.sid)
-        except ArenaError:
+        except ArenaError as e:
+            if self.cfg.safe_exceptions:  # a failed read says nothing about a withdrawal
+                self.note("resync_failed", supplier=t.sid, status=getattr(e, "status", None), error=str(e)[:200])
+                return
             t.events.append({"from": "arena", "status": "walked_away", "term_sheets": []})
             return
         msgs = th.get("messages") or t.events
@@ -11519,6 +11570,15 @@ def play(case_id, cfg=Config(), client=None, log_dir=LOG_DIR, quiet=False, deadl
                 if st.get("status") == "ended" and st.get("result"):  # the deal may already be done: report the arena's result
                     res = st["result"]
                     n.note("result_after_crash", score=res.get("score"), deal=res.get("deal"))
+                elif cfg.safe_exceptions and (best := n._best_primary()) is not None:
+                    # a bug on our side must not throw away a live acceptable deal
+                    for x in n.threads.values():
+                        try:
+                            n.resync(x)
+                        except Exception:
+                            pass
+                    best = n._best_primary() or best
+                    res = n._accept_primary(best[1], best[2], "crash_recovery")
                 else:
                     res = n.walk()
             except Exception:
@@ -11530,7 +11590,11 @@ def play(case_id, cfg=Config(), client=None, log_dir=LOG_DIR, quiet=False, deadl
             with open(Path(log_dir).parent / "unresolved.txt", "a") as f:
                 f.write(n.sid + "\n")
         (Path(log_dir) / f"{case_id.replace(':', '_')}-{n.sid}.json").write_text(json.dumps(n.log, indent=1, default=str))
-        if (not cfg.safe_close and not getattr(cfg, "close_recovery_v2", False)) or n.terminal_result(res) is not None:
+        confirmed = isinstance(res, dict) and "deal" in res
+        if cfg.safe_exceptions and not confirmed:
+            with open(Path(log_dir).parent / "unresolved.txt", "a") as f:  # cleanup may still close it
+                f.write(n.sid + "\n")
+        elif (not cfg.safe_close and not getattr(cfg, "close_recovery_v2", False)) or n.terminal_result(res) is not None:
             with open(Path(log_dir).parent / "closed.txt", "a") as f:
                 f.write(n.sid + "\n")
     return n.sid, res
