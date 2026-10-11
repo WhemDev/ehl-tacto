@@ -64,6 +64,22 @@ class ResumingClient:
                     "resumed": True, "status": state.get("status")}
 
 
+class SlowClient:
+    """Rehearsal only: every supplier reply arrives `lo`-`hi` seconds late, like a busy arena (counts against our 60 s)."""
+
+    def __init__(self, client, lo, hi):
+        self._c, self.lo, self.hi = client, lo, hi
+
+    def __getattr__(self, name):
+        return getattr(self._c, name)
+
+    def send_message(self, *a, **k):
+        import random
+        r = self._c.send_message(*a, **k)
+        time.sleep(random.uniform(self.lo, self.hi))
+        return r
+
+
 def manifest(variant, cfg):
     src = b"".join(Path(p).read_bytes() for p in ["proto/engine.py", "proto/practice.py", "proto/target.py", "proto/variants.py"])
     try:
@@ -152,6 +168,7 @@ if __name__ == "__main__":
     ap.add_argument("--rehearse", type=int, default=0, help="sandbox rehearsal with N parallel cases (free)")
     ap.add_argument("--parallel", type=int, default=10)
     ap.add_argument("--wave-seconds", type=int, default=480)
+    ap.add_argument("--latency", default="", help="rehearsal only: 'lo,hi' seconds of extra delay on every reply")
     args = ap.parse_args()
     from proto.variants import VARIANTS
 
@@ -161,6 +178,9 @@ if __name__ == "__main__":
     print(f"variant {variant} code {m['code_sha256']} team repo {m['team_repo_rev']}", flush=True)
     client = ArenaClient(timeout=25, retries=7)
     if args.rehearse:
+        if args.latency:
+            lo, hi = (float(x) for x in args.latency.split(","))
+            client = SlowClient(client, lo, hi)
         rows = rehearse(client, cfg, args.rehearse, args.wave_seconds, args.parallel)
     else:
         rows = list(run_final(client, cfg, parallel=args.parallel).values())

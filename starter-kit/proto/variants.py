@@ -239,6 +239,8 @@ VARIANTS["G8u"] = ("G8t + safe exception paths (no walk after a failed promotion
 VARIANTS["G8v"] = ("G8s + safe exception paths only (plays exactly like G8s; no walk after a failed promotion / read / crash) - final default",
                    replace(VARIANTS["G8s"][1], safe_exceptions=True))
 
+VARIANTS["G8w"] = ("G8u + R3-2 shared-index skip (RFQ)", replace(VARIANTS["G8u"][1], shared_index_skip=True))
+
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     cls = None
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts
