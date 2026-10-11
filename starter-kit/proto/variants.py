@@ -88,14 +88,18 @@ VARIANTS = {
     # 2026-10-11 03:30: + the RFQ rival trigger (rival_gap 0.05): from the first mail each bidder sees the cheapest rival
     # price at least 5 % below its own, never a dearer one, never twice. P05: 0.739-0.743 in 5 of 6 sessions (the sixth
     # 0.717 was a late accept, fixed in c6abd0f) vs 0.607-0.665 since 21:05; sandbox D02 0.724 x 2 vs 0.661-0.710.
-    # The build before it: "A9h-0300".
+    # 03:45: + collect an announced step (collect_owed; research session) with an RFQ collecting ask that concedes a
+    # quarter of the curve's step (owed_concede 0.25): P05 0.846 / 0.846 / 0.814 / 0.846 vs 0.739-0.743, D02 0.724 x 2
+    # (=), practice pass 0.744 (P05 0.846, the rest in their usual ranges). Builds before: "A9h-0300", "A9h-gap".
     "A9h": ("A9 with A6's RFQ play (no RFQ-only overrides, no breakdown argument), 3 holds, RFQ fact allocation, "
-            "clause packages at their cheapest payment term in supplier-health cases, the RFQ rival trigger",
+            "clause packages at their cheapest payment term in supplier-health cases, the RFQ rival trigger, "
+            "announced steps collected",
             replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                     bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
                     price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                     holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
-                    clause_pay_best=True, clause_pay_rate=0.064, rival_gap=0.05)),
+                    clause_pay_best=True, clause_pay_rate=0.064, rival_gap=0.05, collect_owed=True,
+                    owed_concede=0.25)),
     "A9h-0300": ("the final build before the RFQ rival trigger (2026-10-11 03:00)",
                  replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                          bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
@@ -217,12 +221,13 @@ for name, overrides in {
 # dearer one, never twice), and its announced rest collected (A9h-owed)
 VARIANTS["A9h-rival"] = ("A9h-owed + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
                          replace(VARIANTS["A9h-owed"][1], rival_gap=0.05))
-# 03:40: collect the announced rest without paying for it: a collecting ask concedes a quarter of the curve's step
+# 03:30: collect the announced rest without paying for it: a collecting ask concedes a quarter of the curve's step
+# (joined A9h at 03:45, so the same as A9h now)
 VARIANTS["A9h-owedask"] = ("A9h + collect an announced step, conceding a quarter of the curve's step for it (RFQ)",
                            replace(VARIANTS["A9h"][1], collect_owed=True, owed_concede=0.25))
-# 03:20: the rival trigger alone (no owed hold) - joined A9h at 03:30, so the same as A9h now
-VARIANTS["A9h-gap"] = ("A9h + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
-                       replace(VARIANTS["A9h"][1], rival_gap=0.05))
+# 03:20: the rival trigger alone, no owed collection = the final build from 03:30 to 03:45
+VARIANTS["A9h-gap"] = ("A9h-0300 + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
+                       replace(VARIANTS["A9h-0300"][1], rival_gap=0.05))
 
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):

@@ -33,7 +33,7 @@ kanban-plugin: basic
 
 ## Done
 
-- [x] **RFQ rival trigger joins the final build** (`f979f4f`): the cheapest rival price >= 5 % below a bidder's own from the first mail - P05 0.739-0.743 (5 of 6) vs 0.607-0.665, D02 0.724 x 2. Late-accept fix (`c6abd0f`): accept the standing sheet a timeout left. Owed hold not adopted. [[0007 The final build]]
+- [x] **Final build, night of 10-11 Oct: RFQ rival trigger + announced steps collected** - P05 0.846 (x 3 of 4; was 0.607-0.665), D02 0.724 x 2, fresh practice pass **0.744** (was 0.711-0.726). Late-accept fix (`c6abd0f`): accept the standing sheet a timeout left. Rollbacks `A9h-gap`, `A9h-0300`. [[0007 The final build]]
 - [x] Reversible A9h candidates implemented; owed RFQ tests repaired. Four hosted openings total: two harness failures, then P05 A9h 0.607 vs owed 0.665; owed excluded by <15 s replies, no promotion. [[Reversible candidates 2026-10-11]]
 
 - [x] Fact planner + RFQ rival loop ([[Options 2026-10-10 - beyond tuning]] O1/O3, `A9h-plan-rfq`): probe P18 0.401 (facts front-loaded), fresh pass **0.715** = baseline; suppliers stop at the same price whatever facts we send. Kept as a variant; the final build stays A9h (+ the phantom-ID fix)

@@ -91,7 +91,7 @@ def cfg(name, **kw):
 
 def test_the_plain_build_accepts_on_the_escalation_reply(monkeypatch):
     generous(monkeypatch)
-    arena, res = run(cfg("A9h"))
+    arena, res = run(cfg("A9h-gap"))
     assert res["deal"] and arena.accepted == (1, f"offer:{F1}-1")  # took 52.00 and never saw the approval
 
 
@@ -124,8 +124,8 @@ def test_only_announced_steps_count():
         assert n.owes_step(t) is owed, body
         t.collected = 1
         assert n.owes_step(t) is False  # once per thread
-    n.cfg = VARIANTS["A9h"][1]
-    assert n.owes_step(eng.Thread(F1, [quote(52.0, body=ASK_BOSS)])) is False  # off in the final build
+    n.cfg = VARIANTS["A9h-gap"][1]
+    assert n.owes_step(eng.Thread(F1, [quote(52.0, body=ASK_BOSS)])) is False  # off without collect_owed
 
 
 class Rest:
@@ -184,7 +184,7 @@ def play_rest(monkeypatch, name):
 
 
 def test_the_plain_build_closes_the_rfq_on_an_agreement_while_a_bidder_owes_its_rest(monkeypatch):
-    arena, res, accept = play_rest(monkeypatch, "A9h")
+    arena, res, accept = play_rest(monkeypatch, "A9h-gap")
     assert res["deal"] and accept[1] == C1 and arena.sent[J1] == 1
 
 

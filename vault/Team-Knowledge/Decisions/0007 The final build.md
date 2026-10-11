@@ -73,9 +73,14 @@ change before the final is the RFQ port from the R4 fork, if it passes the sandb
 - **Late accepts** (`c6abd0f`): a move the arena processes more than 60 s after the supplier's reply counts as a
   timeout and leaves a new standing sheet in the thread's `timeouts`; after a failed accept the engine now accepts that
   sheet instead of retrying the stale one (one-supplier case: the old path walked away).
-- **Not adopted:** the owed hold (`A9h-owed`: collect an announced step before closing) - no gain measured in practice
-  (P02, P05), and it caused the late accept above; it now waits on an agreed or final best only while the owing
-  bidder can still beat it. Waiting for the research session's D02 numbers.
+- **Announced steps collected** (03:45, `collect_owed` + `owed_concede` 0.25): a reply that announces a further step
+  ("we need to clarify this internally", "any further step needs approval from our management") is never accepted
+  on; in an RFQ the next ask concedes only a quarter of the curve's step - the announced rest comes anyway. P05: after
+  the rival half step to 30.50 the curve's next ask (28.68) was agreed six times of six; with a quarter step the rest
+  came as 28.00 and 27.69 was agreed: **0.846 / 0.846 / 0.814 / 0.846** vs 0.739-0.743. D02 0.724 x 2 (=). Fresh
+  practice pass **0.744** (10 deals; the one-supplier cases in their usual ranges). An agreed or final best waits for
+  an owing bidder only while that bidder's ask costs >= 0.5 % less (the late accept above). Rollbacks: `A9h-gap`
+  (rival trigger only), `A9h-0300` (before tonight).
 
 **Sunday checklist**
 - 08:00 `cd starter-kit && uv run arena data`, then `ls data/release-sunday/facts.json`: `DataPackage` merges a
