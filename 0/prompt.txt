@@ -1,0 +1,6 @@
+<task-notification>
+<task-id>b3qvntnvg</task-id>
+<summary>Monitor event: "Watch the writer A/B batches finish"</summary>
+<event>batch 3 4 done 18:23:16</event>
+If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+</task-notification>
