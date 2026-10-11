@@ -5,8 +5,9 @@ Pumpenwerke: price increases, renewals, RFQs with several bidders, bundles, raw-
 cuts and quality cases. It closes the deal with the lowest total cost C, or walks away when the alternative is
 cheaper. Forked from [tacto-ai/negotiation-arena-kit](https://github.com/tacto-ai/negotiation-arena-kit).
 
-Practice board on the evening before the final: mean best score **0.736** over the 10 hosted suppliers, #3 of 24;
-a full fresh pass of the final build scores **0.72-0.73** with 10 deals out of 10 and no failed accept.
+Practice board on the evening before the final: mean best score **0.736** over the 10 hosted suppliers, #3 of 24.
+On the morning of the final, six fresh single passes of the final build averaged **0.743** (0.737-0.749), every
+case closed with a deal, no claim contradicted.
 
 ## How it negotiates
 
@@ -27,17 +28,28 @@ The code decides every number; a language model only writes the words around the
    orders of the same part elsewhere, its scorecard, our forecast, the notice period in its own letter, the
    rival's offer in an RFQ. Facts that rose, or that argue for the supplier, are never cited; in an RFQ a shared
    fact goes to one bidder only, since the arena counts each ID once per case.
-5. **RFQs.** One worker per supplier on its own 60-second clock; the cheapest quote is opened first and the
-   others are opened citing its fresh reply; the best standing offer is accepted the moment it is agreed or
-   final, a rival's reply in flight gets at most 15 seconds.
-6. **Answers.** Volume questions get our binding need and forecast, requests about fixed terms get a plain
+5. **RFQs.** One worker per supplier on its own 60-second clock; the cheapest quote that keeps our must-haves is
+   opened first. From the first e-mail each bidder sees the cheapest rival price at least 5 % below its own -
+   never a dearer one, never the same offer twice: owner-run suppliers then give half a step at once and
+   announce the rest ("we need to clarify this internally"). The best standing offer is accepted the moment it
+   is agreed or final; a rival's reply in flight gets at most 15 seconds.
+6. **Announced steps are collected.** A reply that promises a further step ("we need to clarify this
+   internally", "any further step needs approval from our management") is never accepted on; our next ask
+   concedes only a quarter of its usual step, because the rest comes anyway (P05: 0.61-0.67 → 0.81-0.88).
+7. **Answers.** Volume questions get our binding need and forecast, requests about fixed terms get a plain
    "fixed in this enquiry", complaints about late payment get a promise to pay on the agreed day.
-7. **The e-mail.** Claude Sonnet 5.5 rewrites the engine's template; every sentence with a data ID stays
+8. **The e-mail.** Claude Sonnet 5.5 rewrites the engine's template; every sentence with a data ID stays
    verbatim, no figure the code did not choose gets in, and the template goes out whenever the model is slow or
    breaks a rule. On the practice suppliers wording did not move the score; the numbers did.
+9. **Guards for cases we have not seen.** Never close a deal that costs more than our alternative (no deal scores
+   the alternative) or breaks a must-have; never propose the supplier's opening back; price solvers that scale
+   to the part (EUR 2 to EUR 1,600 in the data); a central price list ("no individual price reductions") moves
+   the talk to payment and contract terms; a late move that the arena counted as a timeout is recovered by
+   accepting the standing sheet it left. A persona test bench of 69 cases (prices x0.012-x40, cheaper
+   alternatives, new must-haves) scores 0.520 out of distribution vs 0.474 on the known cases.
 
 The engine is Tugra's deterministic engine (`starter-kit/proto/`, algorithm `A9h`), developed by the team on
-the hosted sandbox, 70 practice sessions and the local simulator. Our earlier agent, the orchestra
+the hosted sandbox, several hundred practice sessions, the local simulator and the persona bench. Our earlier agent, the orchestra
 (`arena_kit/agents/orchestra.py`), is the fallback if the engine cannot start on a case.
 
 ## Setup
@@ -56,7 +68,7 @@ Python 3.12 and [uv](https://docs.astral.sh/uv/). Secrets go into `.env` at the 
 cd starter-kit
 uv sync --all-extras
 uv run arena data                                  # the data package (and Sunday's release, once public)
-uv run pytest -q                                   # 70 tests
+uv run pytest -q                                   # 158 tests
 uv run arena run --set sandbox --agent hybrid      # free: the two demo cases
 uv run arena play case:P01 --agent hybrid --practice -v   # one practice session
 ```
@@ -81,7 +93,7 @@ every negotiation live at http://127.0.0.1:8765 from our own event log.
 | `starter-kit/arena_kit/agents/hybrid.py` | runs the engine through the kit's runner: event log, resume, wave cap, background attachments |
 | `starter-kit/arena_kit/agents/engine_writer.py` | the LLM writer and its guards |
 | `starter-kit/arena_kit/` | the kit: client, runner (`play.py`), cost function (`cost.py`), data package, dashboard, local simulator |
-| `starter-kit/tests/` | 70 tests: cost model, clock rules, RFQ accept timing, the writer's guards, the final runner |
+| `starter-kit/tests/` | 158 tests: cost model, clock rules, RFQ accept timing, rival and announced-step rules, out-of-distribution guards, the writer's guards, the final runner |
 | `vault/` | the team's Obsidian vault: decisions (`Team-Knowledge/Decisions/`), test log (`Progress/Testing.md`), every practice run with its replay |
 | `brief/`, `data/` | Tacto's brief, API docs and data package |
 
@@ -96,5 +108,7 @@ every negotiation live at http://127.0.0.1:8765 from our own event log.
 - The 60-second clock runs from the supplier's reply; downloading its attachments before reading the offer, or
   waiting for a rival, lost deals until both happened in the background.
 - Wording, tone and even the choice of writer model did not change scores on these suppliers; data and timing did.
+- In an RFQ the strongest lever is a verified rival price well below the supplier's own: half a step at once, the
+  rest on the next reply - and the rest arrives whatever we ask, so conceding for it only gives money away.
 
 Decisions, measurements and the Sunday checklist: `vault/Team-Knowledge/Decisions/0007 The final build.md`.
