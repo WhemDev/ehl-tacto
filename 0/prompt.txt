@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bpxuv0635</task-id>
+<tool-use-id>toolu_014Ks1mkZcDfWNXepifQ7tZs</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-ardagurses-Desktop-TactoEHL/dd146335-aa1f-4ce4-b488-335cbff12d05/tasks/bpxuv0635.output</output-file>
+<status>completed</status>
+<summary>Background command "Run the template-vs-Sonnet A/B on the hosted sandbox" completed (exit code 0)</summary>
+</task-notification>
