@@ -45,8 +45,9 @@ def test_lead_requires_isolated_quote_saving_above_late_cost():
 def test_baseline_is_unchanged_and_switches_independent():
     base = VARIANTS["A9h"][1]
     assert base.collect_owed  # joined the final build 2026-10-11 03:45 (P05 0.846 vs 0.74)
-    assert not any((base.first_indices, base.economic_lead, base.extreme_payment))
-    assert VARIANTS["A9h-candidate"][1] == replace(base, first_indices=True, economic_lead=True, extreme_payment=True)
+    assert base.economic_lead  # joined the final build 06:30 (bench: never below A9h, fixes a long-lead zero)
+    assert not any((base.first_indices, base.extreme_payment))
+    assert VARIANTS["A9h-candidate"][1] == replace(base, first_indices=True, extreme_payment=True)
 
 
 def test_candidate_packages_keep_must_haves_and_endpoint_payments():
