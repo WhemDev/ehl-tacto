@@ -1,0 +1,6 @@
+<task-notification>
+<task-id>by05x5i8f</task-id>
+<summary>Monitor event: "Watch the practice run for failures or results"</summary>
+<event>19:08:55 HTTP Request: GET https://arena.tacto.ai/v1/sessions/84409a3cd39efc06 "HTTP/1.1 200 OK"</event>
+If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+</task-notification>
