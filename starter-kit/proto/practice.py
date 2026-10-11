@@ -747,7 +747,24 @@ class PracticeNegotiator(Negotiator):
         pos = q("SELECT id FROM po_lines WHERE part_id = ? AND supplier_id = ? ORDER BY id DESC LIMIT 3", (part, t.sid))
         if len(pos) >= 2:
             ids = [p["id"] for p in pos]
-            facts.append((ids, f"Our recent orders {', '.join(ids)} show the price level we have been paying"))
+            sentence = f"Our recent orders {', '.join(ids)} show the price level we have been paying"
+            if self.cfg.bind_evidence and ("volume_per_year" in (case.get("negotiable") or [])
+                                           or (case.get("fixed_terms") or {}).get("volume_per_year") is not None):
+                # I1: state the quantity these orders document, next to the volume our package commits
+                # (only when the case lets or makes the package carry the volume, as for the forecast sentence)
+                try:
+                    rows = q(f"SELECT id, qty, order_date FROM po_lines WHERE id IN ({','.join('?' * len(ids))})", tuple(ids))
+                    by_id = {r["id"]: r for r in rows}
+                    qtys = [by_id[i]["qty"] for i in ids]
+                    months = [str(by_id[i]["order_date"])[:7] for i in ids]
+                    if (all(isinstance(x, int | float) and not isinstance(x, bool) and math.isfinite(x) for x in qtys)
+                            and all(re.fullmatch(r"\d{4}-\d{2}", m) for m in months)):
+                        sentence = (f"Our orders {', '.join(ids)} total {sum(qtys):,.0f} pieces between {min(months)} and "
+                                    f"{max(months)}: steady demand that our package now turns into a binding volume, "
+                                    "which lowers your risk and your cost per piece")
+                except Exception:
+                    pass  # missing data: keep the original sentence
+            facts.append((ids, sentence))
         # 5. its scorecard, if it is weak
         for r in refs:
             if r.startswith("sc:") and r.split("@")[0] == "sc:" + t.sid.split(":")[1]:
@@ -759,7 +776,14 @@ class PracticeNegotiator(Negotiator):
         # 6. a forecast that grows
         for r in refs:
             if r.startswith("fc:") and (f := lookup(r) or {}).get("change_pct", 0) > 0:
-                facts.append((r, f"Our forecast {r} shows demand {f['change_pct']:+.1f}%"))
+                sentence = f"Our forecast {r} shows demand {f['change_pct']:+.1f}%"
+                if self.cfg.bind_evidence and ("volume_per_year" in (case.get("negotiable") or [])
+                                               or (case.get("fixed_terms") or {}).get("volume_per_year") is not None) \
+                        and isinstance(b.get("need_per_year"), int | float):
+                    # I1: only state the commitment when the case lets/makes the package carry the volume
+                    sentence += (f"; our package commits the full requirement of {b['need_per_year']:,} pieces per year, "
+                                 "so that growth is secured volume for you")
+                facts.append((r, sentence))
         # 6b. news about this supplier (checked: that it is about this supplier) - optional
         if self.cfg.news:
             for nrow in q("SELECT id, headline FROM news WHERE supplier_id = ? ORDER BY date DESC LIMIT 1", (t.sid,)):
@@ -1086,6 +1110,61 @@ class PracticeNegotiator(Negotiator):
             if lock is not None:
                 lock.release()
 
+    _VERIFY_LINE = ("Please verify these inputs first, then assess the attached package; if you counter, "
+                    "please reflect any applicable adjustment in your primary term sheet.")
+
+    def _verify_settle(self, t, rnd, msg):
+        """I3: evidence-first layout and/or a verify-then-assess request; same lines, refs and sheets (no new facts)."""
+        cfg = self.cfg
+        if not (cfg.verify_layout or cfg.verify_request) or rnd < 1 or not isinstance(msg, dict):
+            return msg
+        refs = [r for r in (msg.get("refs") or []) if isinstance(r, str) and r]
+        if not msg.get("term_sheets") or not refs or not isinstance(msg.get("body"), str) or not msg["body"]:
+            return msg
+        try:
+            original = msg["body"]
+            lines = original.split("\n")
+            layout_done = request_done = False
+
+            def signoff_index(ls):
+                idx = [i for i, ln in enumerate(ls) if ln.strip() == "Best regards"]
+                return idx[-1] if idx else None
+
+            if cfg.verify_layout:
+                g = next((i for i, ln in enumerate(lines) if ln.strip()), None)
+                so = signoff_index(lines)
+                end = so if so is not None else len(lines)
+                if g is not None and g < end:
+                    body_idx = range(g + 1, end)
+                    ev = [i for i in body_idx if lines[i].strip() and any(r in lines[i] for r in refs)]
+                    if ev:
+                        evset = set(ev)
+                        evidence = [lines[i] for i in ev]
+                        rest = [lines[i] for i in range(g + 1, len(lines)) if i not in evset]
+                        while rest and not rest[0].strip():
+                            rest.pop(0)
+                        new_lines = lines[:g + 1] + [""] + evidence + [""] + rest
+                        key = lambda ls: sorted(x.strip() for x in ls if x.strip())
+                        if key(new_lines) == key(lines):
+                            if new_lines != lines:
+                                lines, layout_done = new_lines, True
+                        else:
+                            self.note("verify_settle_failed", supplier=t.sid, reason="sentence_multiset_changed")
+            if cfg.verify_request and self._VERIFY_LINE not in lines:
+                so = signoff_index(lines)
+                if so is not None:
+                    lines = lines[:so] + [self._VERIFY_LINE, ""] + lines[so:]
+                else:
+                    lines = lines + ["", self._VERIFY_LINE]
+                request_done = True
+            if not (layout_done or request_done):
+                return msg
+            self.note("verify_settle", supplier=t.sid, layout=layout_done, request=request_done)
+            return {**msg, "body": "\n".join(lines)}
+        except Exception as e:
+            self.note("verify_settle_failed", supplier=getattr(t, "sid", None), error=f"{type(e).__name__}: {str(e)[:200]}")
+            return msg
+
     def write(self, t, rnd, sheets, rival=None):
         if self.cfg.safe_claims:
             return super().write(t, rnd, sheets, rival)
@@ -1196,6 +1275,7 @@ class PracticeNegotiator(Negotiator):
         msg = self._no_dup_claims(t, msg)
         if self.cfg.text_fixes and msg.get("refs"):
             msg["refs"] = list(dict.fromkeys(msg["refs"]))  # audit: P03 cited the same forecast ID twice in one message
+        msg = self._verify_settle(t, rnd, msg)  # I3 (flags verify_layout / verify_request; no-op when off)
         return msg
 
 

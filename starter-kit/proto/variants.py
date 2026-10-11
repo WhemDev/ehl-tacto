@@ -251,6 +251,16 @@ VARIANTS["L2"] = ("G8u + keep countering while the single supplier still moves (
                   replace(VARIANTS["G8u"][1], holds=4, hold_gave=0.001, rfq_holds=0))
 VARIANTS["L3"] = ("G8u + long game: L1 + L2 (single supplier only)",
                   replace(VARIANTS["G8u"][1], T=8, rfq_T=4, holds=4, hold_gave=0.001, rfq_holds=0))
+# E67 Astra round 5 ideas, each alone on top of G8u
+for _name, _desc, _flags in [
+        ("I1", "G8u + bind evidence (facts state what the package makes actionable)", dict(bind_evidence=True)),
+        ("I3a", "G8u + evidence-first layout in counters", dict(verify_layout=True)),
+        ("I3b", "G8u + 'verify these inputs, then reflect them in your primary sheet'", dict(verify_request=True)),
+        ("I3", "G8u + verify-then-settle (layout + request)", dict(verify_layout=True, verify_request=True)),
+        ("I4", "G8u + quote-implied exchange-rate package", dict(quote_exchange=True)),
+        ("I5", "G8u + RFQ counter waits briefly for an in-flight rival reply", dict(rival_defer=True)),
+        ("I6", "G8u + same-cost carrier package (larger visible price step at equal C)", dict(same_cost_carrier=True))]:
+    VARIANTS[_name] = (_desc, replace(VARIANTS["G8u"][1], **_flags))
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     cls = None
