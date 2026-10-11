@@ -1,0 +1,4 @@
+understand the challenge we are competing right now. How can we perform better? I have current running 2 different agents, one of them actively try new strategies and the other try to optimize main orchestrator. You can check files, obsidian, other branches and links.
+Main links:
+https://arena.tacto.ai
+http://localhost:8765
