@@ -54,13 +54,12 @@ Rules for the body:
 - Start with "Hello," and end with "Best regards" and "Hollerau Pumpenwerke, Purchasing" on their own lines."""
 
 
-DOSSIER_RULES = """SUPPLIER NOTES are background from our own files (who the supplier is, its letters, e-mails,
-call notes, news). Use them only to show in one or two tactful sentences that we understand its situation and why one of our
-packages suits it - for example faster payment for a supplier that needs cash, payment terms and call-off planning
-instead of the list price for a group with a fixed price list, continuity for a long-standing family partner.
-Never quote the notes, never mention credit ratings, insolvency, short-time work or anyone's financial trouble, and
-never add a number, date, promise or fact
-that the DRAFT does not contain."""
+DOSSIER_RULES = """SUPPLIER NOTES are background from our own files (who the supplier is, its letters,
+e-mails, call notes, news). Use them only to show in one or two tactful sentences that we understand its situation
+and why one of our packages suits it - for example faster payment for a supplier that needs cash, payment terms and
+call-off planning instead of the list price for a group with a fixed price list, continuity for a long-standing
+family partner. Never quote the notes, never mention credit ratings, insolvency, short-time work or anyone's
+financial trouble, and never add a number, date, promise or fact that the DRAFT does not contain."""
 
 
 def mode():
