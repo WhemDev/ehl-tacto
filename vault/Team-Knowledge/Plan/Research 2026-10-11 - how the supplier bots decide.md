@@ -117,6 +117,19 @@ holders did. Untested probe, low prior (0 of 15): on P08/P18 ask 0.5-1 % below t
 the persona's final, so collect_owed can collect an escalation; upside ~+0.04 on a case. Scripts: research
 scratchpad `plateau/`.
 
+## Pacing probe on P07/P08 (05:55, practice, 10 sessions, AI brain 20-23 s; variants on gap2)
+Why: /v1/live shows Tacto's house agent at P07 0.782 / P08 0.752 vs our best 0.710 / 0.657 (~1.5 % of price).
+| variant | P07 | P08 |
+|---|---|---|
+| A9h (control) | 0.697 (final R4 at 5.45) | 0.614 (final R5 at 5.41) |
+| A9h-slow (e 0.5, T 8, 1 fact a round, holds 0) | 0.637 / 0.630 (final R3 at 5.58-5.59) | 0.499 / 0.430 (final R3 at 5.48 / 5.58) |
+| A9h-fast (e 3.0, holds 0) | 0.682 / 0.671 | 0.553 / 0.553 |
+- **The final round is not fixed: it reacts to our pace.** Slow, small moves make the persona go final earlier and
+  higher; faster without holds is also worse. A9h's pacing sits at the optimum on this axis - pacing does not close
+  the house gap. The final build stays `e78168f`.
+- The board's best_mean is the mean of per-case bests over all of a team's sessions (top teams ran 300-413): the 0.79
+  cluster is best-of-n, not one pass.
+
 ## Open
 - ~~Adoption into the final build~~ done 03:45: A9h = rival trigger + announced steps collected, owed_concede 0.25 (`e78168f`, [[0007 The final build]]).
 - What gets single-supplier records 1-4.5 % below our plateaus (P08, P18, P11, P07): not in our data (see above).
