@@ -1,0 +1,1 @@
+your task is to log every knowledge the agents gathered to the obsidian and share with teammates.
