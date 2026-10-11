@@ -167,6 +167,11 @@ class Config:
     # must-have-compliant sheets, sent the stagger lead none, and showed the leader dearer rivals (D02: J1 at 15.00 was
     # shown C1's 15.80, twice). rival_gap: from the first mail, cite the lowest-priced rival offer (any package) not
     # shown to it yet, only if it is at least this share below its own price; never a dearer one. 0 = the old rule.
+    # out-of-distribution guards (research session, persona test bench 2026-10-11 04:50): never close a deal that costs
+    # more than our alternative (the single-supplier "no thread left to push" path accepted it: 6 of 66 bench cases),
+    # never recall a supplier's package that is no better than the opening (P06/X02: agreed at C_open = 0), and the
+    # package price floor relative to the supplier's price instead of a fixed EUR 0.50 (parts under EUR 0.50 got no offer)
+    guards: bool = False
     rival_gap: float = 0.0
 
     def key(self):
@@ -414,6 +419,8 @@ class Negotiator:
             return []
         now = min(self.C(t, s2["terms"]) for s2 in t.sheets)
         best_c, best_terms = min(seen, key=lambda z: z[0])
+        if self.cfg.guards and best_c >= self.c_open * 0.999:
+            return []  # its best earlier package is its opening: agreeing to it scores 0
         if best_c < now * 0.997:
             t.recalled_once = True
             self.note("recall_best", supplier=t.sid, best_c=round(best_c), now=round(now))
@@ -528,7 +535,7 @@ class Negotiator:
             p = price_for_c(self.case, g, t.std, c_goal, t.est if self.relationship else None)
             terms = complete_offer(self.case, {**g, "unit_price": p})
             c = self.C(t, terms)
-            if p <= 0.5 or (abs(c - c_goal) > max(tol, 0.01 * c_goal) and c < c_goal):
+            if p <= (0.05 * their_price if self.cfg.guards and their_price else 0.5) or (abs(c - c_goal) > max(tol, 0.01 * c_goal) and c < c_goal):
                 continue
             # guard (teammates' P02 zero): never offer a higher price than the supplier itself asks - cap at its price
             # (still a better package for us: P10) - and never a package that costs us more than its standing offer
@@ -928,6 +935,10 @@ class Negotiator:
                                                 f"On exactly your terms, can you do €{ask['unit_price']:.2f}? If yes, we sign immediately."] + SIGN)})
 
     def close(self, t, sheet):
+        if self.cfg.guards and self.c_alt < float("inf") and (
+                self.C(t, sheet["terms"]) > self.c_alt + 1 or not must_haves_ok(self.case, sheet["terms"], t.std)):
+            self.note("walk_instead", supplier=t.sid, c=round(self.C(t, sheet["terms"])), c_alt=round(self.c_alt))
+            return self.walk()  # no deal scores our alternative: better than this deal
         # only the supplier's first (primary) sheet is its standing offer; an alternative ("-a")
         # has to be sent back as our terms first - the supplier then answers "agreed"
         if t.sheets and sheet["term_sheet_id"] != t.sheets[0]["term_sheet_id"]:

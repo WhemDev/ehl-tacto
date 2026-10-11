@@ -65,3 +65,14 @@ def test_a_final_offer_dearer_than_our_alternative_is_never_taken():
     arena = Stubborn()
     eng.Negotiator(arena, "case:P07", VARIANTS["A9h"][1], quiet=True).run()
     assert arena.actions == ["walk_away"]
+
+
+def test_the_guard_walks_rather_than_close_any_deal_dearer_than_our_alternative():
+    import proto.engine as eng
+    from proto.variants import VARIANTS
+
+    arena = Stubborn()
+    n = eng.Negotiator(arena, "case:P07", VARIANTS["A9h"][1], quiet=True)
+    t = n.threads[arena.sup]
+    n.close(t, t.sheets[0])  # any path that reaches close() with the 7.50 opening
+    assert arena.actions == ["walk_away"]

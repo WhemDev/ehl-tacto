@@ -91,6 +91,9 @@ VARIANTS = {
     # 03:45: + collect an announced step (collect_owed; research session) with an RFQ collecting ask that concedes a
     # quarter of the curve's step (owed_concede 0.25): P05 0.846 / 0.846 / 0.814 / 0.846 vs 0.739-0.743, D02 0.724 x 2
     # (=), practice pass 0.744 (P05 0.846, the rest in their usual ranges). Builds before: "A9h-0300", "A9h-gap".
+    # 07:30: + guards (research session's persona bench, 69 cases): never close dearer than our alternative or with a
+    # broken must-have when one exists, never recall the opening, the price floor relative to the supplier's price.
+    # Bench 0.443 -> 0.474 in distribution, 0.441 -> 0.520 out of it; 0 of 401 practice deals would have changed.
     "A9h": ("A9 with A6's RFQ play (no RFQ-only overrides, no breakdown argument), 3 holds, RFQ fact allocation, "
             "clause packages at their cheapest payment term in supplier-health cases, the RFQ rival trigger, "
             "announced steps collected",
@@ -99,7 +102,7 @@ VARIANTS = {
                     price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                     holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
                     clause_pay_best=True, clause_pay_rate=0.064, rival_gap=0.05, collect_owed=True,
-                    owed_concede=0.25)),
+                    owed_concede=0.25, guards=True)),
     "A9h-0300": ("the final build before the RFQ rival trigger (2026-10-11 03:00)",
                  replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                          bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
