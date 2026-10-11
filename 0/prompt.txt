@@ -1,0 +1,1 @@
+Open WhemDev/cellwiser. I want you to pull the spreadsheet analysis harness only. Put it in a sepeareted folder. Add md so people can understand what it is and how can we use it.
