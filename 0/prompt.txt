@@ -1,0 +1,2 @@
+thought experiment:
+would trying to examine and score the the emails content and text? Would using LLM for this way help?
