@@ -82,6 +82,12 @@ change before the final is the RFQ port from the R4 fork, if it passes the sandb
   an owing bidder only while that bidder's ask costs >= 0.5 % less (the late accept above). Rollbacks: `A9h-gap`
   (rival trigger only), `A9h-0300` (before tonight).
 
+**Since 07:00 (2026-10-11): unseen cases** - the research session's audit and persona bench (69 case files, prices
+x0.012-x40, alternatives cheaper than any deal) found zero paths, now closed: price solvers bounded at EUR 1,000
+(world.sqlite has a EUR 1,608 part; `3534309`), a deal dearer than our alternative or with a broken must-have is never
+closed, the opening is never recalled, the price floor scales with the supplier's price (`Config.guards`). Bench
+0.441 -> 0.520 out of distribution; practice play unchanged.
+
 **Sunday checklist**
 - 08:00 `cd starter-kit && uv run arena data`, then `ls data/release-sunday/facts.json`: `DataPackage` merges a
   `release-sunday` folder next to the package by itself (rehearsed 2026-10-10 20:00 with a synthetic release:
