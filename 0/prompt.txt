@@ -1,0 +1,3 @@
+We are in Tacto EHL challenge, you can find the information about it in the project files.
+Our task on the challenge is to setup an agent orchestration that negotiates the price with different selelrs.
+Your task is to find and propose techniques, strategies and resources our agents can use. Search internet
