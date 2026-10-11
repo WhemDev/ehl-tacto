@@ -1,0 +1,1 @@
+can try using different llm models? try opus 5.5, sonnet, haiku also gpt. Lets try to find which LLM performs best in the core. Do not use practice session usage. Use hosted sandbox
