@@ -191,6 +191,7 @@ class Config:
     adopted_lane: bool = False  # single supplier, not stabilise: keep the payment/contract lane the supplier adopted from our 2nd package
     text_fixes: bool = False  # audit fixes: real contract months, supplier type only when evidenced, no duplicate IDs per message
     safe_exceptions: bool = False  # exception paths only: no walk after a failed promotion/read/crash while an acceptable offer stands
+    clause_buyout: bool = False  # supplier-introduced index clause: 2nd package without the clause at a price inside the win-win window
     spread_args: bool = False  # stage the strong arguments (breakdown components -> total/margin, volume cap) over rounds
     cs_tension: float = 0.60  # cluster_safezone: stop pushing a supplier once its tension (P(stop next)) crosses this
     writer_positive: bool = False  # LLM writer: maximise positive sentiment (warm, appreciative opening), same content
@@ -3617,7 +3618,7 @@ class Negotiator:
                   ("late_price_continuity", "_late_price_continuity_package"),
                   ("nash_package_bargain", "_g42_nash_packages"), ("quality_packages", "_quality_packages"),
                   ("sweetener_pkg", "_sweetener_package"), ("clause_pkg", "_clause_package"),
-                  ("adopted_lane", "_adopted_lane_package"))
+                  ("adopted_lane", "_adopted_lane_package"), ("clause_buyout", "_clause_buyout_package"))
 
     def _sweetener_package(self, t, c_goal, picks):
         """Option 1 'standard, like before' = the supplier's own current terms with only the price set to the same total
@@ -4421,6 +4422,44 @@ class Negotiator:
         except Exception as e:
             self.note("no_dup_claims_failed", supplier=t.sid, error=f"{type(e).__name__}: {str(e)[:200]}")
             return msg
+
+    def _clause_buyout_package(self, t, c_goal, picks):
+        """S5-6 (P18/P08): the supplier introduced an index clause; under the arena's C a clause costs us its expected
+        pass-through AND a risk premium, while the supplier only gains the pass-through. Offer the same package without
+        the clause at a price that splits that window (we keep `keep` of our saving)."""
+        keep = 0.4
+        opts = self.case.get("term_options", {}).get("index_clause") or []
+        if ("index_clause" not in self.case.get("negotiable", []) or None not in opts
+                or self.b.get("category_goal") == "stabilise" or not picks
+                or "index_clause" in getattr(t, "required", {})):
+            return None
+        theirs = [sh for m in t.events if m.get("from") not in ("buyer", "arena") for sh in m.get("term_sheets") or []]
+        if not any(isinstance((sh.get("terms") or {}).get("index_clause"), dict) for sh in theirs):
+            return None  # it never introduced a clause: nothing to buy out
+        base = complete_offer(self.case, picks[0])
+        if not isinstance(base.get("index_clause"), dict):
+            return None
+        with_c = self.C(t, base)
+        bare = complete_offer(self.case, {**base, "index_clause": None})
+        same_price_c = self.C(t, bare)
+        saving = with_c - same_price_c  # what the clause costs us at this price
+        if saving <= 0:
+            return None
+        target_c = with_c - keep * saving  # still cheaper for us than the clause package
+        try:
+            price = price_for_c(self.case, {k: v for k, v in bare.items() if k != "unit_price"}, t.std, target_c,
+                                t.est if self.relationship and t.est else None)
+        except Exception as e:
+            self.note("clause_buyout_failed", supplier=t.sid, error=repr(e)[:200])
+            return None
+        if price is None or not math.isfinite(price) or price <= base["unit_price"]:
+            return None
+        cand = complete_offer(self.case, {**bare, "unit_price": round(price, 2)})
+        if not must_haves_ok(self.case, cand, t.std) or self.C(t, cand) >= with_c:
+            return None
+        self.note("clause_buyout", supplier=t.sid, with_clause=(base["unit_price"], round(with_c)),
+                  without=(cand["unit_price"], round(self.C(t, cand))), saving=round(saving))
+        return [picks[0], cand] + list(picks[2:])[: max(0, self.cfg.meso_n - 2)]
 
     def _adopted_lane_package(self, t, c_goal, picks):
         """R3-3 (P07): the supplier rewarded our 2nd package's payment/contract combination; our next 2nd package keeps it."""

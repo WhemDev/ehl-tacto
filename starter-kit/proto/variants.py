@@ -241,6 +241,9 @@ VARIANTS["G8v"] = ("G8s + safe exception paths only (plays exactly like G8s; no 
 
 VARIANTS["G8w"] = ("G8u + R3-2 shared-index skip (RFQ)", replace(VARIANTS["G8u"][1], shared_index_skip=True))
 
+VARIANTS["G8x"] = ("G8u + S5-6 clause buy-out (2nd package without a supplier-introduced clause, inside the win-win window)",
+                   replace(VARIANTS["G8u"][1], clause_buyout=True))
+
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     cls = None
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts
