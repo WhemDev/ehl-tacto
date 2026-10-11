@@ -1,0 +1,1 @@
+There is a high chance that very top team (the 0.8+ ones) optimized their model for the  available data set so much and cause overfitting. But however, there are so many teams at the 0.79 zone, I think we can reach there tonight while paying attention to the overfitting.
