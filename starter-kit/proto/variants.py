@@ -85,13 +85,23 @@ VARIANTS = {
     # and alone on single-supplier cases it is agreed at our goal instead of conceding (P01 0.91 -> 0.82): off.
     # 23:35: + clause packages in supplier-health cases at their cheapest payment term and price for us (P02 fresh:
     # 0.735 x 2 vs 0.628-0.682; see A9h-clausepay2). The frozen 21:05 build without it: "A9h-frozen".
+    # 2026-10-11 03:30: + the RFQ rival trigger (rival_gap 0.05): from the first mail each bidder sees the cheapest rival
+    # price at least 5 % below its own, never a dearer one, never twice. P05: 0.739-0.743 in 5 of 6 sessions (the sixth
+    # 0.717 was a late accept, fixed in c6abd0f) vs 0.607-0.665 since 21:05; sandbox D02 0.724 x 2 vs 0.661-0.710.
+    # The build before it: "A9h-0300".
     "A9h": ("A9 with A6's RFQ play (no RFQ-only overrides, no breakdown argument), 3 holds, RFQ fact allocation, "
-            "clause packages at their cheapest payment term in supplier-health cases",
+            "clause packages at their cheapest payment term in supplier-health cases, the RFQ rival trigger",
             replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                     bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
                     price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
                     holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
-                    clause_pay_best=True, clause_pay_rate=0.064)),
+                    clause_pay_best=True, clause_pay_rate=0.064, rival_gap=0.05)),
+    "A9h-0300": ("the final build before the RFQ rival trigger (2026-10-11 03:00)",
+                 replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
+                         bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
+                         price_freeze=True, meet_cheapest=True, lead_cap=True, evidence_plus=True, answer_plus=True,
+                         holds=3, hold_gave=0.003, allocate_facts=True, ask_cap=0.18, pushes=0,
+                         clause_pay_best=True, clause_pay_rate=0.064)),
     "A9h-frozen": ("the final build as frozen at 21:05 (before the clause-package rule)",
                    replace(VARIANTS_A2, rfq_stagger=True, meet_insist=True, penalty_aversion=3.0, never_walk=True,
                            bottleneck_anchor=0.10, meet_band=0.03, recall_best=True, proof=True, target_prior=True,
@@ -207,7 +217,7 @@ for name, overrides in {
 # dearer one, never twice), and its announced rest collected (A9h-owed)
 VARIANTS["A9h-rival"] = ("A9h-owed + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
                          replace(VARIANTS["A9h-owed"][1], rival_gap=0.05))
-# 03:20: the rival trigger alone (no owed hold): what the final would ship if only the P05 evidence counts
+# 03:20: the rival trigger alone (no owed hold) - joined A9h at 03:30, so the same as A9h now
 VARIANTS["A9h-gap"] = ("A9h + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
                        replace(VARIANTS["A9h"][1], rival_gap=0.05))
 

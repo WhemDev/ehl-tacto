@@ -8,6 +8,7 @@ import threading
 from dataclasses import replace
 from pathlib import Path
 
+import pytest
 from test_engine_clock import C1, J1
 from test_engine_clock import quote as rfq_quote
 
@@ -193,10 +194,11 @@ def test_an_rfq_is_never_closed_while_a_bidder_owes_its_rest(monkeypatch):
     assert accept[1] == J1 and accept[2] == f"offer:{J1}-2"  # and it won: 13.60 beats C1's agreed 15.00
 
 
-def test_the_rival_trigger_cites_the_cheapest_price_well_below_its_own_and_never_a_dearer_one():
+@pytest.mark.parametrize("variant", ["A9h", "A9h-rival"])
+def test_the_rival_trigger_cites_the_cheapest_price_well_below_its_own_and_never_a_dearer_one(variant):
     from test_engine_clock import Arena
 
-    n = eng.Negotiator(Arena(), "case:D02", replace(VARIANTS["A9h-rival"][1], pushes=0, rfq_pushes=0), quiet=True)
+    n = eng.Negotiator(Arena(), "case:D02", replace(VARIANTS[variant][1], pushes=0, rfq_pushes=0), quiet=True)
     j1, c1 = n.threads[J1], n.threads[C1]  # J1 opens at 17.10 FCA; C1 at 16.00 EXW with a 45-day lead (not compliant)
     pick = n.rival_cheaper(j1)
     assert pick and pick[0] == f"offer:{C1}-0"  # 6.4 % below: cited although its package misses our must-haves
