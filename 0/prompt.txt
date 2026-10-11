@@ -1,0 +1,13 @@
+<task-notification>
+<task-id>b3qvntnvg</task-id>
+<task-id>by05x5i8f</task-id>
+<task-id>bwi56kzi0</task-id>
+<task-id>bji4na9qw</task-id>
+<task-id>byiy6qtpr</task-id>
+<task-id>b6l13cmnk</task-id>
+<task-id>b3r7yvjbi</task-id>
+<task-id>__orphan_summary__:shell</task-id>
+<status>stopped</status>
+<summary>7 background shell command tasks didn't finish before the previous session ended. Task ids: b3qvntnvg, by05x5i8f, bwi56kzi0, bji4na9qw, byiy6qtpr, b6l13cmnk, b3r7yvjbi.</summary>
+<note>No completion record was found for them in the previous session. They may have been stopped (via the UI, Monitor timeout, or agent teardown — these leave no transcript marker), or they may have been running when the previous Claude Code process exited. They have been marked stopped. Task ids in this notification beginning with "__orphan_summary" are internal scan markers, not tasks.</note>
+</task-notification>
