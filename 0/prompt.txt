@@ -1,0 +1,18 @@
+In /Users/ardagurses/Desktop/TactoEHL (Tacto EHL negotiation agent; read CLAUDE.md and vault/Home.md first), `starter-kit/arena_kit/agents/orchestra.py` method `_write` (search for `NARRATE_S`, about line 517) calls the LLM writer like this:
+
+```python
+with ThreadPoolExecutor(max_workers=1) as one:
+    try:
+        out = one.submit(self.complete, SYSTEM, prompt).result(timeout=NARRATE_S)
+        ...
+    except (FutureTimeout, ...):
+        log.warning("narrator failed ... - template e-mail")
+```
+
+Bug: `ThreadPoolExecutor.__exit__` calls `shutdown(wait=True)`, so after the 25 s timeout fires, the `with` block still waits until the slow LLM call returns. Verified with a 0.5 s timeout on a 3 s sleep: "timed out after 0.5s, left the with-block after 3.0s". In `agents/llm.py`, `llm_from_env()` builds `anthropic.Anthropic(timeout=45.0)` with the SDK default `max_retries=2`, so one hung writer call can block a turn for ~135 s. The arena allows 60 s per message (counted from the supplier's reply); a late message is a timeout, three in a row end the thread, and in the Live Final every wave has an 8-minute cap.
+
+Fix:
+1. Don't wait for the abandoned call: e.g. a module-level `ThreadPoolExecutor` (a few workers) shared by all writers, or create the executor without `with` and call `one.shutdown(wait=False, cancel_futures=True)` in a `finally`. The template e-mail must go out right after `NARRATE_S`.
+2. Consider giving the live writer client `max_retries=0` or 1 and a timeout close to NARRATE_S, so abandoned threads don't pile up during a wave of 10 parallel cases. Keep `llm_from_env()`'s behaviour for other callers, or make it configurable (e.g. an env var).
+3. Add a unit test: a fake `complete` that sleeps longer than a patched NARRATE_S must yield the template body within NARRATE_S + a small margin.
+Run `cd starter-kit && uv run pytest && uv run ruff check .` before finishing. Other sessions work in the same checkout and switch branches. Before committing, run `git branch --show-current` and `git diff --cached --stat`, and commit only your own paths with `git commit -- <paths>`. Log the fix in `vault/Progress/Bugs.md` or `vault/Progress/Testing.md`.
