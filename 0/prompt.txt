@@ -1,0 +1,3 @@
+We found out that some teams actually harr coded their model for task specific. They run tasks individually and repeatedly.
+However there still many teams ahead us in which some of them dont overfit. 
+Is there actually no way we improve it until 8am
