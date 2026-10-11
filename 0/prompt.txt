@@ -1,0 +1,5 @@
+<task-notification>
+<task-id>bwi56kzi0</task-id>
+<summary>Monitor event: "Watch the fresh pass for failures or results"</summary>
+<event>[Monitor expired after 25m with 1 event delivered. Re-arm it if you still need the watch.]</event>
+</task-notification>
