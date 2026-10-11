@@ -1,0 +1,1 @@
+our limit increased to 600. We can try until 11am. Btw I still think adding an LLM to write email with the additional company informations will work. How should we plan the remaining hours? I need 45mins to be ready for submission (merging on main, env setup, making the repo public etc)
