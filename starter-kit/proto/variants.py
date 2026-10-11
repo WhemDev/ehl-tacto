@@ -262,6 +262,37 @@ for _name, _desc, _flags in [
         ("I6", "G8u + same-cost carrier package (larger visible price step at equal C)", dict(same_cost_carrier=True))]:
     VARIANTS[_name] = (_desc, replace(VARIANTS["G8u"][1], **_flags))
 
+# E69: three public GitHub negotiation agents, each mechanism alone on top of G8u (+ the two that fire on D02 combined)
+for _name, _desc, _flags in [
+        ("GH-rand", "G8u + roeiex74 ANL skeleton: packages drawn at random among the rational ones", dict(random_rational_pkg=True)),
+        ("GH-split", "G8u + hari7261 mediator: meet exactly halfway once the gap is > 5 % after 3 prices", dict(split_difference=True)),
+        ("GH-seq", "G8u + saimadhu27 sequential calls: RFQ others opened after the lead's 2nd (negotiated) reply",
+         dict(seq_anchor=True)),
+        ("GH-split+seq", "G8u + mediator split + sequential opening", dict(split_difference=True, seq_anchor=True))]:
+    VARIANTS[_name] = (_desc, replace(VARIANTS["G8u"][1], **_flags))
+
+# E70: manufacturer-dependent buyer persona (LLM writer), with the plain LLM writer as the control for "LLM text at all"
+VARIANTS["G8u-W"] = ("G8u + Sonnet 5.5 writer mirroring the supplier's register (A10w-style)", replace(VARIANTS["G8u"][1], llm_writer=True))
+VARIANTS["G8u-P"] = ("G8u + Sonnet 5.5 writer as a buyer persona chosen by manufacturer type (family / job shop / group / strategic)",
+                     replace(VARIANTS["G8u"][1], llm_writer=True, persona_writer=True))
+
+VARIANTS["G8u-g"] = ("G8u + conditional-repair guard (a price of the supplier's own alternative sheet is not a conditional agreement)",
+                     replace(VARIANTS["G8u"][1], repair_alt_guard=True))
+VARIANTS["G8u-P2"] = ("G8u-P + conditional-repair guard", replace(VARIANTS["G8u-P"][1], repair_alt_guard=True))
+
+# E72: fixes from the G8u-P2 practice review, on G8u + the conditional-repair guard
+VARIANTS["G8y"] = ("G8u + repair guard + offer memory before accept (not stabilise) + no self-anchoring prices + text fixes 2",
+                   replace(VARIANTS["G8u"][1], repair_alt_guard=True, memory_first=True, anchor_guard=True, text_fixes2=True))
+
+VARIANTS["G8y-own"] = ("G8y as first tested on practice (own-order guard on)", replace(VARIANTS["G8y"][1], anchor_guard_own=True))
+
+VARIANTS["G8z"] = ("G8u + conditional-repair guard + offer memory before accept (not stabilise) + text fixes 2 (no anchor guard: P08/P18 lost)",
+                   replace(VARIANTS["G8u"][1], repair_alt_guard=True, memory_first=True, text_fixes2=True))
+
+VARIANTS["G8g"] = ("G8u + conditional-repair guard + offer memory before accept (not stabilise): plays exactly like G8u on every "
+                   "known path; only acts on the misread (16/16 in logs) or a cheaper earlier sheet",
+                   replace(VARIANTS["G8u"][1], repair_alt_guard=True, memory_first=True))
+
 def run_one(client, name, cfg, case, rep, practice, generic=True):
     cls = None
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts

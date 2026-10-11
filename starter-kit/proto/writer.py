@@ -282,12 +282,41 @@ def split_body(body):
     return body.rstrip(), ""
 
 
+# persona_writer: our buyer changes persona with the manufacturer type (the brief: a family foundry that remembers how
+# you treated it, a group with an approval ladder, a job shop that needs cash and work, a near-monopolist that barely
+# moves). Voice, structure and emphasis only - the content contract and the validator are unchanged.
+PERSONAS = {
+    "family": ("You are Hollerau's long-standing purchasing lead, who has worked with this family-owned firm for years and "
+               "knows the people there personally. Write in the first person singular ('I'), personally and warmly; address "
+               "the writer by first name if they signed with one. Show respect for their craft and for the family business, "
+               "refer to the long relationship in general words (no numbers, no years), and present the proposal as something "
+               "you want to work out together. Short paragraphs, no corporate jargon, every figure stated firmly."),
+    "job_shop": ("You are a plain-spoken, practical buyer from the plant, writing to a small owner-run job shop. Short "
+                 "sentences, straight to the point, one friendly line at most, no corporate jargon. Where the TEMPLATE mentions "
+                 "payment terms, the contract length or the annual quantity, say plainly what that means for the shop: money "
+                 "coming in and steady work for its machines - without adding any number or promise. As short as the "
+                 "TEMPLATE content allows."),
+    "group": ("You are a structured, formal procurement manager writing to the sales contact of a large corporate group who "
+              "must take our proposal through internal approval. Formal greeting and tone, clear structure (short paragraphs "
+              "or a few points marked with '-'; never numbered points - every digit is checked). Open with one sentence that summarises what we propose and why it is commercially "
+              "sound for them, using only the TEMPLATE's content, so the contact can forward the e-mail as it is. Keep the "
+              "evidence explicit and precise."),
+    "strategic": ("You are a senior buyer writing to a supplier that holds a strong position for this part (scarce capacity "
+                  "or few alternatives). Calm, respectful and never confrontational; frame the proposal as long-term planning "
+                  "security for both companies, and stay precise and firm on every figure."),
+    "default": ("You are a professional, businesslike buyer at a mid-sized pump manufacturer: courteous, concise and factual, "
+                "matching the supplier's register."),
+}
+PERSONA_RULE = ("Write as BUYER_PERSONA describes. Where it differs from simply mirroring the supplier's register, follow "
+                "BUYER_PERSONA. The CONTENT CONTRACT still applies in full: the persona changes voice, structure and emphasis, "
+                "never figures, IDs, requests, conditions or commitments.")
+
 POSITIVE_TONE = ("Maximise positive sentiment in every sentence, above all in the opening: warm, appreciative, "
                  "optimistic and collaborative wording (e.g. thank, appreciate, glad, look forward, together, partnership). "
                  "Stay precise and firm on every figure; positivity must never soften a number or add a concession.")
 
 
-def rewrite(template_body, refs, sheets_plain, supplier_bodies, our_last, case_title, budget, tone=None):
+def rewrite(template_body, refs, sheets_plain, supplier_bodies, our_last, case_title, budget, tone=None, persona=None):
     """(body, info). body is the validated LLM text with our sign-off, or the template on any failure."""
     info = {"used": False, "reason": None, "latency": None}
     if not os.environ.get("ANTHROPIC_API_KEY"):
@@ -310,7 +339,15 @@ def rewrite(template_body, refs, sheets_plain, supplier_bodies, our_last, case_t
         "term_sheets_attached": sheets_plain,
         "TEMPLATE": core,
         **({"TONE_GOAL": tone} if tone else {}),
+        **({"BUYER_PERSONA": PERSONAS.get(persona, PERSONAS["default"]), "PERSONA_RULE": PERSONA_RULE,
+            # a persona pushes the model toward words the validator rejects ("paid on time", a formal sign-off): name them
+            "PERSONA_AVOID": "Never write a sign-off, closing formula, name or company name (the program appends them). "
+                             "Do not use these words or phrases (the TEMPLATE does not contain them): "
+                             + "; ".join(p.replace("\\b", "").replace("(ed)?", "") for p in RISKY
+                                         if not re.search(p, core, re.I))} if persona else {}),
     }, ensure_ascii=False, indent=1)
+    if persona:
+        info["persona"] = persona
     t0 = time.time()
     try:
         try:

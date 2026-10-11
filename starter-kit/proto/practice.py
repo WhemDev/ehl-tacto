@@ -186,6 +186,14 @@ class PracticeNegotiator(Negotiator):
     def claim_source(self, ref):
         return canonical_fact(ref)
 
+    def _supplier_intel(self, sid):
+        """persona_writer: owner type / group parent / staff from the data package (None for unknown suppliers)."""
+        try:
+            rows = q("SELECT owner_type, group_parent, staff FROM supplier_intel WHERE supplier_id = ?", (sid,))
+        except Exception:
+            return None
+        return dict(rows[0]) if rows else None
+
     def _safe_facts_for(self, t):
         case, b = self.case, self.b
         part, refs = case["parts"][0], case.get("refs", [])
@@ -696,6 +704,13 @@ class PracticeNegotiator(Negotiator):
         asked = t.sheets[0]["terms"].get("unit_price") if t.sheets else None
         refs = case.get("refs", [])
         facts = []
+        # E72 anchor_guard: never cite a price above our target price - the supplier settles just under the highest price
+        # we disclose (P18: "another supplier at EUR 5.45" -> deal 5.40; our orders at 5.84 -> "well above your requests")
+        guard = getattr(self.cfg, "anchor_guard", False)
+        t.fact_prices = {}  # sentence -> (per-piece price, "own" | "other"); engine.write checks them when citing
+
+        def per_piece(row):
+            return row["price"] / (row.get("price_unit") or 1)
         # 1. notice: the letter gives less notice than the contract requires
         docs = [r for r in refs if r.startswith("doc:")]
         ctrs = [r for r in refs if r.startswith("ctr:")]
@@ -743,6 +758,8 @@ class PracticeNegotiator(Negotiator):
                     # back "irrelevant" and cost a claim slot (practice A9: P04, P08, P18)
                     facts.insert(0, ([], f"We currently buy the same part from another supplier at EUR "
                                          f"{other[0]['price']:.2f} per unit"))
+                    if guard:
+                        t.fact_prices[facts[0][1]] = (per_piece(other[0]), "other")
         # 4. our order history with this supplier for this part (2-8 order lines)
         pos = q("SELECT id FROM po_lines WHERE part_id = ? AND supplier_id = ? ORDER BY id DESC LIMIT 3", (part, t.sid))
         if len(pos) >= 2:
@@ -765,6 +782,10 @@ class PracticeNegotiator(Negotiator):
                 except Exception:
                     pass  # missing data: keep the original sentence
             facts.append((ids, sentence))
+            if guard:
+                order_rows = q(f"SELECT price, price_unit FROM po_lines WHERE id IN ({','.join('?' * len(ids))})", tuple(ids))
+                if order_rows:
+                    t.fact_prices[sentence] = (max(per_piece(r) for r in order_rows), "own")
         # 5. its scorecard, if it is weak
         for r in refs:
             if r.startswith("sc:") and r.split("@")[0] == "sc:" + t.sid.split(":")[1]:
@@ -1225,6 +1246,9 @@ class PracticeNegotiator(Negotiator):
             part = self.case["parts"][0]
             if re.search(r"volume", asked, re.I) and not getattr(t, "fc_cited", False):
                 fc = q("SELECT id FROM forecasts WHERE part_id = ? ORDER BY snapshot_month DESC LIMIT 1", (part,))
+                if fc and getattr(self.cfg, "text_fixes2", False) and fc[0]["id"] in (msg.get("body") or ""):
+                    fc = []  # E72: the forecast fact already cites this ID in the body (P03: the same ID twice)
+                    t.fc_cited = True
                 if fc and self.cfg.fc_provenance and canonical_fact(fc[0]["id"]) is None:
                     # SQL-only id: the arena would answer "that forecast ID doesn't exist" -> state it without the id
                     extra.append("Our current forecast backs this binding volume.")

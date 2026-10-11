@@ -27,7 +27,7 @@ PREV = {"A10 (run 2)": {"P01": 0.956, "P02": 0.360, "P03": 0.923, "P04": 0.810, 
                          "P10": 0.671, "P11": 0.710, "P18": 0.532}}
 DECISIONS = ("target", "open", "round", "send", "hold", "push", "accept", "mirror_alternative", "accept_retry", "result",
              "stagger", "meet_field", "required_term", "conditional_repair", "recall", "fallback_counter", "hold_close",
-             "writer", "error", "crash", "range_anchor")
+             "writer", "error", "crash", "range_anchor", "manufacturer_persona", "conditional_repair_skipped")
 
 
 def money(x):

@@ -199,6 +199,21 @@ class Config:
     quote_exchange: bool = False  # I4: 2nd package trades one term at the supplier's own quoted price-per-term rate
     rival_defer: bool = False  # I5: RFQ: one counter briefly waits for a rival reply already in flight (no message spent)
     same_cost_carrier: bool = False  # I6: 2nd package at the same C as the primary but a larger visible price step
+    # E69: mechanisms from three public GitHub negotiation agents, each behind its own flag (default off)
+    random_rational_pkg: bool = False  # roeiex74/negotiation-agent (ANL 2024): packages drawn at random among the rational ones at the goal's C
+    split_difference: bool = False  # hari7261/Negotiation-MultiAgent mediator: >= 3 prices on the table and gap > split_gap -> propose the midpoint once
+    split_gap: float = 0.05  # the mediator's trigger: gap between our last ask and the standing offer, share of their mean
+    seq_anchor: bool = False  # saimadhu27/AI-negotiation-agent: RFQ others opened only after the lead's seq_depth-th reply, citing that price
+    seq_depth: int = 2  # lead replies to collect before the others are opened
+    seq_wait: float = 40.0  # max seconds the others wait (their 60 s clock runs from the session start)
+    # E70: with llm_writer, our buyer changes persona with the manufacturer type (family / job shop / group / strategic)
+    persona_writer: bool = False
+    repair_alt_guard: bool = False  # conditional_repair ignores a price that only belongs to the supplier's own alternative sheet
+    # E72: fixes from the G8u-P2 practice review (Progress/Practice-Run-G8u-P2-Findings)
+    memory_first: bool = False  # single supplier, not stabilise: before accepting, take back its own earlier sheet if cheaper in C
+    anchor_guard: bool = False  # never cite another supplier's price above our target price or our current ask
+    anchor_guard_own: bool = False  # ... and not our own orders above the supplier's current ask (practice: P08 -0.033)
+    text_fixes2: bool = False  # thank only for moves that lower our C; plain words for quality/clause/tooling; an ID once per body
     spread_args: bool = False  # stage the strong arguments (breakdown components -> total/margin, volume cap) over rounds
     cs_tension: float = 0.60  # cluster_safezone: stop pushing a supplier once its tension (P(stop next)) crosses this
     writer_positive: bool = False  # LLM writer: maximise positive sentiment (warm, appreciative opening), same content
@@ -1826,6 +1841,12 @@ class Negotiator:
         theirs = t.sheets[0]["terms"]
         if price >= theirs.get("unit_price", 0):
             return []  # nothing better than what stands
+        if self.cfg.repair_alt_guard and any(abs((s.get("terms") or {}).get("unit_price", -1) - price) < 0.005
+                                             for s in t.sheets[1:]):
+            # E70 (sandbox D01): "we can offer EUR 51.30 with 30 days ..." describes its own ALTERNATIVE sheet, not a
+            # conditional agreement to ours - repairing paired that price with the primary's terms and gave away 0.24
+            self.note("conditional_repair_skipped", supplier=t.sid, price=price, reason="price_of_own_alternative_sheet")
+            return []
         cand = complete_offer(self.case, {**theirs, "unit_price": price})
         if not must_haves_ok(self.case, cand, t.std) or self.C(t, cand) >= self.C(t, theirs):
             return []
@@ -3832,7 +3853,34 @@ class Negotiator:
             self.note("quote_exchange_failed", supplier=t.sid, error=f"{type(e).__name__}: {str(e)[:200]}")
             return None
 
+    def _split_goal(self, t, c_goal):
+        """split_difference (hari7261 mediator): once >= 3 prices are on the table and the gap between our last ask and
+        the supplier's standing offer is still > split_gap of their mean, propose exactly the midpoint in C (once per
+        thread). Later asks never fall below it, so we never step back from a split we offered."""
+        t._split_now = None
+        floor = getattr(t, "_split_c", None)
+        if floor is not None:
+            return max(c_goal, floor)
+        if t.sent() < 2 or t.status != "open" or not t.sheets:
+            return c_goal
+        asks = [m["term_sheets"][0]["terms"] for m in t.events if m.get("from") == "buyer" and m.get("term_sheets")
+                and (m["term_sheets"][0].get("terms") or {}).get("unit_price") is not None]
+        if not asks:
+            return c_goal
+        ask_c, st_c = self.C(t, asks[-1]), self.C(t, t.sheets[0]["terms"])
+        if not (math.isfinite(ask_c) and math.isfinite(st_c)) or st_c <= ask_c:
+            return c_goal
+        if st_c - ask_c <= self.cfg.split_gap * (st_c + ask_c) / 2:
+            return c_goal
+        mid = (ask_c + st_c) / 2
+        t._split_c, t._split_now = mid, mid
+        self.note("split_difference", supplier=t.sid, ask_c=round(ask_c), standing_c=round(st_c), mid=round(mid),
+                  curve_goal=round(c_goal), gap=round((st_c - ask_c) / ((st_c + ask_c) / 2), 4))
+        return mid
+
     def meso(self, t, c_goal):
+        if self.cfg.split_difference:
+            c_goal = self._split_goal(t, c_goal)
         picks = self._meso_core(t, c_goal)
         for flag, name in self.MESO_HOOKS:
             fn = getattr(self, name, None)
@@ -3990,7 +4038,11 @@ class Negotiator:
         everything = [(x[0], x[1], {k: v for k, v in x[2].items() if k != "_capped"}, x[3]) for x in everything]
         if not priced:
             return []
-        if self.cfg.pick == "near":
+        if self.cfg.random_rational_pkg:
+            import random
+            random.shuffle(priced)  # ANL skeleton: random.choice(rational_outcomes) instead of ranking by supplier value
+            self.note("random_rational_pkg", supplier=t.sid, pool=len(priced))
+        elif self.cfg.pick == "near":
             priced.sort(key=lambda x: (x[1], -x[0]))
         else:
             priced.sort(key=lambda x: -x[0])
@@ -4690,6 +4742,36 @@ class Negotiator:
                     best = (cc, {"term_sheet_id": sh.get("term_sheet_id"), "terms": sh["terms"]})
         return best
 
+    def _memory_first(self, t, c):
+        """memory_first (E72, practice P04): we were about to accept a sheet that costs c, but one of this supplier's own
+        earlier sheets is cheaper for us -> mirror that one back once (close() re-proposes it, the supplier confirms).
+        Not in stabilise cases: there our C carries an estimated relationship term (P01-P03: -1.7 % vs the arena), so
+        'cheaper' is not reliable; elsewhere our C matched the arena to 0.000 % on every practice deal."""
+        if (not self.cfg.memory_first or getattr(t, "_memory_used", False)
+                or self.b.get("category_goal") == "stabilise" or len(self.threads) != 1):
+            return None
+        earlier = self._better_earlier(t, c)
+        if earlier is None:
+            return None
+        t._memory_used = True
+        self.note("offer_memory", supplier=t.sid, final_c=round(c), earlier_c=round(earlier[0]), sheet=earlier[1],
+                  why="memory_first")
+        return earlier
+
+    def _thank_moves(self, t, moved):
+        """text_fixes2: thank for every real move as before, except a price RISE (P05: thanked after EUR 31.50 -> 34.00)
+        and a default merely filled in (P11: "moving on the chargeback" when it went from unset to 0). A narrower first
+        version (only C-lowering moves) dropped thanks for terms moved toward our proposal and cost D01 0.002."""
+        out = {}
+        for k, v in moved.items():
+            old, new = v if isinstance(v, tuple | list) and len(v) == 2 else (None, None)
+            if k == "unit_price" and isinstance(old, int | float) and isinstance(new, int | float) and new > old:
+                continue
+            if old is None and (new in (None, 0, 0.0) or new == (t.std or {}).get(k)):
+                continue
+            out[k] = v
+        return out
+
     def write(self, t, rnd, sheets, rival=None):
         if self.cfg.package_frontier_v2:
             sheets = [self._package_v2_plain(s) for s in sheets]
@@ -4730,6 +4812,26 @@ class Negotiator:
                 if len(keep) < len(rest):
                     self.note("shared_index_skip", supplier=t.sid, skipped=len(rest) - len(keep))
                 facts[:] = head + keep
+        if cfg.anchor_guard and getattr(t, "fact_prices", None):
+            # E72: never cite a price that works against us at the moment we cite it - our own orders above the supplier's
+            # CURRENT ask (P18: "well above your current requests"), another supplier's price above our target price
+            # (P18: "another supplier at EUR 5.45" -> deal 5.40)
+            ask = (t.sheets[0].get("terms") or {}).get("unit_price") if t.sheets else None
+            prices = [p for p in [(getattr(self, "target_terms", None) or {}).get("unit_price")]
+                      + [(s or {}).get("unit_price") for s in sheets] if isinstance(p, int | float)]
+            ours = min(prices) if prices else None  # our target price or the lowest price we ask in this message
+            keep = []
+            for f in facts[t.facts_used:]:
+                price, kind = t.fact_prices.get(f[1], (None, None))
+                # E72 practice: dropping our own orders cost P08 0.033 (that verified fact was a lever, not an anchor) and
+                # gained nothing on P18 -> own orders only with anchor_guard_own; another supplier's price is checked
+                # against our CURRENT ask too (P18: the EUR 5.45 went out while the target was still EUR 5.49)
+                limit = (ask if cfg.anchor_guard_own else None) if kind == "own" else ours if kind == "other" else None
+                if price is not None and limit is not None and price > limit + 1e-9:
+                    self.note("anchor_guard", supplier=t.sid, fact=kind, price=round(price, 4), limit=limit)
+                    continue
+                keep.append(f)
+            facts[t.facts_used:] = keep
         n_facts, figures_lead = cfg.facts, None
         if cfg.figures_answer and rnd and re.search(
                 r"which figures|based on\?|send us the data|documentation|underlying data|your data|which data|verify",
@@ -4767,7 +4869,12 @@ class Negotiator:
                              if warm else "Thank you for your quote.")
         elif warm:
             moved = t.moves[-1] if t.moves else {}
-            lines.append("Thank you for moving on " + " and ".join(sorted({WORDS.get(k, k) for k in moved})) + ". That helps."
+            words = WORDS
+            if cfg.text_fixes2:
+                moved = self._thank_moves(t, moved)
+                words = {**WORDS, "ppm_commitment": "the ppm commitment", "chargeback_eur_per_complaint": "the chargeback",
+                         "index_clause": "the index clause", "tooling_eur": "tooling"}
+            lines.append("Thank you for moving on " + " and ".join(sorted({words.get(k, k) for k in moved})) + ". That helps."
                          if moved else "Thank you for the quick answer.")
         asked = t.last.get("body") or "" if rnd else ""
         if cfg.say_fixed and asked:
@@ -4874,11 +4981,20 @@ class Negotiator:
             if max(package_costs) - min(package_costs) > 0.01:
                 lines[-1] = (f"We put together {len(sheets)} packages with different price and term trade-offs; "
                              "please choose the one that suits you best.")
+        split = getattr(t, "_split_now", None) if cfg.split_difference else None
+        if split is not None:
+            # hari7261 mediator: acknowledge the progress, point out how close we are, propose the exact middle
+            t._split_now = None
+            lines.append("We have both moved a good way already and are now close. To bridge the remaining gap, we propose "
+                         "to meet you exactly halfway between our last proposal and your current offer in total cost - "
+                         "that is the package attached. It is a fair final step for both sides.")
         if rnd == 0:
             discovered = ((cfg.calibrated_anchor or cfg.anchor_probe)
                           and (getattr(t, "anchor_probe_state", None) in ("pending", "done") or self._usable_cost(t)))
             if not discovered:
                 lines.append("Could you also send us your cost breakdown, so we can see which costs really moved?")
+        elif split is not None:
+            lines.append("Can we agree on the middle?")
         elif warm:
             lines.append("What would you need from us to get closer to these numbers?" if rnd == 1
                          else "How could we close the remaining gap today?")
@@ -5048,6 +5164,57 @@ class Negotiator:
         with t.io_lock:
             return 0.0 if t.closed or t.status in ENDED else max(0.0, t.turn_deadline - time.time())
 
+    PERSONA_WORDS = {  # the supplier's own words, when the data has no owner record (sandbox demo suppliers)
+        "family": r"family[- ](run|owned|business|firm|company|foundry)|familienbetrieb|generations|i answer it myself|"
+                  r"customers we have known",
+        "job_shop": r"back to the machines|our machines|our shop|workshop|liquidity|cash flow|utili[sz]ation|auslastung",
+        "group": r"dear partner|dear sir or madam|delighted to submit|our management|internal approval|head office|"
+                 r"headquarters|our group|group policy|pricing committee",
+        "strategic": r"allocation|capacity is (limited|constrained|fully booked)|sole source|only supplier|bottleneck",
+    }
+
+    def _supplier_intel(self, sid):
+        """Owner record of a supplier (practice / final data); None in the bare engine."""
+        return None
+
+    def _manufacturer_persona(self, t):
+        """persona_writer: the manufacturer type behind this thread -> the buyer persona the writer adopts. Generic rules
+        only: the data's owner type and size, the case goal, else the supplier's own words. Pinned once found."""
+        pinned = getattr(t, "_persona", None)
+        if pinned:
+            return pinned
+        kind, why = None, None
+        if self.b.get("category_goal") == "secure_supply":
+            kind, why = "strategic", "secure_supply case"
+        intel = self._supplier_intel(t.sid) or {}
+        owner = (intel.get("owner_type") or "").lower()
+        if kind is None and owner:
+            staff = int(float(intel.get("staff") or 0) or 0)
+            if owner == "group" or intel.get("group_parent") or staff >= 1000:
+                kind = "group"
+            elif owner == "family":
+                kind = "family"
+            elif owner == "founder" and staff and staff < 100:
+                kind = "job_shop"
+            else:
+                kind = "default"
+            why = f"data: owner {owner}, staff {staff or '?'}"
+        if kind is None:
+            text = " ".join(m.get("body") or "" for m in t.events if m.get("from") not in ("buyer", "arena"))
+            hits = [k for k, pat in self.PERSONA_WORDS.items() if re.search(pat, text, re.I)]
+            if hits:
+                kind, why = hits[0], "text"
+            else:
+                bodies = [m.get("body") or "" for m in t.events if m.get("from") not in ("buyer", "arena") and m.get("body")]
+                terse = bodies and sum(len(b.split()) for b in bodies) / len(bodies) < 60
+                if terse and re.search(r"\bgru(ß|ss)\b|\bcheers\b", text, re.I):
+                    kind, why = "job_shop", "terse, first-name sign-off"
+        if kind is None:
+            return "default"  # not pinned: a later reply may still reveal the type
+        t._persona = kind
+        self.note("manufacturer_persona", supplier=t.sid, persona=kind, why=why)
+        return kind
+
     def styled(self, t, msg):
         """LLM body in this supplier's register; sheets, refs and attachments stay exactly the engine's."""
         from proto import writer
@@ -5062,7 +5229,8 @@ class Negotiator:
         sheets = [fmt(s["terms"]) for s in msg.get("term_sheets") or []]
         body, info = writer.rewrite(msg["body"], msg.get("refs") or [], sheets, theirs, ours[-1] if ours else "",
                                     self.case.get("title", ""), budget,
-                                    tone=writer.POSITIVE_TONE if self.cfg.writer_positive else None)
+                                    tone=writer.POSITIVE_TONE if self.cfg.writer_positive else None,
+                                    persona=self._manufacturer_persona(t) if self.cfg.persona_writer else None)
         self.note("writer", supplier=t.sid, budget=round(budget, 1), **info,
                   body=body[:1500] if info.get("used") else None)
         return {**msg, "body": body}
@@ -11410,12 +11578,17 @@ class Negotiator:
             self.note("stagger", lead=lead.sid if lead else None)
         t_start = time.time()
 
+        # seq_anchor (saimadhu27): the others wait for the lead's NEGOTIATED price (its seq_depth-th reply), not its first
+        depth, wait = (max(1, cfg.seq_depth), cfg.seq_wait) if cfg.seq_anchor else (1, 40)
+
         def worker(t):
             if lead is not None and t is not lead:
-                while lead.sent() < 1 and time.time() - t_start < 40:
+                while lead.sent() < depth and time.time() - t_start < wait and not (cfg.seq_anchor and lead.status in ENDED):
                     time.sleep(0.5)  # wait for the lead's FIRST reply only (max 40 s: the others' clocks are running)
+                if cfg.seq_anchor:
+                    self.note("seq_anchor", supplier=t.sid, lead_replies=lead.sent(), waited=round(time.time() - t_start, 1))
             while True:
-                if lead is not None and t is lead and t.sent() >= 1 and time.time() - t_start < 60 and any(
+                if lead is not None and t is lead and t.sent() >= depth and time.time() - t_start < 60 and any(
                         x.sent() < 1 and x.status not in ENDED for x in self.threads.values() if x is not t):
                     time.sleep(0.5)  # the lead pauses after round 0 until every other supplier has its first message
                     continue
@@ -11730,6 +11903,8 @@ class Negotiator:
                     self.note("stance_hold", supplier=t.sid, c=c, goal=round(goal), next_goal=round(next_goal))
                     rnd -= 1  # goal stays where it is, like the holds logic
                 elif c <= next_goal or t.status == "agreed":
+                    if (earlier := self._memory_first(t, c)) is not None:
+                        return self.close(t, earlier[1])
                     self.note("accept", why="goal" if c <= next_goal else "agreed", c=c, goal=next_goal)
                     return self.close(t, sh)
                 if t.status == "final_offer" and not open_rivals:
@@ -11738,6 +11913,8 @@ class Negotiator:
                     if allowed and t.pushes < cfg.pushes and t.sent() < limit - 1:
                         self.push(t, sh)
                         continue
+                    if (earlier := self._memory_first(t, c)) is not None:
+                        return self.close(t, earlier[1])
                     if cfg.offer_memory and not getattr(t, "_memory_used", False) and (earlier := self._better_earlier(t, c)):
                         t._memory_used = True  # its own earlier package, mirrored back once (arena: re-propose -> agreed -> accept)
                         self.note("offer_memory", supplier=t.sid, final_c=round(c), earlier_c=round(earlier[0]),
