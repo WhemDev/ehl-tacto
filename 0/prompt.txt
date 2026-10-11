@@ -1,0 +1,1 @@
+pull https://github.com/RxV00/EHL-Hackathon Remove the already existing obsidian folders in this project's repo. We will continue with RxV00's obsidian. Add the knowledge we gathered in a separated folder
