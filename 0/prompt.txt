@@ -1,0 +1,3 @@
+Read /Users/ardagurses/Desktop/TactoEHL/vault/Team-Knowledge/Plan/Review 2026-10-10 - worst practice cases and upgrades.md 
+
+Implement the upgrades.
