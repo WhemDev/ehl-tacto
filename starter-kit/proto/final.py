@@ -1,8 +1,8 @@
-"""The Live Final with our engine: G8v (= G8s + safe exception paths) on every case of every wave, with the wave's real cap as deadline.
+"""The Live Final with our engine: G8u (= G8s + text fixes + safe exception paths) on every case of every wave, with the wave's real cap as deadline.
 
     PYTHONPATH=. uv run python proto/final.py                       # the final (5 waves, up to 10 cases in parallel)
     PYTHONPATH=. uv run python proto/final.py --rehearse 10         # same code path on sandbox cases, 8-minute wave
-    FINAL_VARIANT=G8u ...                                           # which named algorithm (default G8v = G8s + safe exceptions)
+    FINAL_VARIANT=G8u ...                                           # which named algorithm (default G8u = G8s + text fixes + safe exceptions)
 
 Mirrors arena_kit.play.play_waves (wave polling, per-wave cap that follows extensions, one broken case never stops
 the others) but drives proto.engine (PracticeNegotiator = the generic code path). A "one session per case" 409
@@ -172,7 +172,7 @@ if __name__ == "__main__":
     args = ap.parse_args()
     from proto.variants import VARIANTS
 
-    variant = os.environ.get("FINAL_VARIANT", "G8v")  # G8s + safe exception paths
+    variant = os.environ.get("FINAL_VARIANT", "G8u")  # G8s + text fixes + safe exception paths
     cfg = VARIANTS[variant][1]
     m = manifest(variant, cfg)
     print(f"variant {variant} code {m['code_sha256']} team repo {m['team_repo_rev']}", flush=True)
