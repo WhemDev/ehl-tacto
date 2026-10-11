@@ -20,7 +20,7 @@ DRAFT = "\n".join(
     ]
 )
 MSG = {"subject": "SH-220", "body": DRAFT, "term_sheets": [{"terms": {"unit_price": 14.12}}], "refs": []}
-CASE = {"title": "SH-220", "type": "rfq", "fixed_terms": {"volume_per_year": 6000}}
+CASE = {"title": "SH-220", "type": "rfq", "fixed_terms": {"volume_per_year": 6000}, "negotiable": ["unit_price"]}
 ID_LINES = [line for line in DRAFT.splitlines() if ":" in line and ("fc:" in line or "offer:" in line)]
 
 
@@ -116,7 +116,7 @@ def test_dossier_mode_adds_supplier_notes_and_keeps_every_rule(monkeypatch):
 
     out = engine_writer.prepare(model, MSG, CASE, "Our offer stands.", supplier="sup:1")
     assert "SUPPLIER NOTES" in seen["user"] and "Acme GmbH" in seen["user"]
-    assert "never mention credit ratings" in seen["system"]
+    assert "SUPPLIER NOTES are background" in seen["system"] and "OUR PACKAGES" in seen["user"]
     assert "value the partnership" in out["body"]
     bad = engine_writer.prepare(lambda s, u: json.dumps({"body": DRAFT.replace("today", "within 10 days")}), MSG, CASE,
                                 "", supplier="sup:1")
