@@ -1,0 +1,1 @@
+Ok can you run the commands when the time come? And do I need to put api keys on github env?
