@@ -191,3 +191,18 @@ def test_an_rfq_is_never_closed_while_a_bidder_owes_its_rest(monkeypatch):
     arena, res, accept = play_rest(monkeypatch, "A9h-owed")
     assert res["deal"] and arena.sent[J1] == 2  # the rest was collected before closing
     assert accept[1] == J1 and accept[2] == f"offer:{J1}-2"  # and it won: 13.60 beats C1's agreed 15.00
+
+
+def test_the_rival_trigger_cites_the_cheapest_price_well_below_its_own_and_never_a_dearer_one():
+    from test_engine_clock import Arena
+
+    n = eng.Negotiator(Arena(), "case:D02", replace(VARIANTS["A9h-rival"][1], pushes=0, rfq_pushes=0), quiet=True)
+    j1, c1 = n.threads[J1], n.threads[C1]  # J1 opens at 17.10 FCA; C1 at 16.00 EXW with a 45-day lead (not compliant)
+    pick = n.rival_cheaper(j1)
+    assert pick and pick[0] == f"offer:{C1}-0"  # 6.4 % below: cited although its package misses our must-haves
+    assert n.rival_cheaper(c1) is None  # J1's 17.10 is dearer than C1's own price: telling C1 so helps nobody
+    j1.events.append({"from": "buyer", "refs": [f"offer:{C1}-0"], "term_sheets": []})
+    assert n.rival_cheaper(j1) is None  # never the same offer twice (a duplicate)
+    n.cfg = replace(n.cfg, rival_gap=0.10)
+    j1.events.pop()
+    assert n.rival_cheaper(j1) is None  # 6.4 % is below a 10 % bar

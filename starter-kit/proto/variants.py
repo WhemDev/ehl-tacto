@@ -203,6 +203,10 @@ for name, overrides in {
     "A9h-candidate": {"first_indices": True, "economic_lead": True, "extreme_payment": True},
 }.items():
     VARIANTS[name] = (name, replace(VARIANTS["A9h"][1], **overrides))
+# 02:55: + the RFQ rival trigger: from the first mail, the cheapest rival price at least 5 % below its own (never a
+# dearer one, never twice), and its announced rest collected (A9h-owed)
+VARIANTS["A9h-rival"] = ("A9h-owed + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
+                         replace(VARIANTS["A9h-owed"][1], rival_gap=0.05))
 
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):

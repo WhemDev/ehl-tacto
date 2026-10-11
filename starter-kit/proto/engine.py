@@ -153,6 +153,13 @@ class Config:
     collect_owed: bool = False
     owed_gap: float = 0.012  # the collecting ask sits this share of C below its offer
     owed_final: bool = False  # also when the cue comes with a final offer (untested: we accepted all 23 of those)
+    # RFQ rival trigger (02:55, D02/P05 back offices): a verified rival price at least ~5 % below a supplier's own makes
+    # it give half a step at once and the rest on its next reply (J1 100 % at 5-20 % below, 0 % under 2 %; Dralveck
+    # 100 % at 5-10 %). The supplier checks only the cited offer's PRICE, but A9h picked the rival by our C among
+    # must-have-compliant sheets, sent the stagger lead none, and showed the leader dearer rivals (D02: J1 at 15.00 was
+    # shown C1's 15.80, twice). rival_gap: from the first mail, cite the lowest-priced rival offer (any package) not
+    # shown to it yet, only if it is at least this share below its own price; never a dearer one. 0 = the old rule.
+    rival_gap: float = 0.0
 
     def key(self):
         return json.dumps(asdict(self), sort_keys=True)
@@ -725,6 +732,19 @@ class Negotiator:
         pick = (fresh or better or [None])[0]
         return pick[1:] if pick else None
 
+    def rival_cheaper(self, t):
+        """Config.rival_gap: the rival offer with the lowest unit price (any package: a supplier checks only the price
+        of a cited offer) that t has not been shown, if it sits at least rival_gap below t's own price; else none."""
+        own = (t.sheets[0]["terms"].get("unit_price") if t.sheets else None) or 0.0
+        shown = {r for m in t.events if m.get("from") == "buyer" for r in m.get("refs") or [] if r.startswith("offer:")}
+        cands = sorted((s2["terms"]["unit_price"], s2["term_sheet_id"], s2["terms"]) for x in self.threads.values()
+                       if x is not t and x.status not in ENDED for s2 in x.sheets
+                       if s2.get("term_sheet_id") and (s2.get("terms") or {}).get("unit_price")
+                       and s2["term_sheet_id"] not in shown)
+        if own and cands and cands[0][0] <= own * (1 - self.cfg.rival_gap):
+            return cands[0][1:]
+        return None
+
     def facts_left(self, t):
         """The planner's best land chance among the facts not yet sent to `t` (0 without a planner)."""
         return 0.0
@@ -1102,6 +1122,8 @@ class Negotiator:
             rival = min(others, key=lambda o: o[0])[1:] if cfg.rival and others and (t.rounds >= 1 or getattr(t, "staggered", False)) else None
             if cfg.auction_rfq and rival is not None:
                 rival = self.rival_for(t)
+            if cfg.rival_gap:
+                rival = self.rival_cheaper(t)  # the cheapest price it has not seen, only when well below its own
             msg = self.write(t, t.rounds, sheets, rival)
             self.note("send", supplier=t.sid, rnd=t.rounds, goal=round(goal), sheets=[(s2, round(self.C(t, s2))) for s2 in sheets],
                       refs=msg["refs"], attachments=[a["name"] for a in msg.get("attachments", [])], body=msg["body"])
@@ -1120,6 +1142,8 @@ class Negotiator:
             rival = min(others, key=lambda o: o[0])[1:] if cfg.rival and others and (t.rounds >= 1 or getattr(t, "staggered", False)) else None
             if cfg.auction_rfq and rival is not None:
                 rival = self.rival_for(t)
+            if cfg.rival_gap:
+                rival = self.rival_cheaper(t)  # the cheapest price it has not seen, only when well below its own
             msg = self.write(t, t.rounds, sheets, rival)
             self.note("send", supplier=t.sid, rnd=t.rounds, goal=round(goal), sheets=[(s2, round(self.C(t, s2))) for s2 in sheets],
                       refs=msg["refs"], attachments=[a["name"] for a in msg.get("attachments", [])], body=msg["body"])
