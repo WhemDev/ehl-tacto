@@ -1,0 +1,1 @@
+remove the aws bedrock part, will use anthropic key when we use it.
