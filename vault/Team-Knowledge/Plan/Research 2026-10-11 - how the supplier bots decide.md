@@ -96,6 +96,27 @@ on its next reply?". Outcome: after an open reply we answered with a lower ask, 
 - The cue texts are templates, identical across personas (P05 Dralveck 24, Fuchsreiter 5, P02 1): unseen final
   suppliers most likely use the same sentences. **No LLM reader.** Scripts: research session scratchpad `cues/`.
 
+## Single-supplier plateaus (04:50, offline, 1,881 sessions / 430 practice, no quota)
+No rule worth practice quota. Closed doors:
+1. **P18 record in our terms** (cost.py, exact against our deal's C): 0.727 = 5.10 at clause db5 / pay 90, or 5.15
+   without a clause; our endpoint 5.40 db5 (0.532). Lowest price any supplier ever offered us: P18 5.30, P08 5.33,
+   P07 5.43, P11 45.50.
+2. **The final round is a persona constant**, not fact exhaustion: P18 final at R3 in 38/39 (92 % with no fact
+   landing, 100 % with one), P07 R4 33/38, P11 R4 22/25. Facts change the step inside the budget (P11 1.07 % with a
+   landing fact vs 0.0 % at R4), not the number of rounds.
+3. **Escalation** ("Approve a further step?") only for D02 C1 (85) and the P02 group rep (2). On C1 mostly when our
+   ask is 0.5-1 % below its standing offer (42 %; 2-4 % below: 15 %; 8 %+: 1.7 %). P18/P08: 15 asks within 1 % -
+   0 escalations. Inside Sales / Export Manager personas look ladder-less.
+4. A second window of an already-cited index series: "already taken into account" 33/33 (P05, P08). No stacking.
+5. **Reciprocity** (supplier step vs our up-move): P07 0.45, P11 0.58, P10 0.88; P08 -0.06, P18 -0.29. The
+   "lower ask + landed fact -> 1.8 % step" signal is all P01.
+6. P18 terms: the AS-14404 clause is required for 24 months; 12 months costs half the need at the 6.13 fallback;
+   36 months = the same C as 24. No package gap.
+Our P18/P08 paths are near-deterministic (5.5 -> 5.5 -> 5.4 final), so the data never explored what the record
+holders did. Untested probe, low prior (0 of 15): on P08/P18 ask 0.5-1 % below the standing offer in the round before
+the persona's final, so collect_owed can collect an escalation; upside ~+0.04 on a case. Scripts: research
+scratchpad `plateau/`.
+
 ## Open
 - ~~Adoption into the final build~~ done 03:45: A9h = rival trigger + announced steps collected, owed_concede 0.25 (`e78168f`, [[0007 The final build]]).
-- Nobody has found what gets single-supplier records 1-4.5 % below our plateaus (P08, P18, P11, P07).
+- What gets single-supplier records 1-4.5 % below our plateaus (P08, P18, P11, P07): not in our data (see above).
