@@ -1,0 +1,116 @@
+{
+ "ideas": [
+  {
+   "id": "I1",
+   "title": "Bind Before You Burn",
+   "mechanic": "Verification and economic application differ: P04 verifies history and forecast without changing calculation; P07 and P11 incorporate forecast or quality evidence; P08 distinguishes hedged from applicable indices. E64 shows that checker duplication alone is not a reason to remove evidence.",
+   "spec": "Compile each accessible source into supported propositions with scope, period, economic issue and package prerequisites. On first exposure, prefer a proposition made actionable by the current complete package, such as documented historical quantities paired with a separately authorized commitment. Preserve G8u bids, package counts and reply timing in the first ablation. Maintain separate checker and recipient-application states. Never relabel used IDs for fresh credit, invent source values, conflate forecasts with orders, or globally suppress shared evidence. Respect the three-claim budget across the whole payload.",
+   "targets": [
+    "Evidence-rich short negotiations",
+    "Volume-sensitive packages",
+    "Quality negotiations",
+    "Cost-driver disputes"
+   ],
+   "expected_gain": "Unmeasured. Potentially useful where first-use evidence is currently economically inert; zero if checker effects are rigidly determined by source metadata.",
+   "effort": "M",
+   "risk": "Alternative truthful propositions may be ignored or classified differently by the checker; premature exposure can consume useful evidence.",
+   "test": "Offline source-facet and authorization audit, then identical-sheet sandbox probes where accessible records support the mechanism. Inactive sandbox paths establish only non-regression. Practice requires the lead's explicit approval.",
+   "closest_failed": "A10map reordered by objection; G9c answered late requests; G2-12 prioritized cost; G10a removed duplicates. This instead changes supported proposition selection and first-use package applicability."
+  },
+  {
+   "id": "I2",
+   "title": "Acceptance-Edge Microscope",
+   "mechanic": "P01 and P02 agree exactly to buyer packages; E20 reports own-package agreement in sandbox; E65 shows a slower path can miss agreement and reach a worse final.",
+   "spec": "Mine or create matched negotiation prefixes, then perturb one field in the next ordinary package while fixing evidence, wording and other terms. Observe exact agreement, counteroffer, finality and complete cost. Use bisection only after establishing a monotone acceptance bracket. Treat non-agreement as a procedural observation, not proof of economic infeasibility. Learn only generic normalized rules with held-out validation and abstention; never deploy case-specific thresholds. Add no runtime probing rounds and preserve G8u closing.",
+   "targets": [
+    "Open threads near own-package agreement",
+    "Deterministic single-supplier response paths",
+    "Allowed packages with uncertain acceptance boundaries"
+   ],
+   "expected_gain": "Unmeasured; potentially meaningful on own-package agreements, but the current accepted package may already be near the useful boundary.",
+   "effort": "M",
+   "risk": "History-dependent or non-monotone acceptance, relationship-cost errors, and overfitting a small supplier population.",
+   "test": "First mine existing matched-prefix interventions offline. Then reproduce sandbox prefixes and perform local one-field probes, closing all owned sessions. Require generic held-out support before requesting any practice evaluation from the lead.",
+   "closest_failed": "G4-1 inferred reservation bands from concessions; ALT-2 imagined supplier responses; ALT-3 changed stopping. This measures actual matched-history responses without replacing the curve or stopping policy."
+  },
+  {
+   "id": "I3",
+   "title": "Verify, Then Settle",
+   "mechanic": "Replies can both verify evidence and accept a package, as in P01 and P02. Whether internal package selection precedes economic application of evidence is unmeasured.",
+   "spec": "Keep factual atoms, references, sheets and claim count unchanged. Organize the body as evidence with applicability, then package explanation, and separately test a request to verify inputs before assessing the package and reflect applicable adjustments in the primary counteroffer. Attachments repeat supported material only and provide no extra claim budget. Add no discovery turn or simulated negotiation sequence.",
+   "targets": [
+    "Counters containing evidence and complete packages",
+    "Replies that acknowledge evidence without an economic change"
+   ],
+   "expected_gain": "Unmeasured; likely zero or small. No gain is expected if arena processing order is fixed independently of wording.",
+   "effort": "S",
+   "risk": "Attention dilution or earlier acceptance of an inferior secondary package.",
+   "test": "Offline factual and numerical equality checks, then sandbox baseline, layout-only and instruction-only matched-prefix probes. Stop on invariant structured responses. Practice only with explicit lead approval.",
+   "closest_failed": "A10w changed style broadly; G1-14 supplied a cost bridge; E50 moved arguments between replies; G9c reacted to requests. This isolates within-message processing organization."
+  },
+  {
+   "id": "I4",
+   "title": "Quote-Implied Exchange Rates",
+   "mechanic": "P01 and P02 provide simultaneous payment-price alternatives; E21-E22 reveal strong chargeback aversion; E47 demonstrates that nominal-price gains can be offset by freight.",
+   "spec": "Extract fully resolved simultaneous quote pairs differing in price and one non-price issue. Use their price difference as an observed quoted exchange, not a hidden-cost fact or exact indifference condition. Abstain on unidentified bundled differences. Transform a normal G8u candidate along supported exchanges and retain only robustly lower-C packages satisfying all existing constraints and price caps. Keep current sheet counts and initially exclude uncertain relationship-cost equivalence.",
+   "targets": [
+    "Suppliers returning comparable alternative sheets",
+    "Payment, freight, lead-time and quality tradeoffs",
+    "Cases where estimated supplier term valuations may be wrong"
+   ],
+   "expected_gain": "Unmeasured and probably localized; useful only when revealed quoted exchanges improve on existing model assumptions.",
+   "effort": "M",
+   "risk": "Quoted alternatives may reflect anchoring, unstable preferences or non-additive interactions.",
+   "test": "Offline extraction and identifiability audit; stop unless a distinct robustly cheaper candidate exists. Then a single-exchange sandbox ablation. Practice requires explicit lead approval.",
+   "closest_failed": "G10b preserved a lane; G1-10 tried an equal-cost payment experiment; G7sw reframed existing model choices; U1 trusted estimated rankings. This uses comparable supplier-quoted compensation to update trade selection."
+  },
+  {
+   "id": "I5",
+   "title": "Spend Seconds, Not Replies",
+   "mechanic": "E18 demonstrates fresh-rival leverage; E63 reports latency-associated RFQ score loss without protocol failures; P05 includes rival quotes supporting a plateau.",
+   "spec": "Preserve the initial stagger and all close behavior. On an open mid-negotiation thread with weak current rival leverage, an already-in-flight rival reply and sufficient authoritative clock slack, defer one counter until that reply arrives or a code-computed safe budget expires. Permit at most one deferred worker; others continue. Send no holding message, create no barrier, rewind no goal, and never defer an agreed/final offer or closing action.",
+   "targets": [
+    "Asynchronous RFQs",
+    "Fast threads spending scarce replies before pending rival information arrives",
+    "Latency-sensitive negotiations"
+   ],
+   "expected_gain": "Unmeasured. Recovery of some latency-associated loss is plausible; E63's approximately 0.06 loss is context, not a predicted gain.",
+   "effort": "M",
+   "risk": "Unproductive waiting, changed bargaining sequence, inaccurate latency estimates or reduced closing slack.",
+   "test": "Offline event replay for missed-information opportunities and deadline safety, then controlled-latency D02 comparisons. Reject any timing or closing regression. Practice RFQs require explicit lead approval.",
+   "closest_failed": "T1/U2 delayed openings or closing and serialized bargaining; SAFEZONE spent holding messages; R3-6 refreshed already-received information. This makes only a bounded mid-turn information wait without spending a reply."
+  },
+  {
+   "id": "I6",
+   "title": "Same-Cost Concession Carriers",
+   "mechanic": "E65 supports pace mirroring but does not identify its coordinate; E8 shows structural changes contaminate concession estimates; E47 separates nominal price from landed economics.",
+   "spec": "Enumerate allowed packages at the same code-computed buyer C as a normal G8u counter but with different unit-price movement or distributions of non-price changes. Explicitly disclose every offsetting trade and make no false claim of larger net sacrifice. Hold evidence and reply phase fixed. Identify whether responses track price, economic value or term movement before considering a generic carrier-selection rule. Preserve caps, must-haves and sheet counts; initially exclude relationship-cost uncertainty.",
+   "targets": [
+    "Mirroring suppliers",
+    "Cases with several negotiable terms",
+    "Feasible matched-cost package contrasts"
+   ],
+   "expected_gain": "Unmeasured. Useful only if the response coordinate can be moved more cheaply than the current package path.",
+   "effort": "M",
+   "risk": "Supplier evaluation of the full package defeats the hypothesis; offsets are overpriced; cost-model error produces false equivalence.",
+   "test": "Offline matched-cost enumeration and movement normalization, then one matched-prefix sandbox substitution with unchanged evidence. Stop if no valid contrast or response effect exists. Practice only after explicit lead approval.",
+   "closest_failed": "G9a bought reciprocity with a larger concession; E8 copied supplier movement; G7sw framed sweeteners; G1-10 probed payment. This holds the buyer's economic concession budget fixed while identifying the mirrored coordinate."
+  }
+ ],
+ "approaches": [
+  {
+   "id": "X1",
+   "title": "Empirically Compiled Supplier Response Model",
+   "summary": "Build a small uncertainty-aware model from actual matched-prefix interventions, separating claim recognition, economic application, package acceptance, counteroffer changes and terminality. Use generic features and abstain outside supported regions.",
+   "worth_it": "maybe",
+   "why": "Unlike ALT-2, it uses measured responses rather than imagined supplier rollouts. The offline identification dataset is worthwhile; replacing G8u before held-out validation is not. Determinism helps identification but does not establish transfer."
+  },
+  {
+   "id": "X2",
+   "title": "Joint Evidence-Contract Planner",
+   "summary": "Plan complete packets consisting of a legal package, supported claims, proof organization and dispatch opportunity over the short remaining reply horizon, with first-use evidence dependencies and uncertain supplier trade values.",
+   "worth_it": "maybe",
+   "why": "It optimizes evidence and contracts jointly rather than attaching arguments after package selection, and unlike ALT-6 spends no discovery-only rounds. A full rewrite is premature until local experiments identify reliable response mechanisms; otherwise it would optimize unsupported assumptions."
+  }
+ ]
+}
