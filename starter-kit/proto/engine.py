@@ -1261,7 +1261,7 @@ class Negotiator:
             best = self.best_standing()
             live = [t for t in self.threads.values() if t.status not in ENDED]
             if not live:
-                return self.walk() if best is None else self.close(best[1], best[2])
+                return self.close(best[1], best[2]) if best and best[0] <= self.c_alt else self.walk()
             goal, next_goal = self.goal(rnd), self.goal(rnd + 1)
             owed, owed_cap, owed_t = False, None, None
             if best and best[0] <= self.c_alt:
@@ -1342,7 +1342,7 @@ class Negotiator:
                         self.note("fallback_counter", supplier=t.sid, sheet=counter[0])
                         jobs.append((t, self.write(t, rnd, counter, None)))
             if not jobs:
-                if best:
+                if best and best[0] <= self.c_alt:  # never a deal that costs more than our alternative (as in the RFQ)
                     self.note("accept", why="no thread left to push", c=best[0])
                     return self.close(best[1], best[2])
                 return self.walk()

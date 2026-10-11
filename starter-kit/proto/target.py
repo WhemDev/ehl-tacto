@@ -27,9 +27,24 @@ def lever_grid(case, std=None):
         yield complete_offer(case, {**terms, "unit_price": 1.0})
 
 
-def _solve(fn, target, lo=0.01, hi=1000.0, increasing=True):
-    """Bisection for fn(p) = target on a monotone fn."""
-    for _ in range(80):
+PRICE_CAP = 1000.0  # the solvers' first upper bound; widened for dearer parts (world.sqlite has one at EUR 1,608)
+
+
+def _cap(case):
+    """Upper bound for a unit price in this case: ten times its dearest reference price, at least PRICE_CAP."""
+    b = case.get("buyer") or {}
+    refs = [b.get("current_unit_price"), b.get("fallback_unit_price"),
+            ((b.get("alternative") or {}).get("terms") or {}).get("unit_price")]
+    return max([PRICE_CAP] + [10.0 * r for r in refs if isinstance(r, (int, float))])
+
+
+def _solve(fn, target, lo=0.01, hi=PRICE_CAP, increasing=True):
+    """Bisection for fn(p) = target on a monotone fn (hi doubles until it brackets the target)."""
+    for _ in range(40):
+        if (fn(hi) < target) != increasing:
+            break
+        hi *= 2
+    for _ in range(120):
         mid = (lo + hi) / 2
         v = fn(mid)
         if (v < target) == increasing:
@@ -41,24 +56,29 @@ def _solve(fn, target, lo=0.01, hi=1000.0, increasing=True):
 
 def floor_price(case, terms, supplier):
     """Lowest unit price on these terms whose cash value to the supplier still reaches its floor."""
-    return _solve(lambda p: supplier_value(case, {**terms, "unit_price": p}, supplier), supplier["floor"])
+    return _solve(lambda p: supplier_value(case, {**terms, "unit_price": p}, supplier), supplier["floor"], hi=_cap(case))
 
 
 def price_for_c(case, terms, std, c_target, supplier=None):
     """Unit price that makes this package cost us exactly c_target. With a relationship term C
     first falls (a squeezed supplier costs us) and then rises with price: solve on the rising side."""
     f = lambda p: total_cost(case, {**terms, "unit_price": p}, std, supplier)
-    lo, hi = 0.01, 1000.0
-    for _ in range(100):  # ternary search for the cheapest price (C is convex in p)
-        m1, m2 = lo + (hi - lo) / 3, hi - (hi - lo) / 3
-        if f(m1) <= f(m2):
-            hi = m2
-        else:
-            lo = m1
-    p_min = (lo + hi) / 2
+    top = _cap(case)
+    for _ in range(12):
+        lo, hi = 0.01, top
+        for _ in range(140):  # ternary search for the cheapest price (C is convex in p)
+            m1, m2 = lo + (hi - lo) / 3, hi - (hi - lo) / 3
+            if f(m1) <= f(m2):
+                hi = m2
+            else:
+                lo = m1
+        p_min = (lo + hi) / 2
+        if p_min < 0.99 * top:
+            break
+        top *= 4  # the cheapest price sits at the bound: a dearer part than the bound assumed
     if f(p_min) >= c_target:
         return round(p_min, 2)  # the goal is below anything this package can reach
-    return _solve(f, c_target, lo=p_min)
+    return _solve(f, c_target, lo=p_min, hi=max(top, 2 * p_min))
 
 
 def target(case, suppliers):
