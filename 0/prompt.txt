@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>b93nbfzq4</task-id>
+<tool-use-id>toolu_01NKnD246StUrgMsGdTMRhhX</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-ardagurses-Desktop-TactoEHL/e5ef867b-d470-4a91-8045-8fa1e678b662/tasks/b93nbfzq4.output</output-file>
+<status>completed</status>
+<summary>Background command "arena-sim plumbing run of A10 on all case files" completed (exit code 0)</summary>
+</task-notification>
