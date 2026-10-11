@@ -1,0 +1,7 @@
+<task-notification>
+<task-id>bj7r5yaom</task-id>
+<tool-use-id>toolu_01WcekkxbfqCa79ue12cQr1Z</tool-use-id>
+<output-file>/private/tmp/claude-501/-Users-ardagurses-Desktop-TactoEHL/e5ef867b-d470-4a91-8045-8fa1e678b662/tasks/bj7r5yaom.output</output-file>
+<status>failed</status>
+<summary>Background command "A10 practice pass 1: all 10 cases, fresh replies" failed with exit code 2</summary>
+</task-notification>
