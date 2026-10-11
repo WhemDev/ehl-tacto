@@ -207,6 +207,9 @@ for name, overrides in {
 # dearer one, never twice), and its announced rest collected (A9h-owed)
 VARIANTS["A9h-rival"] = ("A9h-owed + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
                          replace(VARIANTS["A9h-owed"][1], rival_gap=0.05))
+# 03:20: the rival trigger alone (no owed hold): what the final would ship if only the P05 evidence counts
+VARIANTS["A9h-gap"] = ("A9h + cite the cheapest rival price >= 5 % below each bidder's own, from the first mail",
+                       replace(VARIANTS["A9h"][1], rival_gap=0.05))
 
 
 def run_one(client, name, cfg, case, rep, practice, generic=True):

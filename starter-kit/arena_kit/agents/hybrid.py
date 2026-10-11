@@ -39,7 +39,7 @@ PLAN_NOTES = {"accept", "hold", "push", "mirror_alternative", "cap_close", "bar"
               "accept_retry", "theirs_sheet", "required_term", "recalled", "fallback_counter", "patient", "clause_pay",
               "cash_rate", "collect"}
 STEP_NOTES = ("target", "crash", "error", "close_failed", "close_failed_2", "resync", "attachment_missing",
-              "dropped_ids")
+              "dropped_ids", "timeout_answer")
 BREAKDOWN_HINT = re.compile(r"conversion|Material accounts for about", re.I)
 DOCS = ThreadPoolExecutor(max_workers=4, thread_name_prefix="docs")
 
