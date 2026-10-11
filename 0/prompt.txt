@@ -1,0 +1,6 @@
+<task-notification>
+<task-id>b6l13cmnk</task-id>
+<summary>Monitor event: "Watch the knob passes' means"</summary>
+<event>=== knob-rfqport start 19:58:25 variant=A9hr cfg={}</event>
+If this event is something the user would act on now, send a PushNotification. Routine or benign output doesn't need one.
+</task-notification>
