@@ -1,0 +1,85 @@
+{
+ "tasks": [
+  {
+   "id": "S1",
+   "title": "CLUSTER/SAFEZONE: no direct accept, beat rounds after final offers, staggered opening, locked incoterm",
+   "files": [
+    "proto/alt/cluster_safezone.py"
+   ],
+   "functions": [
+    "Negotiator.decide",
+    "Negotiator.run",
+    "Negotiator.packages",
+    "Negotiator.build (and new helpers in that file)"
+   ],
+   "spec": "You own proto/alt/cluster_safezone.py only. Read its docstring and code first. Implement, each behind its flag (self.cfg.<flag>):\n1) cs_no_direct_accept (multi-vendor cases only; single vendor keeps today's behaviour): an offer that would be accepted today ('at_target', 'agreed', or the first vendor becoming terminal / crossing the tension threshold) must NOT close the deal directly. Instead it becomes (or replaces, if cheaper in C) the SAFEZONE (self.safe, self.safe_c). While a SAFEZONE exists, every other cluster vendor that is not walked_away/no_bid/ended gets up to self.cfg.cs_beat_rounds 'beat' counters - ALSO after that vendor sent a final_offer - asking for a package whose C is about 1.5 % below the SAFEZONE C (cap at the vendor's own standing price on the same terms; use self.packages). Track beat counters per vendor (self.beats dict). Close the lowest standing offer only when every non-SAFEZONE vendor has used its beat rounds (and its reply arrived), walked away, is at the round limit, or the wave cap is near (now > self.wave_end - 90). If a non-SAFEZONE vendor's new standing offer beats the SAFEZONE C, it becomes the SAFEZONE and the previous one becomes a vendor that may get beat counters. Keep the SAFEZONE's clock alive with the existing keepalive (when now - t.replied_at > 38 s, at most 2) and close it before its round limit (t.sent() >= self.limit - 2) - review point 1.\n2) cs_stagger: staggered opening like the main engine: send the first counter only to the vendor with the cheapest opening C; after its reply arrives (or 25 s), send the first counters to the other vendors citing that fresh offer id as the rival (self.write's rival argument = (offer_id, terms)). Single vendor: no change.\n3) cs_lock_incoterm: in Negotiator.packages, if 'incoterm' is negotiable and the vendor's current primary sheet has an allowed incoterm, every package we send to that vendor keeps that incoterm: rebuild a package with a different incoterm via complete_offer(case, {**s, 'incoterm': theirs}) and re-price it to the same C goal with proto.target.price_for_c(self.case, package_without_price, t.std, c_goal, t.est if self.relationship else None) (read target.py for the signature), then apply the existing cap / must-have checks. Log 'cs_incoterm_locked'.\nKeep all hard guards: never above a vendor's standing price on the same terms, must-haves and allowed options only, never accept C above self.c_alt, no lock held during self.send, one worker per vendor.\n\nRULES FOR THIS TASK: every Config flag named here ALREADY EXISTS (end of the Config dataclass) - do NOT edit Config. Edit only the functions/files named as yours. Default-off flags: with the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Never put private keys on arena message dicts. Keep 'old' snippets short and unique.",
+   "test": "sandbox D02 x3, D01 x1 (variant CS2-45)"
+  },
+  {
+   "id": "S2",
+   "title": "Evidence hygiene: forecast-ID provenance + no duplicate claims",
+   "files": [
+    "proto/practice.py",
+    "proto/engine.py"
+   ],
+   "functions": [
+    "PracticeNegotiator.write",
+    "Negotiator.write (only the final refs / rival-citation assembly)",
+    "new helpers"
+   ],
+   "spec": "1) fc_provenance: in PracticeNegotiator.write the answer_plus branch cites the latest forecast id from the SQL table `forecasts` (e.g. 'Our current forecast (fc:320070@2026-09) backs this binding volume.'). That id may not exist in the arena's facts.json -> the supplier answers 'that forecast ID doesn't exist ... That costs trust' (contradicted). With the flag on, only cite such an id if it exists in the authoritative fact registry (use the existing helpers in practice.py that read facts.json, e.g. lookup()/claim_source()/the DataPackage facts - read the file to find the right one); otherwise keep the sentence without the id and without adding it to refs. Apply the same check to every other SQL-derived id practice.py adds in write(). 2) no_dup_claims: before a message leaves write() (both PracticeNegotiator.write and Negotiator.write), drop from msg['refs'] every id that was already cited to THIS supplier in an earlier buyer message (t.events where from == 'buyer', their 'refs'), and remove the sentence that cites it (split body lines; drop the line containing the id) - EXCEPT a rival offer id (offer:...) which may be cited again only if it is a NEW offer id (different from any already cited to this supplier). Never leave a message with an empty body: keep greeting/closing lines.\n\nRULES FOR THIS TASK: every Config flag named here ALREADY EXISTS (end of the Config dataclass) - do NOT edit Config. Edit only the functions/files named as yours. Default-off flags: with the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Never put private keys on arena message dicts. Keep 'old' snippets short and unique.",
+   "test": "smoke; sandbox D02 (claims duplicate count falls), P05 later"
+  },
+  {
+   "id": "S3",
+   "title": "Stance-gated hold before accepting from a still-moving supplier",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator.run (single-supplier accept branch)",
+    "the legacy run_rfq accept-on-goal branch (localized)",
+    "new helper Negotiator._stance_hold"
+   ],
+   "spec": "Flag stance_hold. Add helper `_stance_hold(self, t)` -> bool: True when t.status == 'open', the thread has not used a stance hold yet (t.__dict__ flag), t.sent() < round_limit - 2, and the supplier's latest message has stop_risk < 0.17 (bottom quartile; proto/stance.py: `from proto.stance import Stance`; cache ONE Stance() instance on the class with a lock; Stance().analyze(body)['stop_risk']; on any exception return False). In Negotiator.run's single-supplier loop, where it currently accepts with `elif c <= next_goal or t.status == \"agreed\":` - if the flag is on, the status is 'open' (not 'agreed') and _stance_hold(t) is True: note('stance_hold', ...), mark the hold used, and continue to send one more counter at the current goal (do not accept this round; mirror how the existing `holds` logic keeps the goal: rnd -= 1). Do the same in the legacy run_rfq branch (resilient_rfq False) where a standing offer at/below the goal is accepted while the supplier is 'open' - localized edit, keep everything else. Never hold a 'final_offer' or 'agreed' supplier.\n\nRULES FOR THIS TASK: every Config flag named here ALREADY EXISTS (end of the Config dataclass) - do NOT edit Config. Edit only the functions/files named as yours. Default-off flags: with the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Never put private keys on arena message dicts. Keep 'old' snippets short and unique.",
+   "test": "smoke; sandbox D01, D02"
+  },
+  {
+   "id": "S5",
+   "title": "Slow aggressive ask for single-supplier cases",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator.goal",
+    "new helper"
+   ],
+   "spec": "Flag slow_ask_single. Only when the case has exactly one supplier thread and rnd >= 1 (the first ask stays exactly as today): goal(rnd, t) returns target + share * (C of the supplier's current primary standing offer - target) with share = min(0.6, 0.15 + 0.15 * (rnd - 1)), target = self.target_c (if not finite, fall back to today's goal). Never return a goal above the supplier's standing C; never below today's round-0 start. Note('slow_ask', ...) once per round. This copies the CLUSTER/SAFEZONE strategy's ask that reached D01 0.999 (E46). Everything else (accept rules, holds) unchanged.\n\nRULES FOR THIS TASK: every Config flag named here ALREADY EXISTS (end of the Config dataclass) - do NOT edit Config. Edit only the functions/files named as yours. Default-off flags: with the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Never put private keys on arena message dicts. Keep 'old' snippets short and unique.",
+   "test": "sandbox D01; later single-supplier practice cases"
+  },
+  {
+   "id": "S7",
+   "title": "Quality / chargeback packages for quality_first cases",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "new method Negotiator._quality_packages(self, t, c_goal, picks)"
+   ],
+   "spec": "Flag quality_packages. Implement ONLY the new method `_quality_packages(self, t, c_goal, picks) -> list|None`; it is ALREADY registered in MESO_HOOKS (runs after the core). Only when self.b['category_goal'] == 'quality_first' and 'ppm_commitment' or 'chargeback_eur_per_complaint' is negotiable: build from the allowed options the package that trades a stricter quality commitment (lower ppm and/or a chargeback) for price: take picks[0], set the quality field(s) to the option that lowers our C most at the same price (evaluate with self.C), re-price to the same c_goal with proto.target.price_for_c (read its signature), cap at the supplier's standing price on equal terms, check must_haves_ok, and return picks with that package appended as an extra package if len(picks) < self.cfg.meso_n, else replacing the last one. Return None when not applicable.\n\nRULES FOR THIS TASK: every Config flag named here ALREADY EXISTS (end of the Config dataclass) - do NOT edit Config. Edit only the functions/files named as yours. Default-off flags: with the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Never put private keys on arena message dicts. Keep 'old' snippets short and unique.",
+   "test": "smoke (P11 case file); practice P11 later"
+  },
+  {
+   "id": "S8",
+   "title": "Recall a better earlier offer relative to the case's room",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator.recalled"
+   ],
+   "spec": "Flag recall_room. In Negotiator.recalled the threshold is `best_c < now * 0.997` (0.3 % of C). With the flag on use `best_c < now - max(1.0, 0.10 * room)` where room = max(self.c_open - self.target_c, 0) (if not finite fall back to the old rule). Only offers the supplier itself made (primary or alternative sheets), must-haves kept. Note('recall_room', ...). P04 lost an alternative EUR 117 cheaper in C in a case whose room is ~2,300.\n\nRULES FOR THIS TASK: every Config flag named here ALREADY EXISTS (end of the Config dataclass) - do NOT edit Config. Edit only the functions/files named as yours. Default-off flags: with the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Never put private keys on arena message dicts. Keep 'old' snippets short and unique.",
+   "test": "smoke; practice P04 later"
+  }
+ ]
+}

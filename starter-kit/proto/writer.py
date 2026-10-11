@@ -161,13 +161,99 @@ def validate(body, template, refs):
 
 
 # ---------- the call ----------
+_UNSUPPORTED = ("minimum", "maximum", "exclusiveMinimum", "exclusiveMaximum", "multipleOf", "maxItems",
+                "minLength", "pattern", "format", "minProperties", "maxProperties", "uniqueItems")
+
+
+def sanitize_schema(x):
+    """Structured outputs reject some JSON-schema keywords (number bounds, minItems > 1, ...): drop them; the code
+    validating the answer still enforces its own bounds (ALT-2/ALT-4 bug: every call returned HTTP 400)."""
+    if isinstance(x, dict):
+        out = {}
+        for k, v in x.items():
+            if k in _UNSUPPORTED:
+                continue
+            if k == "minItems" and isinstance(v, int) and v > 1:
+                continue
+            out[k] = sanitize_schema(v)
+        # tell the model the limits the API cannot enforce; enforce() trims the answer afterwards
+        limits = [f"{k} {x[k]}" for k in ("minItems", "maxItems", "minimum", "maximum") if k in x
+                  and not (k == "minItems" and x[k] in (0, 1))]
+        if limits:
+            out["description"] = (str(x.get("description", "")) + f" (limits: {', '.join(limits)})").strip()
+        if out.get("type") == "object" and "properties" in out:
+            out.setdefault("additionalProperties", False)
+        return out
+    if isinstance(x, list):
+        return [sanitize_schema(v) for v in x]
+    return x
+
+
+def enforce(schema, value):
+    """Apply the limits we had to strip from the schema to the parsed answer: trim arrays, clamp numbers."""
+    if not isinstance(schema, dict):
+        return value
+    if isinstance(value, list):
+        items = schema.get("items")
+        value = [enforce(items, v) for v in value]
+        if isinstance(schema.get("maxItems"), int):
+            value = value[:schema["maxItems"]]
+        return value
+    if isinstance(value, dict):
+        props = schema.get("properties") or {}
+        return {k: enforce(props.get(k), v) for k, v in value.items()}
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        if isinstance(schema.get("minimum"), (int, float)):
+            value = max(value, schema["minimum"])
+        if isinstance(schema.get("maximum"), (int, float)):
+            value = min(value, schema["maximum"])
+    return value
+
+
+class _Messages:
+    def __init__(self, inner):
+        self._inner = inner
+
+    def create(self, **kw):
+        fmt = (kw.get("output_config") or {}).get("format")
+        original = fmt.get("schema") if isinstance(fmt, dict) else None
+        if original is not None:
+            kw = {**kw, "output_config": {**kw["output_config"], "format": {**fmt, "schema": sanitize_schema(original)}}}
+        r = self._inner.create(**kw)
+        if original is not None:
+            for b in r.content:
+                if getattr(b, "type", None) == "text":
+                    try:
+                        b.text = json.dumps(enforce(original, json.loads(b.text)))
+                    except (ValueError, TypeError, AttributeError):
+                        pass
+        return r
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
+class _Client:
+    """The Anthropic client with schema sanitising on messages.create (with_options keeps it)."""
+
+    def __init__(self, inner):
+        self._inner = inner
+        self.messages = _Messages(inner.messages)
+
+    def with_options(self, **kw):
+        return _Client(self._inner.with_options(**kw))
+
+    def __getattr__(self, name):
+        return getattr(self._inner, name)
+
+
 def _get_client():
     global _client
     with _client_lock:
         if _client is None:
             import anthropic  # imported only when the writer is on
 
-            _client = anthropic.Anthropic(max_retries=0)  # no live retries: the template is the retry
+            _client = _Client(anthropic.Anthropic(max_retries=0))  # no live retries: the template is the retry
         return _client
 
 
@@ -196,7 +282,12 @@ def split_body(body):
     return body.rstrip(), ""
 
 
-def rewrite(template_body, refs, sheets_plain, supplier_bodies, our_last, case_title, budget):
+POSITIVE_TONE = ("Maximise positive sentiment in every sentence, above all in the opening: warm, appreciative, "
+                 "optimistic and collaborative wording (e.g. thank, appreciate, glad, look forward, together, partnership). "
+                 "Stay precise and firm on every figure; positivity must never soften a number or add a concession.")
+
+
+def rewrite(template_body, refs, sheets_plain, supplier_bodies, our_last, case_title, budget, tone=None):
     """(body, info). body is the validated LLM text with our sign-off, or the template on any failure."""
     info = {"used": False, "reason": None, "latency": None}
     if not os.environ.get("ANTHROPIC_API_KEY"):
@@ -218,6 +309,7 @@ def rewrite(template_body, refs, sheets_plain, supplier_bodies, our_last, case_t
         "our_previous_email": (our_last or "")[:1200],
         "term_sheets_attached": sheets_plain,
         "TEMPLATE": core,
+        **({"TONE_GOAL": tone} if tone else {}),
     }, ensure_ascii=False, indent=1)
     t0 = time.time()
     try:

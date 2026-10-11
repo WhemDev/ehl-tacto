@@ -1,0 +1,17 @@
+{
+ "tasks": [
+  {
+   "id": "P1",
+   "title": "Concession-profile opponent model gating the slow single-supplier ask",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator._slow_ask_goal (top of the method only)",
+    "new helper Negotiator._concession_profile(self, t)"
+   ],
+   "spec": "Flag slow_ask_profile (exists; do NOT edit Config, goal() or anything else). Implement helper `_concession_profile(self, t)` -> dict with keys profile in {'conceder','linear','boulware','mirror','unknown'}, plus the numbers used. Inputs: the supplier's primary-sheet cost series c_1..c_n over its replies (t.events where from not in ('buyer','arena') and term_sheets; C via self.C(t, terms); the opening quote counts as c_0) and our own asks a_1..a_m (buyer events, term_sheets[0].terms via self.C). Supplier concessions d_i = c_{i-1} - c_i (positive = it moved toward us). Classification (research: ANAC BOA opponent model, second-order differences d2 = d_i - d_{i-1}): fewer than 2 supplier concessions -> 'unknown'; if the latest concession is <= 0.6 x our latest concession (our move toward it = a_k - a_{k-1}) -> 'mirror' (it reciprocates our step size, e.g. practice P07/P08); else if d2 < -0.5 x |d_{i-1}| (concessions shrinking fast) -> 'boulware'; else if d2 > 0 or the latest concession >= our latest concession -> 'conceder'; else 'linear'. Cache per thread revision (t.__dict__) and note('concession_profile', ...) when it changes. In _slow_ask_goal, at the very top (after any existing early-return guards you find there, keep them), when self.cfg.slow_ask_profile is True: compute the profile; return None (normal curve) unless the profile is 'conceder' or 'unknown' (round 1 has no history yet: keep today's behaviour there). Evidence: D01's foundry keeps conceding more than we move (slow ask: 0.982 -> 1.000); P07/P08 mirror our smaller steps and went final higher (-0.03/-0.07). Generic rules only; log decisions; keep 'old' snippets short and unique.",
+   "test": "sandbox D01 (must stay 1.000); practice P07, P08, P04"
+  }
+ ]
+}

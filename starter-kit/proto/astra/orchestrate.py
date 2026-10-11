@@ -365,6 +365,86 @@ different. Output: a short analysis (max 30 lines), then ONE json block in the s
 """
 
 
+ALT_PROMPT = """You are Astra, the lead engineer. Our buyer agent (A10 → G5-1) is a deterministic concession-curve engine
+that we have optimised for many hours; 5 generations of tuning on D02 (and two rounds on all practice cases) gave only
++0.001 on practice. The team lead asks for COMPLETELY NEW WAYS to negotiate - not optimisation of our engine - which we
+will implement as separate negotiators and compare head-to-head with G5-1 (sandbox D01/D02, then the 10 practice cases).
+
+Design {n} genuinely different paradigms. Examples of directions (choose, combine or invent better ones):
+- a full LLM agent negotiator (the model reads the thread and plays; code only enforces hard guards and the protocol);
+- simulation / lookahead: an LLM "digital twin" of each supplier, built from its own messages, used to evaluate
+  candidate offers before sending (Monte-Carlo or best-of-k), then send the best predicted;
+- Bayesian opponent modelling: a posterior over the supplier's reservation price and concession style, offers chosen
+  to maximise expected savings × P(acceptance), updated every reply;
+- persona / strategy library: classify the supplier (and case type) early, then play a strategy script built for it;
+- principled one-shot or few-shot designs: a single well-argued firm offer near the estimated fair price (take it or
+  leave it, with rival and evidence), or a "split the difference" protocol with explicit rules;
+- learning across sessions/cases is NOT available in the final (unseen suppliers), but learning within a session is.
+
+Hard requirements for every design (the coder must be able to implement it in ONE new file):
+- File `proto/alt/<module>.py` defining `class Negotiator(PracticeNegotiator)` (import from proto.practice) that
+  overrides `run(self)` completely (single- AND multi-supplier cases; the engine's own run() dispatches RFQs to a
+  1,000-line coordinator you must NOT use). Selected with `Config(strategy="<module>")`; other Config fields are A10's.
+- Use the plumbing from the interface below: `self.send(t, msg)` (blocks until the supplier replies: 0.2-120 s;
+  returns the reply or None; msg = {"subject", "body", "refs": [ids], "term_sheets": [{"terms": {...}}]}),
+  `self.close(t, sheet)` (accept a standing primary sheet; mirrors an alternative first), `self.walk()`, `self.C(t, terms)`
+  (our total cost - lower is better), `complete_offer`, `must_haves_ok`, `self.facts_for(t)` (verified facts + IDs),
+  `self.target_c` / `self.c_alt` / `self.c_open` / `t.est` (our floor estimate), `self.note(kind, **kw)` for logging,
+  `self.write(t, rnd, sheets, rival)` if you want A10's template wording, `proto.writer._get_client()` for Claude
+  Sonnet 5.5 (structured JSON, effort low, ~2.5 s), the arena client `self.c` for session/thread reads.
+- Arena rules: 60 s per thread from the supplier's reply (3 timeouts end a thread), so with several suppliers you
+  must service them concurrently (one worker thread per supplier + a shared lock, never hold the lock during send);
+  ≤3 checked claims per message, each data ID once per case, only IDs from facts_for / case refs / offer ids; only a
+  supplier's primary sheet is acceptable; every sheet must set each negotiable field to an allowed option.
+- Hard guards (in code, never left to an LLM): never ask above a supplier's standing price on the same terms, must-
+  haves and allowed options only, never accept a C above our alternative (c_alt) unless there is no alternative,
+  finish before round_limit, fall back to a safe close of the best standing offer near the end.
+- Generic only: no case IDs, supplier IDs or numbers from D01/D02/practice.
+
+For each paradigm give: id ("ALT-1"…), module name, the paradigm in one paragraph, WHY it could beat G5-1 (which
+mechanism of the results below it exploits), a complete implementation spec for one GPT-6.1-sol coder (algorithm in
+pseudo-code, state, prompts and JSON schemas if an LLM is used, timing, guards, logging), and the main risk.
+
+Output: a short analysis (max 30 lines), then ONE json block:
+```json
+{"analysis": "...", "ideas": [{"id": "ALT-1", "module": "bayes_offer", "title": "...", "type": "code",
+ "params": {"strategy": "bayes_offer"}, "files": ["proto/alt/bayes_offer.py"], "functions": ["Negotiator.run"],
+ "spec": "...", "hypothesis": "...", "risk": "..."}], "notes": "..."}
+```
+
+=== WHAT WE KNOW (results) ===
+{results}
+
+=== D02 LESSONS (5 generations) ===
+{history}
+
+=== CHALLENGE + PRACTICE DIAGNOSIS ===
+{review}
+
+=== INTERFACE (engine/practice excerpts) ===
+{interface}
+
+=== arena_kit/cost.py and proto/target.py ===
+{cost}
+"""
+
+
+def alt(n):
+    rv = (HERE / "review2.md").read_text()
+    results = (HERE / "alt" / "results.md").read_text() if (HERE / "alt" / "results.md").exists() else ""
+    prompt = ALT_PROMPT.replace("{n}", str(n)).replace("{results}", results) \
+        .replace("{history}", (HERE / "d02" / "history.md").read_text()).replace("{review}", rv) \
+        .replace("{interface}", (HERE / "alt" / "interface.py").read_text()) \
+        .replace("{cost}", sources(["arena_kit/cost.py", "proto/target.py"]))
+    text = call(ASTRA, ASTRA_EFFORT, prompt, "astra-alt")
+    (HERE / "alt" / "ideas.md").write_text(text)
+    p = extract_json(text)
+    (HERE / "alt" / "ideas.json").write_text(json.dumps(p, indent=1))
+    print(f"alt: {len(p['ideas'])} paradigms -> proto/astra/alt/ideas.json")
+    for i in p["ideas"]:
+        print(f"  {i['id']} {i.get('module')}: {i['title']}")
+
+
 def d02(gen, n):
     hist_path = HERE / "d02" / "history.md"
     history = hist_path.read_text() if hist_path.exists() else "=== RESULTS SO FAR === (generation 1: none yet)"
@@ -385,6 +465,51 @@ def d02(gen, n):
         print(f"  {i['id']} [{i['type']}] {i['title']} | {i.get('params')}")
 
 
+SONNET = os.environ.get("SONNET_MODEL", "claude-sonnet-5-5")
+
+
+def call_sonnet(prompt, tag, effort="high"):
+    """Claude Sonnet 5.5 as coder (Anthropic SDK, streaming: large outputs)."""
+    import anthropic
+
+    client = anthropic.Anthropic(max_retries=2)
+    t0 = time.time()
+    with client.messages.stream(model=SONNET, max_tokens=64000, output_config={"effort": effort},
+                                messages=[{"role": "user", "content": prompt}]) as stream:
+        msg = stream.get_final_message()
+    if msg.stop_reason not in ("end_turn", "max_tokens"):
+        raise RuntimeError(f"{tag}: stop_reason {msg.stop_reason}")
+    text = "".join(b.text for b in msg.content if b.type == "text")
+    print(f"[{tag}] {SONNET}/{effort} {time.time() - t0:.0f}s in={msg.usage.input_tokens} out={msg.usage.output_tokens} "
+          f"stop={msg.stop_reason}", flush=True)
+    (HERE / "raw").mkdir(exist_ok=True)
+    (HERE / "raw" / f"{tag}-{time.strftime('%H%M%S')}.txt").write_text(text)
+    return text
+
+
+def code_sonnet(ids):
+    p = json.loads((HERE / PLAN).read_text())
+    review = (HERE / REVIEW).read_text()
+    src = sources(os.environ["SOURCES"].split(",")) if os.environ.get("SOURCES") else sources()
+    tasks = [t for t in p["tasks"] if t["id"] in ids]
+    (HERE / EDITS).mkdir(exist_ok=True, parents=True)
+
+    def one(t):
+        prompt = CODE_PROMPT.replace("{task_id}", t["id"]).replace("{task}", json.dumps(t, indent=1)) \
+            .replace("{review}", review).replace("{source}", src)
+        try:
+            text = call_sonnet(prompt, f"sonnet-{t['id']}")
+            e = extract_json(text)
+            (HERE / EDITS / f"{t['id']}.json").write_text(json.dumps(e, indent=1))
+            return t["id"], len(e.get("edits", [])), None
+        except Exception as ex:
+            return t["id"], 0, repr(ex)[:300]
+
+    with ThreadPoolExecutor(len(tasks)) as ex:
+        for tid, n, err in ex.map(one, tasks):
+            print(f"  {tid}: {n} edits {'ERROR ' + err if err else ''}", flush=True)
+
+
 def plan():
     review = (HERE / "review.md").read_text()
     text = call(ASTRA, ASTRA_EFFORT, PLAN_PROMPT.replace("{review}", review).replace("{source}", sources()), "astra-plan")
@@ -399,7 +524,7 @@ def plan():
 def code(ids):
     p = json.loads((HERE / PLAN).read_text())
     review = (HERE / REVIEW).read_text()
-    src = sources()
+    src = sources(os.environ["SOURCES"].split(",")) if os.environ.get("SOURCES") else sources()
     tasks = [t for t in p["tasks"] if t["id"] in ids]
     (HERE / EDITS).mkdir(exist_ok=True)
 
@@ -436,5 +561,5 @@ def apply(ids):
 if __name__ == "__main__":
     load_env()
     cmd = sys.argv[1]
-    {"plan": lambda: plan(), "writer": lambda: writer(), "improve": lambda: improve(),
-     "d02": lambda: d02(int(sys.argv[2]), int(sys.argv[3]) if len(sys.argv) > 3 else 14), "code": lambda: code(sys.argv[2:]), "apply": lambda: apply(sys.argv[2:])}[cmd]()
+    {"plan": lambda: plan(), "writer": lambda: writer(), "improve": lambda: improve(), "alt": lambda: alt(int(sys.argv[2]) if len(sys.argv) > 2 else 6),
+     "d02": lambda: d02(int(sys.argv[2]), int(sys.argv[3]) if len(sys.argv) > 3 else 14), "code": lambda: code(sys.argv[2:]), "code_sonnet": lambda: code_sonnet(sys.argv[2:]), "apply": lambda: apply(sys.argv[2:])}[cmd]()

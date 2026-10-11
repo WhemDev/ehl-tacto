@@ -7,7 +7,6 @@ the mean score per value of each knob, per case - which settings help, which hur
 """
 
 import json
-import os
 import sys
 from collections import defaultdict
 from datetime import datetime
@@ -17,7 +16,7 @@ from proto.engine import Config
 
 RESULTS = Path(sys.argv[1] if len(sys.argv) > 1 else "proto/runs/search/results.jsonl")
 NOTE = Path(sys.argv[2] if len(sys.argv) > 2 else
-            os.environ.get("VAULT_DIR", "../vault") + "/Progress/Runs/Search-Results.md")
+            "/Users/rxv/Documents/Obsidian/EHL-Hackathon/Progress/Runs/Search-Results.md")
 DEFAULT = Config()
 
 

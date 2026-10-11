@@ -8,6 +8,7 @@ Results: proto/runs/variants/results.jsonl; summary printed per variant and case
 """
 
 import argparse
+import os
 import json
 import time
 from collections import defaultdict
@@ -163,13 +164,91 @@ VARIANTS["G5-1"] = ("G3-4 (retain freight + stable incoterm + no hold rewinds) +
                             nash_package_bargain=True))
 VARIANTS["G5-2"] = ("G5-1 + G4-1 reservation-band goal", replace(VARIANTS["G5-1"][1], reservation_band_goal=True))
 
+# ALT paradigms (proto/astra/alt/ideas.json): completely different negotiators, Config.strategy = module
+for _idea in (_json.load(open(Path(__file__).parent / "astra" / "alt" / "ideas.json")).get("ideas", [])
+              if (Path(__file__).parent / "astra" / "alt" / "ideas.json").exists() else []):
+    VARIANTS[_idea["id"]] = (_idea["title"], replace(VARIANTS["A10"][1], strategy=_idea["module"]))
+
+# The lead's CLUSTER / SAFEZONE spec (proto/alt/cluster_safezone.py) on top of G5-1, positive-tone Sonnet writer
+VARIANTS["CS-60"] = ("CLUSTER/SAFEZONE spec, tension threshold 60 %",
+                     replace(VARIANTS["G5-1"][1], strategy="cluster_safezone", cs_tension=0.60, llm_writer=True,
+                             writer_positive=True))
+VARIANTS["CS-45"] = ("CLUSTER/SAFEZONE spec, tension threshold 45 % (lead's review point 2)",
+                     replace(VARIANTS["CS-60"][1], cs_tension=0.45))
+
+# Lead's price-range anchor: soft first ask (1-2 % below our estimated best) for parts under EUR 25, D01 (~EUR 50) unchanged
+VARIANTS["RA-15"] = ("G5-1 + price-range anchor, 1.5 % soft ask below EUR 25", replace(VARIANTS["G5-1"][1], range_anchor=0.015))
+VARIANTS["RA-10"] = ("G5-1 + price-range anchor, 1 % soft ask below EUR 25", replace(VARIANTS["G5-1"][1], range_anchor=0.010))
+VARIANTS["RA-20"] = ("G5-1 + price-range anchor, 2 % soft ask below EUR 25", replace(VARIANTS["G5-1"][1], range_anchor=0.020))
+
+# Fixes from the E48 report (coded by Claude Sonnet 5.5): G6 = G5-1 + hygiene + stance hold + single-supplier slow ask + quality packages + room recall
+_FIX = dict(fc_provenance=True, no_dup_claims=True, stance_hold=True, slow_ask_single=True, quality_packages=True, recall_room=True)
+VARIANTS["G6"] = ("G5-1 + E48 fixes (provenance, no duplicates, stance hold, slow single ask, quality packages, room recall)",
+                  replace(VARIANTS["G5-1"][1], **_FIX))
+VARIANTS["CS2-45"] = ("CLUSTER/SAFEZONE v2: no direct accept, beat rounds after final offers, stagger, locked incoterm + E48 fixes",
+                      replace(VARIANTS["CS-45"][1], cs_no_direct_accept=True, cs_beat_rounds=2, cs_stagger=True,
+                              cs_lock_incoterm=True, **_FIX))
+VARIANTS["G5-1s"] = ("G5-1 + spread the strong arguments over the conversation", replace(VARIANTS["G5-1"][1], spread_args=True))
+VARIANTS["G6s"] = ("G6 + spread the strong arguments over the conversation", replace(VARIANTS["G6"][1], spread_args=True))
+VARIANTS["G6ss"] = ("G6 + spread the strong arguments only with a single supplier",
+                    replace(VARIANTS["G6"][1], spread_args=True, spread_single_only=True))
+VARIANTS["G7"] = ("G5-1 + slow single-supplier ask + spread arguments with a single supplier (RFQ play = G5-1)",
+                  replace(VARIANTS["G5-1"][1], slow_ask_single=True, spread_args=True, spread_single_only=True))
+VARIANTS["G7sw"] = ("G7 + Option 2 sweetener / partnership package in every counter", replace(VARIANTS["G7"][1], sweetener_pkg=True))
+VARIANTS["G8"] = ("G7 + slow-ask guard + clause package + evidence hygiene + quality packages (E53 improvements)",
+                  replace(VARIANTS["G7"][1], slow_ask_guard=True, clause_pkg=True, fc_provenance=True, no_dup_claims=True,
+                          quality_packages=True))
+VARIANTS["G8b"] = ("G8 with the clause package only in stabilise cases", replace(VARIANTS["G8"][1], clause_pkg_stabilise=True))
+VARIANTS["G8s"] = ("G8b + slow ask only in stabilise cases", replace(VARIANTS["G8b"][1], slow_ask_stabilise=True))
+VARIANTS["G8c"] = ("G8b + slow ask only for conceding suppliers (concession-profile opponent model)", replace(VARIANTS["G8b"][1], slow_ask_profile=True))
+# Review of the external G8s critique (E56): each recommendation we agree with, alone on G8s, then combined
+VARIANTS["R1"] = ("G8s + floor prior 0.72 x opening (RFQ 0.78 x lowest opening) without cost evidence",
+                  replace(VARIANTS["G8s"][1], floor_prior=0.72, floor_prior_rfq=0.78))
+VARIANTS["R2"] = ("G8s + bolder first ask (-7 %, RFQ -13 %)", replace(VARIANTS["G8s"][1], anchor=-0.07, rfq_anchor=-0.13))
+VARIANTS["R3"] = ("G8s + concession-velocity hold (do not accept while the supplier still moves)",
+                  replace(VARIANTS["G8s"][1], stance_hold=True, velocity_hold=True))
+VARIANTS["CS2-60"] = ("CLUSTER/SAFEZONE v2 at 60 %", replace(VARIANTS["CS2-45"][1], cs_tension=0.60))
+
+
+VARIANTS["G9a"] = ("G8s + mirror jump (single supplier: one jump to the midpoint when the supplier copies our step size)",
+                   replace(VARIANTS["G8s"][1], mirror_jump=True))
+VARIANTS["G9b"] = ("G8s + offer memory (mirror back a cheaper earlier package instead of taking a final offer; room recall)",
+                   replace(VARIANTS["G8s"][1], offer_memory=True, recall_room=True))
+VARIANTS["G9c"] = ("G8s + figures answer (real data facts, full claim budget, when asked which figures)",
+                   replace(VARIANTS["G8s"][1], figures_answer=True))
+VARIANTS["G9"] = ("G8s + mirror jump + offer memory + figures answer",
+                  replace(VARIANTS["G8s"][1], mirror_jump=True, offer_memory=True, recall_room=True, figures_answer=True))
+
+VARIANTS["G9bc"] = ("G8s + offer memory + figures answer (no mirror jump)",
+                    replace(VARIANTS["G8s"][1], offer_memory=True, recall_room=True, figures_answer=True))
+
+VARIANTS["G9v"] = ("G8s + exclusive-volume wording (100 % of demand, no split; no 'cannot promise more')",
+                   replace(VARIANTS["G8s"][1], exclusive_volume=True))
+
+VARIANTS["G10a"] = ("G8s + R3-2 shared-index skip (RFQ: no index ID already given to another supplier)",
+                    replace(VARIANTS["G8s"][1], shared_index_skip=True))
+VARIANTS["G10b"] = ("G8s + R3-3 adopted lane (keep the payment/contract lane the supplier took from our 2nd package)",
+                    replace(VARIANTS["G8s"][1], adopted_lane=True))
+
 def run_one(client, name, cfg, case, rep, practice, generic=True):
+    cls = None
     if practice or generic:  # the generic (final) code path is the default; --handfacts uses the sandbox-only facts
         from proto.practice import PracticeNegotiator
-        eng.Negotiator = PracticeNegotiator
+        cls = PracticeNegotiator
+    if cfg.strategy:  # a completely different negotiator (proto/alt/<strategy>.py, class Negotiator)
+        import importlib
+        cls = importlib.import_module(f"proto.alt.{cfg.strategy}").Negotiator
     for attempt in range(6):
         try:
-            sid, res = eng.play(case, cfg, client=client, log_dir=OUT / name, quiet=True)
+            # watchdog: a frozen negotiator (G4-8) must not hang the whole batch; the arena ends the session itself
+            from concurrent.futures import ThreadPoolExecutor as _TPE, TimeoutError as _TO
+            _ex = _TPE(1)
+            _fut = _ex.submit(eng.play, case, cfg, client=client, log_dir=OUT / name, quiet=True, cls=cls)
+            try:
+                sid, res = _fut.result(timeout=float(os.environ.get("SESSION_WATCHDOG", "600")))
+            except _TO:
+                sid, res = None, {"score": None, "error": "watchdog: negotiator hung > 10 min"}
+            _ex.shutdown(wait=False)
             break
         except ArenaError as e:  # e.g. 429 too many open sessions: wait for a slot
             time.sleep(10 * (attempt + 1))

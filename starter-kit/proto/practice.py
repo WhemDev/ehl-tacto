@@ -849,6 +849,20 @@ class PracticeNegotiator(Negotiator):
                     est.update(floor=cap, full_cost=cap, basis=est["basis"] + f" -> capped at opening/(1+margin) = {cap}")
             if self.cfg.calibrated_anchor:
                 self._calibrate_estimate(t, est, raw_floor)
+            prior = self.cfg.floor_prior_rfq if len(self.threads) > 1 else self.cfg.floor_prior
+            basis = str(est.get("basis", ""))
+            if prior and est.get("floor") is not None and "own cost breakdown" not in basis and "material" not in basis:
+                # review E56: without the supplier's own cost evidence, opening quotes embed 25-45 % margin; an 85 %-of-
+                # opening or price-minus-margin floor hands the anchor to the supplier. Cap at prior x opening (RFQ:
+                # x the lowest opening). Overwritten as soon as a breakdown / material share arrives (re-estimate).
+                opens = [x.opening_terms.get("unit_price") for x in self.threads.values() if x.opening_terms.get("unit_price")]
+                ref = (min(opens) if len(self.threads) > 1 else t.opening_terms.get("unit_price")) if opens else None
+                if ref and est["floor"] > prior * ref:
+                    cap = round(prior * ref, 2)
+                    est.update(floor=cap, full_cost=min(est.get("full_cost") or cap, cap),
+                               basis=basis + f" -> prior cap {prior:.2f} x opening = {cap}")
+            if getattr(self.cfg, "strategy", "") and est.get("floor") is not None:
+                est.setdefault("full_cost", est["floor"])  # alt negotiators (proto/alt) read full_cost; A10 unchanged
             t.est = est
         rows = target(case, {s: t.est for s, t in self.threads.items() if t.est.get("floor")})
         self.target_c, self.target_sup, self.target_terms = rows[0] if rows else (float("inf"), None, None)
@@ -1132,7 +1146,12 @@ class PracticeNegotiator(Negotiator):
             part = self.case["parts"][0]
             if re.search(r"volume", asked, re.I) and not getattr(t, "fc_cited", False):
                 fc = q("SELECT id FROM forecasts WHERE part_id = ? ORDER BY snapshot_month DESC LIMIT 1", (part,))
-                if fc:  # cited without a figure: the arena takes the data's own value
+                if fc and self.cfg.fc_provenance and canonical_fact(fc[0]["id"]) is None:
+                    # SQL-only id: the arena would answer "that forecast ID doesn't exist" -> state it without the id
+                    extra.append("Our current forecast backs this binding volume.")
+                    self.note("fc_provenance", supplier=t.sid, ref=fc[0]["id"], cited=False)
+                    t.fc_cited = True
+                elif fc:  # cited without a figure: the arena takes the data's own value
                     extra.append(f"Our current forecast ({fc[0]['id']}) backs this binding volume.")
                     msg.setdefault("refs", []).append(fc[0]["id"])
                     t.fc_cited = True
@@ -1174,6 +1193,7 @@ class PracticeNegotiator(Negotiator):
                 t.proof_sent = True
         if self.cfg.material_share_bridge:
             msg = self._material_share_bridge(t, msg)
+        msg = self._no_dup_claims(t, msg)
         return msg
         msg["body"] = msg["body"].replace(
             "Energy and wage costs have clearly been a strain for a foundry this year",

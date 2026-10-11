@@ -4,7 +4,6 @@
 """
 
 import json
-import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -13,7 +12,7 @@ import httpx
 
 VARIANT = sys.argv[1] if len(sys.argv) > 1 else "A"
 NOTE = Path(sys.argv[2] if len(sys.argv) > 2 else
-            os.environ.get("VAULT_DIR", "../vault") + f"/Progress/Runs/2026-10-10-practice-algorithm-{VARIANT}.md")
+            f"/Users/rxv/Documents/Obsidian/EHL-Hackathon/Progress/Runs/2026-10-10-practice-algorithm-{VARIANT}.md")
 RESULTS = Path("proto/runs/variants/results.jsonl")
 # Whem's orchestra, best per case after 30 sessions (Team-Knowledge/Plan/Report 2026-10-10 - profile hook and practice A-B)
 TEAMMATE = {"case:P01": 0.76, "case:P02": 0.18, "case:P03": 0.83, "case:P04": 0.86, "case:P05": 0.41, "case:P07": 0.70,

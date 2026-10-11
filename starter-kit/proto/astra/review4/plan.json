@@ -1,0 +1,160 @@
+{
+ "improvements": [
+  {
+   "id": "S5-1",
+   "title": "Exception-only transactional recovery and truthful session ownership",
+   "section": 5,
+   "targets": [
+    "P05",
+    "P10",
+    "hidden RFQs",
+    "hidden no-alternative cases"
+   ],
+   "expected_gain": "Unmeasured tail-loss prevention; healthy-path score change should be zero. No defensible expected score estimate without a failure-rate measurement.",
+   "effort": "M",
+   "risk": "Recovery may accidentally serialise RFQs, close early, or dispatch conflicting actions.",
+   "test": "Healthy-path differential replay and fault injection, then D01/D02 sandbox. Practice only with the lead's explicit approval.",
+   "spec": "Persist ownership immediately after session creation; journal ambiguous sends; retry identical requests with the same move ID; refresh before a different action; validate the actual primary after alternative promotion; never infer withdrawal from read failure; mark closed only on authoritative terminal confirmation. Reserve state locally under the RFQ lock and perform all network work outside it. Preserve successful G8s scheduling and decisions."
+  },
+  {
+   "id": "S5-2",
+   "title": "Source-backed payload audit without broad evidence reordering",
+   "section": 5,
+   "targets": [
+    "P01",
+    "P02",
+    "P03",
+    "P05",
+    "P07",
+    "P11",
+    "hidden cases"
+   ],
+   "expected_gain": "Unmeasured score effect; primarily integrity and robustness. Removing unsupported persuasive claims may not improve immediate score.",
+   "effort": "M",
+   "risk": "Overbroad filtering could remove useful verified evidence or weaken the early RFQ argument sequence.",
+   "test": "Recorded-state payload fixtures with source pointers for factual sentences, followed by sandbox regression. Practice only with explicit approval.",
+   "spec": "Deduplicate identical IDs within a message; distinguish claims from IDs; substantiate factual comparisons; use neutral descriptions for unknown case-only values; derive volume and horizon language from authorised case scope; distinguish historical purchases, forecasts, commitments and executable offers; retain breakdown arithmetic without asserting unknown profit; audit bundle authorisation. Keep valid evidence order and rival citations unchanged."
+  },
+  {
+   "id": "S5-3",
+   "title": "Shadow cost and input reconciliation before target changes",
+   "section": 5,
+   "targets": [
+    "P01",
+    "P02",
+    "P03",
+    "P05",
+    "hidden multi-part and price-unit cases"
+   ],
+   "expected_gain": "Zero behavioural gain in shadow mode; downstream benefit unmeasured and not yet quantifiable.",
+   "effort": "M",
+   "risk": "Confusing hidden supplier-cost uncertainty with a deterministic calculator error and changing a successful policy.",
+   "test": "Recompute historical accepted-package cost components and compare with official breakdowns; require identical sandbox actions in shadow mode.",
+   "spec": "Record resolved terms, standard and fixed-term sources, unit normalisation, cost components, relationship estimates, opening feasibility and immutable versus current quote inputs. Separate definite normalisation bugs from uncertain economic assumptions. Any decision-changing target correction must be a separate generic flag and experiment."
+  },
+  {
+   "id": "S5-4",
+   "title": "Confirm narrow RFQ shared-index handling",
+   "section": 5,
+   "targets": [
+    "P05",
+    "hidden RFQs"
+   ],
+   "expected_gain": "Duplicate reduction is measured in E60; score gain remains unmeasured. Tentative upside envelope is 0 to 0.04 per triggered case, not a confidence interval.",
+   "effort": "S",
+   "risk": "Skipping repeated evidence may reduce useful persuasion or simply reduce verified claims without improving offers.",
+   "test": "Offline trigger and claim-count audit, sandbox regression, then lead-approved interleaved G8s versus G10a practice screening.",
+   "spec": "Use the existing shared_index_skip mechanism only for index facts across RFQ suppliers. Preserve rival IDs, breakdown arguments and other fact types. Reserve evidence locally at dispatch without network waits under the RFQ lock. Count original claim evaluations consistently rather than repeated confirmation echoes."
+  },
+  {
+   "id": "S5-5",
+   "title": "Request-specific proof inside the existing counter before finality",
+   "section": 5,
+   "targets": [
+    "P08",
+    "P18",
+    "P11",
+    "P04",
+    "P07"
+   ],
+   "expected_gain": "Unmeasured; tentative 0 to 0.04 per triggered case, with negative outcomes possible.",
+   "effort": "M",
+   "risk": "Treating boilerplate as a causal gate or adding irrelevant proof without changing supplier behaviour.",
+   "test": "First demonstrate a missed open-thread proof request in recorded states. Stop if the existing proof hook already handles it. Then sandbox and explicitly approved targeted practice.",
+   "spec": "Match a current open-thread request to actual available evidence: executable quote, historical purchase record, forecast, order or calculation. Explain evidence limitations. Attach proof alongside the normal G8s counter, without an extra discovery round, invented volume, broad fact reordering or final-offer override."
+  },
+  {
+   "id": "S5-6",
+   "title": "Supplier-introduced clause trade priced jointly",
+   "section": 5,
+   "targets": [
+    "P08",
+    "P18",
+    "P16"
+   ],
+   "expected_gain": "Unmeasured; tentative 0 to 0.04 per triggered case, not a measured forecast.",
+   "effort": "M",
+   "risk": "Giving away clause value without sufficient price compensation or relying on uncertain relationship-cost equivalence.",
+   "test": "Offline replay must produce a distinct valid candidate not already generated by conditional repair. Then sandbox regression and lead-approved practice.",
+   "spec": "Only after an open supplier introduces an allowed clause-price relationship, preserve the normal primary and evaluate one secondary package using that clause variant. Compute price compensation with code and the official cost helper. Preserve coverage, fixed terms, must-haves, option legality and price cap. Do not introduce unsolicited leverage clauses or blindly persist adopted lanes."
+  },
+  {
+   "id": "S5-7",
+   "title": "Optional supplier-quoted cost-neutral schedule relaxation",
+   "section": 5,
+   "targets": [
+    "D02",
+    "hidden RFQs with unnecessary requested speed"
+   ],
+   "expected_gain": "Unmeasured; likely small or zero. No supported numeric gain estimate.",
+   "effort": "S",
+   "risk": "A quoted schedule establishes feasibility, not acceptance of the proposed lower price.",
+   "test": "Synthetic exact-match and immutability fixtures, then G8s sandbox comparison. Stop if it never triggers or duplicates an existing package. Practice only with explicit approval.",
+   "spec": "Reuse the narrow A_hybrid mechanism: open RFQ, negotiable non-fixed lead time, explicitly supplier-quoted longer allowed schedule within need, all other non-price terms equal after resolution, finite complete costs within the documented EUR 0.01 tolerance, at most one changed package. Present it as a counteroffer, not acceptance."
+  }
+ ],
+ "approaches": [
+  {
+   "id": "S6-1",
+   "title": "Event-sourced pure-decision G8s executor",
+   "summary": "Separate immutable observations, pure G8s action selection, validated dispatch transactions and authoritative acknowledgements.",
+   "worth_it": "yes",
+   "why": "A minimal journal and recovery slice could reduce realised-score losses without replacing the tested bargaining policy. A full rewrite before the final is not justified without differential equivalence tests."
+  },
+  {
+   "id": "S6-2",
+   "title": "Robust conditional-trade compiler",
+   "summary": "Compile source-linked supplier conditions into code-validated allowed packages while retaining G8s bidding and closing as fallback.",
+   "worth_it": "maybe",
+   "why": "Different from discovery-first ALT-6: it uses already-received conditions, adds no discovery round and does not let an LLM choose numbers. Benefit on unfamiliar wording is unmeasured."
+  },
+  {
+   "id": "S6-3",
+   "title": "Offline adversarial policy portfolio",
+   "summary": "Use explicit supplier mechanisms and transport faults to falsify generic policies offline, rather than relying on online LLM digital-twin rollouts.",
+   "worth_it": "maybe",
+   "why": "Useful for hidden-case robustness and testing diversity, but simulator success cannot establish hosted score gains. Not a justified last-minute live replacement for G8s."
+  }
+ ],
+ "final_risks": [
+  "G8s deployment and final-wave adapter are not demonstrated by the supplied material; the handoff says G8s was not yet pushed.",
+  "G8s leaves arena_clock_guard, safe_close, safe_single and close_recovery_v2 disabled.",
+  "Legacy closing can walk after failed alternative promotion and does not visibly validate the promoted primary against the intended package on every path.",
+  "Legacy resync can treat a failed read as supplier withdrawal.",
+  "The runner can record unconfirmed closure and a locally fabricated failure score without preserving a clear official-outcome distinction.",
+  "Session construction opens a session before the shown ownership logging and exception handler.",
+  "No complete five-wave, ten-case parallel-load and restart rehearsal is supplied.",
+  "The omitted RFQ coordinator cannot be certified for lock discipline, close arbitration or stale snapshots.",
+  "The shown Thread deepcopy logic may still encounter MappingProxyType fields unless omitted support or a different production path handles them.",
+  "Internal opening costs and strategic deal valuations disagree with official values in supplied cases.",
+  "The supposed opening-based floor cap uses current primary quotes when calibrated_anchor is disabled.",
+  "Forecast provenance and no_dup_claims do not provide complete message-wide and case-wide evidence integrity.",
+  "Case-only evidence descriptions can assert unsupported comparisons; historical purchases can be mistaken for executable rival quotes.",
+  "Volume, horizon and bundle wording require authorisation checks; parts[0] handling is a multi-part generalisation risk.",
+  "P05 remains execution-sensitive, while the apparent G8s portfolio gain is concentrated largely in P02.",
+  "D01/D02 repeatability and the observed D02 plateau do not prove hidden-supplier generalisation or an absolute reachable-score ceiling.",
+  "Historical board records, quota statements and architecture documents are stale or contradictory.",
+  "Dormant experimental flags, duplicated Config definitions and a large integrated engine increase accidental-configuration and interaction risk.",
+  "Final runtime must be isolated from prohibited live ranking, event, screen and result feeds."
+ ]
+}

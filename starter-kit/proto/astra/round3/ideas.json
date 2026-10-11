@@ -1,0 +1,130 @@
+{
+ "ideas": [
+  {
+   "id": "R3-1",
+   "title": "Deliver request-specific proof before finality",
+   "flag": "proof_scope_before_final",
+   "targets": [
+    "P04",
+    "P11",
+    "P18",
+    "P08"
+   ],
+   "expected_gain": "Unmeasured hypothesis: 0-0.02 absolute score per affected case.",
+   "risk": "Duplicate evidence, checker-irrelevant historical sources, or regression from changing a successful message sequence.",
+   "test": "Offline request/provenance fixtures; D01 and interleaved D02 non-regression. Target gain is practice-only: request approval for P04, P11 and P18.",
+   "functions": [
+    "PracticeNegotiator.write",
+    "PracticeNegotiator.facts_for",
+    "PracticeNegotiator.claim_source",
+    "Negotiator.write"
+   ],
+   "spec": "On an open-state evidence request, distinguish forecast, authorized commitment, historical purchase and executable quote. Supply supported proof within the existing counter; omit optional unsubstantiable settlement claims. Derive deal-scope figures from case/package data. Never invent IDs, relabel forecasts as orders, or add a post-final round."
+  },
+  {
+   "id": "R3-2",
+   "title": "Filter acknowledged shared-index duplicates across RFQ threads",
+   "flag": "shared_index_ack_filter",
+   "targets": [
+    "P05"
+   ],
+   "expected_gain": "Unmeasured hypothesis: 0-0.03 absolute score; noisy RFQ outcome requires paired evaluation.",
+   "risk": "Removing useful reinforcement or accidentally suppressing rival and cost-breakdown leverage.",
+   "test": "Replay non-rival duplicate counts and replacement validity; D02 must preserve breakdown timing, rival citations and asynchronous sends. Request approval for paired P05 tests.",
+   "functions": [
+    "Negotiator.send",
+    "Negotiator.apply_thread_update",
+    "PracticeNegotiator.facts_for",
+    "PracticeNegotiator.write"
+   ],
+   "spec": "Cache completed-reply acknowledgements for shared index evidence only. Replace already acknowledged index groups with valid unused recipient-specific facts where available. Exempt rival offers and own breakdowns. No network wait, global claim reservation, or filler references."
+  },
+  {
+   "id": "R3-3",
+   "title": "Preserve one supplier-adopted secondary trade lane",
+   "flag": "adopted_secondary_lane",
+   "targets": [
+    "P07",
+    "P08",
+    "P18"
+   ],
+   "expected_gain": "Unmeasured hypothesis: 0-0.03 absolute score per affected case.",
+   "risk": "Secondary-package anchoring and existing total-cost model error.",
+   "test": "Offline field-lineage and unchanged-primary assertions; D01/D02 scope non-regression. Practice-only benefit: request approval for P07, P08 and P18.",
+   "functions": [
+    "Negotiator.meso",
+    "Negotiator.write"
+   ],
+   "spec": "For an open non-stabilise single-supplier thread, detect when the next secondary package reverses a payment/contract combination the supplier adopted or rewarded. Preserve that combination in the existing secondary slot, priced by normal code at the unchanged goal. Do not alter primary, pacing, acceptance or final-offer handling."
+  },
+  {
+   "id": "R3-4",
+   "title": "Exchange supplier-offered clause variants after introduction",
+   "flag": "requested_clause_lane",
+   "targets": [
+    "P18",
+    "P08"
+   ],
+   "expected_gain": "Unmeasured hypothesis: 0-0.04 on P18 and 0-0.02 on P08.",
+   "risk": "Misvalued index risk, higher supplier base prices, or displacement of a useful secondary clause choice.",
+   "test": "Offline option, must-have and marginal-cost checks; D01/D02 unchanged. Practice-only benefit: request approval for P18, P08 and a P02 regression guard.",
+   "functions": [
+    "Negotiator.meso",
+    "Negotiator.clause_candidate",
+    "Negotiator.C"
+   ],
+   "spec": "Only after the supplier offers distinct admissible clause variants, permit the existing secondary package to use the other variant. Preserve its payment and duration and the baseline primary. Derive the price adjustment from code-calculated clause/risk cost. Do not introduce a clause in the opening or infer premiums from non-comparable packages."
+  },
+  {
+   "id": "R3-5",
+   "title": "Document authorized bundle scope in volume answers",
+   "flag": "authorized_bundle_proof",
+   "targets": [
+    "P07"
+   ],
+   "expected_gain": "Unmeasured conditional hypothesis: 0-0.03; zero if bundle authority is absent.",
+   "risk": "Confusing historical purchases or forecasts with authority to commit a wider award.",
+   "test": "Audit bundle source and authorization first; reject unauthorized-bundle fixtures; D01/D02 unchanged. Practice-only benefit: request approval for P07.",
+   "functions": [
+    "PracticeNegotiator.write",
+    "PracticeNegotiator.claim_source",
+    "Negotiator.write"
+   ],
+   "spec": "When a supplier asks for volume after an authorized case-defined bundle was mentioned, separate focal-part demand from sourced bundle scope and distinguish commitments from forecasts. Keep focal-part volume fields unchanged. No-op without explicit scope authority; create no unsupported term-sheet fields."
+  },
+  {
+   "id": "R3-6",
+   "title": "Refresh stale-known rival evidence at dispatch",
+   "flag": "dispatch_rival_refresh",
+   "targets": [
+    "P05"
+   ],
+   "expected_gain": "Zero without detected stale-known opportunities; otherwise an unmeasured 0-0.02 hypothesis.",
+   "risk": "Mismatched offer IDs, figures and attachments, or accidental scheduling changes.",
+   "test": "Audit draft versus locally available offer revisions first. Test delayed replies and consistent rival attachments on D02. Request approval for paired P05 tests only if the trigger occurs.",
+   "functions": [
+    "Negotiator.run_rfq",
+    "Negotiator.write",
+    "Negotiator.send",
+    "Negotiator.apply_thread_update"
+   ],
+   "spec": "Before dispatch, substitute a newer already-received admissible better rival primary offer for a stale draft reference. Update ID, terms, text and attachment atomically from one revision. Use authoritative history order, not ID syntax. No HTTP refresh, wait, barrier, disclosure suppression or close-policy change."
+  },
+  {
+   "id": "R3-7",
+   "title": "Use a compliant opening package to select the stagger leader",
+   "flag": "feasible_stagger_lead",
+   "targets": [
+    "P05"
+   ],
+   "expected_gain": "Zero unless the selection audit finds a noncompliant leader with a compliant alternative; conditional 0-0.03 hypothesis.",
+   "risk": "Losing a productive cheap-first negotiation sequence or mistaking a soft preference for a must-have.",
+   "test": "Audit actual case constraints and current selection first; offline noncompliant-opening fixture; D02 retains its leader when compliant. Target benefit likely practice-only: request approval for P05.",
+   "functions": [
+    "Negotiator.run_rfq",
+    "Negotiator.C"
+   ],
+   "spec": "Before the existing RFQ stagger, rank completed compliant opening primary packages using existing total cost. Change the lead only when the current choice violates a hard requirement and a compliant opening exists. Otherwise retain G8s. Add no barriers, floor assumptions, or speculative repair premiums."
+  }
+ ]
+}

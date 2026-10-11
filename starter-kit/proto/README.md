@@ -23,7 +23,18 @@ measured effect), `App/Engine-Prototype.md` (architecture + changelog), `App/Tar
 | A10 (+ GPT-6.1-sol advice: deadline reserve for alternatives, conditional-agreement repair, push scaled to room, plain proof) | 0.982 | 0.744 over 6 recent runs (0.682–0.786) | practice 0.693 over 10 cases |
 | A10w (A10 + Claude Sonnet 5.5 writes every e-mail in the supplier's register, template fallback) | 0.982 | – | practice 0.682 (writer used for 90 % of mails, median 2.5 s) - kept as an option |
 | A11c / A12d (Astra + GPT-6.1-sol rounds: safe close, clause exploration, package frontier, close recovery …) | 0.957–0.995 | 0.765–0.772 | practice 0.657 / 0.664 → not adopted (Experiment-Log E38–E39) |
-| **G5-1 (A10 + keep a delivered incoterm + stable incoterm basis + no RFQ hold rewinds + Nash package bargaining; from a 5-generation D02 evolution with Astra)** | **0.982** | **0.772** (0.765, 0.765, 0.786; never below 0.765) | **main algorithm**; practice **0.694** (P05 0.665); generic code path |
+| **G5-1 (A10 + keep a delivered incoterm + stable incoterm basis + no RFQ hold rewinds + Nash package bargaining; from a 5-generation D02 evolution with Astra)** | **0.982** | **0.772** (0.765, 0.765, 0.786; never below 0.765) | main algorithm until 11 Oct; practice 0.694 |
+
+## The Live Final (start before wave 1, leave it running)
+
+```bash
+PYTHONPATH=. uv run python proto/final.py                 # G8s on every case of every wave, real wave cap as deadline
+PYTHONPATH=. uv run python proto/final.py --rehearse 10   # same code path on sandbox cases, one 8-minute wave (free)
+```
+`FINAL_VARIANT` picks another named algorithm (default **G8s**). A "one session per case" 409 resumes the running
+session (e.g. after a crash/restart). `proto/runs/final/manifest.json` records the exact config and code hash.
+
+| **G8s** (G5-1 + slow tough ask for single-supplier stabilise cases with a generosity guard + spread arguments (single supplier) + clause package for stabilise + evidence fixes + quality packages) | **1.000** | 0.73–0.77 | **current main algorithm**; practice **0.731** (P01 0.956 and P02 0.733 above the board records) |
 
 ## Run
 

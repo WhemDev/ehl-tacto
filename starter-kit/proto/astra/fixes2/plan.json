@@ -1,0 +1,28 @@
+{
+ "tasks": [
+  {
+   "id": "I1",
+   "title": "Guard the slow single-supplier ask",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "Negotiator._slow_ask_goal (only this method)"
+   ],
+   "spec": "Flag slow_ask_guard (works together with slow_ask_single; only when slow_ask_guard is True). Two changes inside Negotiator._slow_ask_goal:\n(1) NEVER MORE GENEROUS THAN THE NORMAL CURVE: compute the normal goal for this round exactly as goal() would without slow_ask_single (careful: goal() calls _slow_ask_goal - avoid recursion, e.g. by a temporary instance flag/attribute that makes goal() skip the slow branch, or by factoring the existing curve computation; you may NOT edit goal(), so use an attribute guard such as self._slow_ask_bypass checked... no: goal() checks `self.cfg.slow_ask_single`; you may compute the normal goal by temporarily setting an attribute that _slow_ask_goal itself checks first and returns None for - e.g. `if getattr(self, '_slow_bypass', False): return None` at the top of _slow_ask_goal, then set it, call self.goal(rnd, t), unset it in a finally). Return min(slow, normal) - the ask must never be more generous (higher C) than the normal curve. Evidence: practice P01 slow ask EUR 136.65 vs normal EUR 131.42 -> the supplier agreed instantly (-0.16).\n(2) ONLY WHILE THE SUPPLIER OUT-CONCEDES US: look at the supplier's primary-sheet C over its replies (t.events, from != 'buyer', term_sheets[0].terms, via self.C) and our own asks (buyer events, term_sheets[0].terms). If, in the latest round, the supplier's concession (drop in its C) was smaller than our own last concession (drop in our ask's C, i.e. how much we moved toward it), the supplier is reciprocating - return None (normal curve) from then on for this thread (remember it in t.__dict__). Evidence: P07/P08 mirrored our smaller steps and went final higher (-0.03/-0.07), D01's foundry did not (+0.018). Note('slow_ask_guard', reason=..., slow=..., normal=..., supplier_move=..., our_move=...).\n\nRULES: the Config flags named here ALREADY EXIST - do NOT edit Config, MESO_HOOKS or any function not named as yours. With the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Keep 'old' snippets short and unique.",
+   "test": "sandbox D01 (must stay >= 0.995); practice P01/P07/P08"
+  },
+  {
+   "id": "I2",
+   "title": "Explicit clause package for stabilise / raw-material cases",
+   "files": [
+    "proto/engine.py"
+   ],
+   "functions": [
+    "new method Negotiator._clause_package(self, t, c_goal, picks)"
+   ],
+   "spec": "Flag clause_pkg. Implement ONLY the new method `_clause_package(self, t, c_goal, picks) -> list|None`; it is ALREADY registered in MESO_HOOKS (runs after the core and the other hooks). Applies only when 'index_clause' is in self.case['negotiable'], the category goal is 'stabilise' or the case type is 'raw_material' or a supplier message/term sheet mentions an index/clause, and no package in picks already has an index_clause. Build ONE clause package: start from picks[0]; choose the index-clause option from self.case['term_options']['index_clause'] whose series matches a series the supplier named or offered (term sheets / body text) if any, otherwise the option whose series is in self.b.get('index_paths') (a cost driver we can evaluate); among options of that series prefer the widest deadband (deadband_pct) and a material_share of a real driver. Re-price to the same c_goal with proto.target.price_for_c(self.case, terms_without_price, t.std, c_goal, t.est if self.relationship else None); cap at the supplier's standing price on equal non-price terms; must_haves_ok; the clause package's C must not exceed max(C of picks) + 0.2 % (it shares index risk, so a tiny premium is acceptable). Return picks with it appended if len(picks) < max(2, self.cfg.meso_n), else replacing the last package. Evidence: practice P02 - a CU-NOTATION 5 % deadband clause package at EUR 365.47 / 60 d was agreed (+0.109); A5 reached 0.684 with a copper clause. Note('clause_pkg', ...).\n\nRULES: the Config flags named here ALREADY EXIST - do NOT edit Config, MESO_HOOKS or any function not named as yours. With the flag off, behaviour must be byte-identical. Generic rules only (case features, statuses, supplier text, data) - never case/supplier IDs or prices. Log decisions with self.note(kind, ...). Keep 'old' snippets short and unique.",
+   "test": "smoke; practice P02/P08/P18"
+  }
+ ]
+}
