@@ -1,0 +1,1 @@
+would creating personas help? What should be our strategy to create the best agent structure? We can try using multiple models from claude or gpt with different harnesses to find the best fit. But we should be careful not to overfit on practice (18) and sandbox (2) data since the actual dataset has 50.
