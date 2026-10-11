@@ -27,7 +27,10 @@ class DataPackage:
         self.release = next((p.resolve() for p in candidates if (p / "facts.json").is_file()), None)
         if self.release:  # new IDs only: nothing in the package changes
             self.facts |= json.loads((self.release / "facts.json").read_text(encoding="utf-8"))
-        dbs = sorted(self.root.rglob("*.sqlite")) + sorted(self.root.rglob("*.db"))
+        # the package's own world.sqlite first; never an empty file (2026-10-11 08:04: a sqlite3 shell opened a
+        # missing data/package/data/world.sqlite, created it empty, and every case fell back to the orchestra)
+        found = [self.root / "world.sqlite", *sorted(self.root.rglob("*.sqlite")), *sorted(self.root.rglob("*.db"))]
+        dbs = [d for d in found if d.is_file() and d.stat().st_size > 0]
         if not dbs and not facts:
             raise FileNotFoundError(f"no facts.json or .sqlite under {self.root}")
         self.db = None
